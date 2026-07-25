@@ -19,7 +19,7 @@ function el(tag, cls, html) {
 const esc = (s) => String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
 // --------------------------- real state --------------------------
-const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'inbox'];
+const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'inbox', 'lanes'];
 const S = {
   files: {},           // name -> parsed json | null
   batch: null,
@@ -190,6 +190,7 @@ function renderFeeds() {
   gc.innerHTML = '';
   const runs = [];
   if (S.files.signals) runs.push({ who: 'NOVA', what: `research run — ${S.files.signals.signals.length} signals`, when: S.files.signals.fetchedAt });
+  if (S.files.lanes) runs.push({ who: 'SCOUT', what: `lane research — ${S.files.lanes.lanes.length} lanes ranked`, when: S.files.lanes.fetchedAt });
   if (S.files.art) runs.push({ who: 'FLORA', what: `art intake — ${S.files.art.ok.length} validated`, when: S.files.art.fetchedAt });
   if (S.files.products) runs.push({ who: 'MERCH', what: `product sync`, when: S.files.products.fetchedAt });
   if (S.files.orders) runs.push({ who: 'LEDGER', what: `orders pull`, when: S.files.orders.fetchedAt });
@@ -280,8 +281,31 @@ function buildRoom(root, roomId) {
       break;
     }
     case 'ventures': {
-      panel(root, 'LANE PIPELINE').appendChild(el('div', 'panel-note',
-        'Idea scout run is in progress (background agent evaluating adjacent lanes on real platform data). Results land here as a ranked queue.'));
+      const lanes = S.files.lanes;
+      if (!lanes) {
+        panel(root, 'LANE PIPELINE').appendChild(el('div', 'panel-note',
+          'No lane research recorded yet.'));
+        break;
+      }
+      const qBody = panel(root, `LANE QUEUE — SCOUT RUN · ${new Date(lanes.fetchedAt).toLocaleString()}`);
+      qBody.appendChild(el('div', 'panel-note', esc(lanes.source)));
+      lanes.queue.forEach((q, i) => {
+        qBody.appendChild(el('div', 'trow',
+          `<span class="tk">${i === 0 ? '▶' : String(i + 1)} ${esc(q)}</span>`));
+      });
+      const lBody = panel(root, 'RANKED LANES (VERIFIED)');
+      for (const l of lanes.lanes) {
+        lBody.appendChild(el('div', 'trow',
+          `<span class="tk">#${l.rank} ${esc(l.name)}</span>` +
+          `<span class="dim">${esc(l.note)}</span>` +
+          `<span class="tv">${esc(l.automation)} auto · ${esc(l.startup)} · ${esc(l.firstDollar)}</span>`));
+      }
+      const dBody = panel(root, 'DO NOT BOTHER (DISQUALIFIED ON POLICY/ECONOMICS)');
+      for (const d of lanes.doNotBother) {
+        dBody.appendChild(el('div', 'log-line warn', esc(d)));
+      }
+      panel(root, 'FULL REPORT').appendChild(el('div', 'panel-note',
+        'Complete scored report with 48 sources: ops/LANES.md in the repo.'));
       break;
     }
     case 'comms': {
