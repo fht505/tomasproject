@@ -7,6 +7,10 @@
   },
   "scripts": {
     "test": "node test-margin.mjs",
+    "doctor": "node doctor.mjs",
     "ops": "node ops.mjs"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

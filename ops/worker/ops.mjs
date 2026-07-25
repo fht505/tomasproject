@@ -2,6 +2,7 @@
 // ============================================================================
 // PERPETUA ORBITAL — one command for the whole operation.
 //
+//   node ops.mjs doctor          check this machine can run everything
 //   node ops.mjs                 where am I, what do I do next
 //   node ops.mjs verify          prove the Printify token + list shops
 //   node ops.mjs listings        regenerate listing copy from ops/config.json
@@ -192,6 +193,7 @@ const COMMANDS = {
   unstage: () => run('publish.mjs', ['unstage', ...rest]),
   ledger: () => run('ledger.mjs'),
   orders: () => run('orders.mjs', ['watch']),
+  doctor: () => run('doctor.mjs'),
   test: () => run('test-margin.mjs'),
   tm: () => run('tm.mjs', [arg0 ?? 'list', ...rest.slice(1)]),
   blueprints: () => run('cli.mjs', ['blueprints', ...rest]),
