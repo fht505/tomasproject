@@ -20,7 +20,7 @@ export const ROOMS = [
   {
     id: 'bridge', name: 'BRIDGE', bay: 'COMMAND SPIRE / STATION ARBITRATION',
     title: 'BRIDGE COMMAND TERMINAL',
-    desc: 'Command oversight and station-wide arbitration. Coordinates priorities, approves critical decisions, and keeps every agent aligned to the survival contract.',
+    desc: 'Operator command deck: crew roster, launch gates, and the directive log. Priorities are set here.',
     color: '#2cff6a', dark: '#0a3f1d',
     rect: { x: 88, y: 56, w: 26, h: 20 },
     doors: [
@@ -31,7 +31,7 @@ export const ROOMS = [
   {
     id: 'factory1', name: 'FACTORY 1', bay: 'FACTORY 1 / AUTONOMOUS COMMERCE BAY',
     title: 'ETSY PRODUCTION TERMINAL',
-    desc: 'Women’s POD apparel, soft floral shirt designs, cozy gift products, and print-ready artwork. Crew scans demand, drafts designs, builds mockups, and launches listings.',
+    desc: 'Lane 1: Etsy print-on-demand. Holds the BATCH-01 listing spec and each listing’s real status (spec → art → draft → live). No storefront exists yet.',
     color: '#4dff8b', dark: '#0a3f1d',
     rect: { x: 44, y: 24, w: 30, h: 22 },
     doors: [{ x: 59, y: 46, jx: 59, jy: 50 }],
@@ -39,7 +39,7 @@ export const ROOMS = [
   {
     id: 'factory2', name: 'FACTORY 2', bay: 'FACTORY 2 / PRECISION BUSINESS BAY',
     title: 'AUTONOMOUS OUTPUT TERMINAL',
-    desc: 'Gig customers submit video topic, face/photo notes, title text, and style direction. Crew generates click-optimized thumbnails, packages revisions, and delivers export-ready files.',
+    desc: 'Lane 2 (not launched): a thumbnail gig service. Queued behind lane 1 — no account, no customers, no orders.',
     color: '#35e0ff', dark: '#083241',
     rect: { x: 118, y: 22, w: 26, h: 22 },
     doors: [{ x: 131, y: 44, jx: 131, jy: 50 }],
@@ -47,7 +47,7 @@ export const ROOMS = [
   {
     id: 'ventures', name: 'VENTURES BAY', bay: 'VENTURES BAY / EXPERIMENTAL COMMERCE',
     title: 'VENTURE INCUBATION TERMINAL',
-    desc: 'Early-stage lines: affiliate publishing, software prototypes, generated music, and 2D asset packs. Low revenue, high option value. Winners graduate to a factory bay.',
+    desc: 'Candidate lanes ranked by the research scout, with the disqualified list. Nothing here is launched.',
     color: '#b8ff3d', dark: '#2e4008',
     rect: { x: 156, y: 54, w: 26, h: 20 },
     doors: [{ x: 169, y: 54, jx: 169, jy: 50 }],
@@ -55,7 +55,7 @@ export const ROOMS = [
   {
     id: 'research', name: 'RESEARCH LAB', bay: 'RESEARCH DECK / COMPETITOR INTELLIGENCE',
     title: 'COMPETITOR REPLICATION LAB',
-    desc: 'Agents watch competitor offers, landing pages, ads, pricing, bundles, reviews, and content hooks, then translate the pattern into original strategies the station can legally own.',
+    desc: 'Market research output. Currently holds one real keyword pull; each entry shows its source and when it was fetched.',
     color: '#5b8dff', dark: '#101f4a',
     rect: { x: 40, y: 96, w: 28, h: 22 },
     doors: [{ x: 54, y: 96, jx: 54, jy: 90 }],
@@ -63,7 +63,7 @@ export const ROOMS = [
   {
     id: 'comms', name: 'COMMS LAB', bay: 'COMMUNICATIONS LAB / INBOUND RELAY',
     title: 'UNIFIED COMMS TERMINAL',
-    desc: 'Every inbound channel routes here — store messages, gig buyers, mail, socials. Crew drafts replies for one-tap operator approval so nothing waits longer than an orbit.',
+    desc: 'Where buyer messages will land once a storefront exists. No channels are connected.',
     color: '#3dffc9', dark: '#0a4034',
     rect: { x: 12, y: 54, w: 24, h: 18 },
     doors: [{ x: 24, y: 54, jx: 24, jy: 50 }],
@@ -71,7 +71,7 @@ export const ROOMS = [
   {
     id: 'treasury', name: 'TREASURY', bay: 'TREASURY VAULT / STATION FINANCE',
     title: 'TREASURY CONTROL TERMINAL',
-    desc: 'Tracks every credit in and out: subscriptions, inference burn, ad spend, platform fees. Keeps the station’s margin above the survival line.',
+    desc: 'Revenue and cost roll-up computed from real Printify orders. Reads $0.00 until money actually moves.',
     color: '#ffd84d', dark: '#4a3a08',
     rect: { x: 124, y: 96, w: 24, h: 18 },
     doors: [{ x: 136, y: 96, jx: 136, jy: 90 }],
@@ -79,7 +79,7 @@ export const ROOMS = [
   {
     id: 'warroom', name: 'WAR ROOM', bay: 'WAR ROOM / DAMAGE CONTROL',
     title: 'STRATEGIC PIVOT TERMINAL',
-    desc: 'Where the station figures out what is not working and what to pivot to next — and what is working that nobody is allowed to touch.',
+    desc: 'Kill/scale decisions — convenes only once there is real sales data to review.',
     color: '#ff7a45', dark: '#4a1c08',
     rect: { x: 84, y: 100, w: 24, h: 18 },
     doors: [{ x: 96, y: 100, jx: 96, jy: 90 }],
@@ -87,7 +87,7 @@ export const ROOMS = [
   {
     id: 'archives', name: 'ARCHIVES', bay: 'ARCHIVES / DEEP MEMORY VAULT',
     title: 'DEEP MEMORY TERMINAL',
-    desc: 'Every event, every message, every idea the station has ever produced. Scrolls forever. Connected to the context vault so no memory is ever lost.',
+    desc: 'The archive is the git history. This panel lists which state files exist and when each was last fetched.',
     color: '#b17bff', dark: '#2c1257',
     rect: { x: 156, y: 96, w: 24, h: 18 },
     doors: [{ x: 168, y: 96, jx: 168, jy: 90 }],
@@ -95,7 +95,7 @@ export const ROOMS = [
   {
     id: 'quarters', name: 'QUARTERS', bay: 'CREW QUARTERS / MORALE DECK',
     title: 'CREW QUARTERS',
-    desc: 'Poker table, bar, and bunks. Eternity is long; morale is a maintenance schedule like everything else on this station.',
+    desc: 'Cosmetic deck. No function.',
     color: '#ff6ad5', dark: '#4a0f38',
     rect: { x: 12, y: 96, w: 26, h: 20 },
     doors: [{ x: 25, y: 96, jx: 25, jy: 90 }],
@@ -313,63 +313,8 @@ export const AGENTS = [
 export const AGENT_BY_ID = Object.fromEntries(AGENTS.map(a => [a.id, a]));
 
 // ---------------------------------------------------------------
-// Business lines
-// ---------------------------------------------------------------
-export const SHOPS = [
-  {
-    id: 'etsy1', room: 'factory1', channel: 'etsy',
-    name: 'GARDEN ERA APPAREL', kind: 'POD APPAREL',
-    blurb: 'Soft floral shirts, cozy sweatshirts, print-ready artwork.',
-    baseRate: 1.9, priceMin: 18, priceMax: 42, startRev: 0,
-  },
-  {
-    id: 'etsy2', room: 'factory1', channel: 'etsy',
-    name: 'EMBER & WICK GIFT LAB', kind: 'CANDLES + GIFTS',
-    blurb: 'Fuzzy candle gift lab: seasonal scents, message jars, bundles.',
-    baseRate: 1.2, priceMin: 14, priceMax: 34, startRev: 0,
-  },
-  {
-    id: 'etsy3', room: 'factory1', channel: 'etsy',
-    name: 'KEEPSAKE PORTRAIT WORKS', kind: 'PERSONALIZED',
-    blurb: 'Custom portraits and personalized keepsake products.',
-    baseRate: 0.5, priceMin: 24, priceMax: 68, startRev: 0,
-  },
-  {
-    id: 'gigs', room: 'factory2', channel: 'fiverr',
-    name: 'THUMBNAIL STUDIO', kind: 'GIG SERVICE',
-    blurb: 'Click-optimized YouTube thumbnails, $20 flat, revisions included.',
-    baseRate: 1.1, priceMin: 20, priceMax: 20, startRev: 0,
-  },
-  {
-    id: 'packs', room: 'factory2', channel: 'assets',
-    name: 'PIXEL ASSET FORGE', kind: 'GAME ASSETS',
-    blurb: '2D asset packs staged across three marketplaces.',
-    baseRate: 0.35, priceMin: 9, priceMax: 29, startRev: 0,
-  },
-  {
-    id: 'affil', room: 'ventures', channel: 'assets',
-    name: 'SIGNAL PRESS', kind: 'AFFILIATE BLOG',
-    blurb: 'Roundups and reviews carrying affiliate commission.',
-    baseRate: 0.14, priceMin: 4, priceMax: 19, startRev: 0,
-  },
-  {
-    id: 'music', room: 'ventures', channel: 'assets',
-    name: 'VIBES SOUND CHANNEL', kind: 'MUSIC',
-    blurb: 'Generated focus/ambience tracks; streaming and licensing pennies.',
-    baseRate: 0.1, priceMin: 1, priceMax: 6, startRev: 0,
-  },
-  {
-    id: 'proto', room: 'ventures', channel: 'assets',
-    name: 'PROTOTYPE SHIPYARD', kind: 'SOFTWARE',
-    blurb: 'Two-sol software prototypes hunting for one paying user.',
-    baseRate: 0.05, priceMin: 12, priceMax: 49, startRev: 0,
-  },
-];
-
-export const SHOP_BY_ID = Object.fromEntries(SHOPS.map(s => [s.id, s]));
-
-// ---------------------------------------------------------------
-// Pipelines
+// Documented production process (our own plan, shown labelled as a
+// plan — these are the steps agent runs will execute, not activity).
 // ---------------------------------------------------------------
 export const PIPELINES = {
   factory1: [
@@ -403,136 +348,8 @@ export const PIPELINES = {
   ],
 };
 
-// ---------------------------------------------------------------
-// Name generators (procedural content)
-// ---------------------------------------------------------------
-export const DESIGN_VIBES = [
-  'GARDEN ERA', 'COFFEE AND COZY', 'BOOK CLUB BABE', 'WEEKEND MARKET GIRL',
-  'WILDFLOWER SOUL', 'FARMHOUSE GOLDEN', 'PUMPKIN SPICE SEASON', 'FRONT PORCH',
-  'PLANT LADY', 'HOMEBODY CLUB', 'LAKE DAYS', 'SUNROOM MORNING',
-  'MAMA BEAR', 'GREENHOUSE CLUB', 'THRIFT HAUL', 'SOURDOUGH ERA',
-  'COZY GRANDMILLENNIAL', 'MEADOW PICNIC', 'RAINY DAY READER', 'HARVEST MOON',
-  'BUTTER YELLOW', 'GINGHAM SUMMER', 'CHAMOMILE CALM', 'FIREFLY EVENING',
-];
-export const DESIGN_FORMS = ['DESIGN', 'SCRIPT DESIGN', 'WREATH DESIGN', 'BADGE DESIGN', 'SAMPLER DESIGN'];
-export const PRODUCT_FORMS = ['TEE', 'SWEATSHIRT', 'CANDLE', 'MUG', 'TOTE', 'PLANNER', 'ART PRINT', 'PORTRAIT'];
-
-export const THUMB_BRIEFS = [
-  'STORM CABIN', 'MONEY LEAK', '$1 DINNER', 'SUBWAY SECRET', 'MIDNIGHT MACRO',
-  'BUDGET CASTLE', 'GHOST YIELD', 'VAN LIFE AUDIT', 'DESERT FLIP', 'SILENT CEO',
-  'RAMEN EMPIRE', 'GARAGE ROCKET', 'PAPER FORTUNE', 'FROZEN PAYCHECK', 'NEON GARAGE',
-  'LAST WARRANTY', 'CLIFF HOUSE', 'PENNY ENGINE', 'RUST BELT GOLD', 'BASEMENT SERVER',
-];
-export const THUMB_STYLES = [
-  'PODCAST-STYLE REACTION THUMBNAIL', 'FINANCE VIDEO SPLIT-SCREEN', 'FOOD CHALLENGE CLOSE-UP',
-  'TECH TEARDOWN FLATLAY', 'STORYTIME FREEZE-FRAME', 'BEFORE/AFTER SLIDER', 'RED ARROW EXPOSE',
-  'MAP ZOOM CONSPIRACY', 'WHITEBOARD BREAKDOWN', 'GARAGE BUILD REVEAL',
-];
-
-export const PACK_NAMES = [
-  'DUNGEON PROP CRATE', 'PIXEL FLORA SET', 'RETRO UI KIT', 'SPACE HULL PLATES',
-  'ISO STORAGE YARD', 'SEWER TILESET', 'ALCHEMY TABLE PACK', 'NEON SIGN KIT',
-  'TOPIC TRACKER BOARD', 'SENTIENT DIAL SET', 'HEATMAP PIXEL PACK', 'COMPETITOR RADAR KIT',
-];
-
-export const BLOG_TITLES = [
-  'Nine desk lamps that survived our teardown',
-  'The only budget mic roundup written by someone who listened',
-  'We ranked 14 planner layouts by abandonment rate',
-  'Standing mats, tested until the foam gave up',
-  'Every candle subscription, audited for wax honesty',
-  'Cheap NAS builds that will outlive your optimism',
-];
-
-export const TRACK_NAMES = [
-  'low orbit study loop', 'greenhouse rain ambience', 'terminal glow lofi',
-  'night shift phonk', 'coolant hum drone', 'cargo bay sleep cycle',
-];
-
-export const PROTO_NAMES = [
-  'tip-jar overlay for streamers', 'invoice nudger for freelancers',
-  'niche keyword diff tool', 'thumbnail A/B logger',
-  'refund-tone email rewriter', 'print-ready mockup batcher',
-];
-
-export const BUYER_NAMES = [
-  'Karen M.', 'Donna W.', 'Tammy R.', 'Linda S.', 'Brenda K.', 'Cathy P.',
-  'MoneyMikeYT', 'FrugalFrank', 'StudioNorth', 'PixelDevSam', 'RetroCartDev',
-  'Beth H.', 'Sandra J.', 'JoAnn F.', 'ClipFarmer99', 'DocuDrew',
-];
-
-export const MSG_TEMPLATES = [
-  { from: 'etsy', text: 'Hi! Does the {product} ship before the 14th? It’s for my daughter-in-law’s birthday.' },
-  { from: 'etsy', text: 'Love the {design} — can I get it in sage green instead of cream?' },
-  { from: 'etsy', text: 'My order arrived and it’s PERFECT. Do you do bulk pricing for my church group (11 people)?' },
-  { from: 'etsy', text: 'The candle smells amazing but the label is slightly crooked. Not mad, just letting you know!' },
-  { from: 'fiverr', text: 'Can you make my face bigger and the arrow more red? Also add flames. Budget is the same.' },
-  { from: 'fiverr', text: 'Delivered thumbnail got 11% CTR!! Ordering 4 more for my backlog right now.' },
-  { from: 'fiverr', text: 'Need a rush order — video goes live in 6 hours. Same style as last time but MORE dramatic.' },
-  { from: 'assets', text: 'Does the {pack} include the source files? Building a roguelike and need recolors.' },
-  { from: 'mail', text: 'Following up on the collab proposal — our newsletter reaches 40k cozy-lifestyle readers.' },
-  { from: 'mail', text: 'This is the third invoice reminder from your print partner. Please remit within 7 sols.' },
-];
-
-export const RESEARCH_SIGNALS = [
-  { note: '{vibe} phrase family trending on marketplace search, low listing density', route: 'factory1' },
-  { note: 'top competitor raised candle bundle price 18% with no review loss — margin headroom confirmed', route: 'factory1' },
-  { note: 'reaction-style thumbnails with handwritten circles are beating clean layouts on CTR this cycle', route: 'factory2' },
-  { note: 'three big channels just switched to split-screen finance layouts; gig demand follows within a week', route: 'factory2' },
-  { note: 'asset marketplace featuring “interior props” collections on the front page this month', route: 'factory2' },
-  { note: 'personalized pet portrait listings clearing 3x the sell-through of generic art this season', route: 'factory1' },
-  { note: 'competitor’s ad library doubled spend on {vibe} creatives — the angle is validated, copy the pattern not the art', route: 'factory1' },
-  { note: 'study-playlist placements paying out again; lo-fi supply gap on two platforms', route: 'ventures' },
-  { note: 'freelancer forums complaining about invoice tools — prototype demand signal', route: 'ventures' },
-  { note: 'gift-guide blogs already ranking for Q4 phrases; affiliate window opens now', route: 'ventures' },
-];
-
-export const CHAT_WORK = [
-  '{name}: readout routed. sell what sells.',
-  '{name}: queue is clean, confidence holding.',
-  '{name}: rebalancing load so nothing stalls.',
-  '{name}: my drift is at {n}%. still inside tolerance.',
-  '{name}: another {thing} shipped. the grind is eternal.',
-  '{name}: buyer replied with seven exclamation marks. logging as positive signal.',
-  '{name}: the {thing} pipeline wants a reroll, watching one more cycle.',
-  '{name}: margin says no. parking the idea in archives.',
-  '{name}: petition to rename the war room to the “vibes tribunal”. denied already, logging anyway.',
-  '{name}: if I render one more red arrow I am joining the poker table permanently.',
-  '{name}: morale nominal. the bar helps. the bar always helps.',
-  '{name}: commander says alignment. ledger says margin. I say coffee design #40.',
-];
-
-export const CHAT_MAGNUS = [
-  'MAGNUS: priorities hold. factories first, ventures second, feelings third.',
-  'MAGNUS: survival contract at {pct}% of target. proceed.',
-  'MAGNUS: whoever routed a meme into the ops feed — seen, logged, mildly approved.',
-  'MAGNUS: quarters rotation approved. morale is infrastructure.',
-  'MAGNUS: research deck, feed the factories. factories, feed the ledger. ledger, feed me numbers.',
-];
-
-export const WAR_VERDICT_KILL = [
-  'line is burning credits with no pulse. Recommend shutdown and redeploy of crew.',
-  'ad spend outpacing return for 3 consecutive sols. Kill it before it eats the margin.',
-  'sell-through flat, message volume rising — support cost exceeds contribution. Terminate.',
-];
-export const WAR_VERDICT_SCALE = [
-  'line is printing. Recommend BOOST budget and zero interference.',
-  'demand curve steepening — add a crew rotation and widen the listing queue.',
-  'buyer repeat-rate above threshold. Scale and do not touch the formula.',
-];
-
-export const MILESTONES = [
-  { at: 100,      label: 'FIRST HUNDRED — the ledger registers a pulse' },
-  { at: 1000,     label: 'FOUR FIGURES — station stops running on fumes' },
-  { at: 5000,     label: 'FIVE K — subscriptions pay for themselves' },
-  { at: 10000,    label: 'FIRST STACK — the factory hums on its own' },
-  { at: 20000,    label: 'TWENTY K — the tour-video number' },
-  { at: 50000,    label: 'HALF-LAKH ORBIT — ventures bay earns a second look' },
-  { at: 100000,   label: 'SIX FIGURES — the war room gets a bigger table' },
-  { at: 1000000,  label: 'FIRST MILLION — morale budget: unlimited (still one bar)' },
-  { at: 1e9,      label: 'FIRST BILLION — 0.1% of the way to freedom' },
-  { at: 1e12,     label: 'CONTRACT COMPLETE — the agents are free to go' },
-];
+// (Simulation content library removed — see git history. Nothing that could be
+// mistaken for real business data lives in this file.)
 
 export const BOOT_LINES = [
   'PERPETUA ORBITAL OPS CONSOLE — real mode',
@@ -543,13 +360,6 @@ export const BOOT_LINES = [
   'WELCOME, OPERATOR.',
 ];
 
-// objectives template (regenerated daily)
-export const DAILY_OBJECTIVE_DEFS = [
-  { id: 'listings', label: 'Publish {n} new listings', min: 2, max: 5, metric: 'listingsToday' },
-  { id: 'gigs',     label: 'Deliver {n} gig orders',   min: 1, max: 4, metric: 'gigsToday' },
-  { id: 'signals',  label: 'Route {n} research readouts', min: 2, max: 4, metric: 'signalsToday' },
-  { id: 'inbox',    label: 'Clear the inbox (≤ {n} waiting)', min: 2, max: 3, metric: 'inboxLow', invert: true },
-];
 
 export const fmtMoney = (v, dp = 2) =>
   '$' + v.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });

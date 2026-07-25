@@ -1,28 +1,135 @@
 {
   "fetchedAt": "2026-07-25T20:30:00Z",
   "source": "Semrush keyword database (us), pulled live in operator session",
-  "agent": "NOVA (session run)",
   "signals": [
-    { "keyword": "teacher gifts", "volume": 12100, "kd": 40, "note": "back-to-school spike in August" },
-    { "keyword": "retirement gifts for women", "volume": 9900, "kd": 40, "note": "evergreen gift intent" },
-    { "keyword": "fall candles", "volume": 8100, "kd": 26, "note": "season peaks Aug-Oct; launch window open" },
-    { "keyword": "bridesmaid gifts", "volume": 8100, "kd": 47, "note": "high competition, later wave" },
-    { "keyword": "personalized cutting board", "volume": 8100, "kd": 21, "note": "engravable via Printify providers" },
-    { "keyword": "girl dad shirt", "volume": 4400, "kd": 9, "note": "phrase contested on apparel — original constructions only (see BATCH-01 gates)" },
-    { "keyword": "personalized gifts for her", "volume": 3600, "kd": 37, "note": "broad gift head term" },
-    { "keyword": "nurse gifts", "volume": 2900, "kd": 24, "note": "evergreen" },
-    { "keyword": "book lover gifts", "volume": 2900, "kd": 39, "note": "cozy-season adjacency" },
-    { "keyword": "custom pet portrait", "volume": 1900, "kd": 32, "note": "premium price point, wave 2 candidate" },
-    { "keyword": "personalized tumbler", "volume": 1900, "kd": 28, "note": "accent product candidate" },
-    { "keyword": "personalized dog gifts", "volume": 1600, "kd": 26, "note": "evergreen" },
-    { "keyword": "teacher shirt", "volume": 1600, "kd": 6, "note": "near-zero competition" },
-    { "keyword": "memorial gifts for loss of mother", "volume": 1600, "kd": 22, "note": "sensitive niche; handle with care if ever" },
-    { "keyword": "funny candles", "volume": 1300, "kd": 8, "note": "low competition" },
-    { "keyword": "grandma shirt", "volume": 1300, "kd": 14, "note": "low competition" },
-    { "keyword": "bachelorette shirts", "volume": 1300, "kd": 34, "note": "later wave" },
-    { "keyword": "dog mom shirt", "volume": 1000, "kd": 11, "note": "low competition" },
-    { "keyword": "nana gifts", "volume": 1000, "kd": 24, "note": "evergreen" },
-    { "keyword": "custom dog mug", "volume": 480, "kd": 11, "note": "accent product" },
-    { "keyword": "youtube thumbnail maker", "volume": 4400, "kd": 75, "note": "lane 2: demand is marketplace-internal; tool-intent in search" }
-  ]
+    {
+      "keyword": "teacher gifts",
+      "volume": 12100,
+      "kd": 40,
+      "note": "back-to-school spike in August"
+    },
+    {
+      "keyword": "retirement gifts for women",
+      "volume": 9900,
+      "kd": 40,
+      "note": "evergreen gift intent"
+    },
+    {
+      "keyword": "fall candles",
+      "volume": 8100,
+      "kd": 26,
+      "note": "season peaks Aug-Oct; launch window open"
+    },
+    {
+      "keyword": "bridesmaid gifts",
+      "volume": 8100,
+      "kd": 47,
+      "note": "high competition, later wave"
+    },
+    {
+      "keyword": "personalized cutting board",
+      "volume": 8100,
+      "kd": 21,
+      "note": "engravable via Printify providers"
+    },
+    {
+      "keyword": "girl dad shirt",
+      "volume": 4400,
+      "kd": 9,
+      "note": "phrase contested on apparel \u2014 original constructions only (see BATCH-01 gates)"
+    },
+    {
+      "keyword": "personalized gifts for her",
+      "volume": 3600,
+      "kd": 37,
+      "note": "broad gift head term"
+    },
+    {
+      "keyword": "nurse gifts",
+      "volume": 2900,
+      "kd": 24,
+      "note": "evergreen"
+    },
+    {
+      "keyword": "book lover gifts",
+      "volume": 2900,
+      "kd": 39,
+      "note": "cozy-season adjacency"
+    },
+    {
+      "keyword": "custom pet portrait",
+      "volume": 1900,
+      "kd": 32,
+      "note": "premium price point, wave 2 candidate"
+    },
+    {
+      "keyword": "personalized tumbler",
+      "volume": 1900,
+      "kd": 28,
+      "note": "accent product candidate"
+    },
+    {
+      "keyword": "personalized dog gifts",
+      "volume": 1600,
+      "kd": 26,
+      "note": "evergreen"
+    },
+    {
+      "keyword": "teacher shirt",
+      "volume": 1600,
+      "kd": 6,
+      "note": "near-zero competition"
+    },
+    {
+      "keyword": "memorial gifts for loss of mother",
+      "volume": 1600,
+      "kd": 22,
+      "note": "sensitive niche; handle with care if ever"
+    },
+    {
+      "keyword": "funny candles",
+      "volume": 1300,
+      "kd": 8,
+      "note": "low competition"
+    },
+    {
+      "keyword": "grandma shirt",
+      "volume": 1300,
+      "kd": 14,
+      "note": "low competition"
+    },
+    {
+      "keyword": "bachelorette shirts",
+      "volume": 1300,
+      "kd": 34,
+      "note": "later wave"
+    },
+    {
+      "keyword": "dog mom shirt",
+      "volume": 1000,
+      "kd": 11,
+      "note": "low competition"
+    },
+    {
+      "keyword": "nana gifts",
+      "volume": 1000,
+      "kd": 24,
+      "note": "evergreen"
+    },
+    {
+      "keyword": "custom dog mug",
+      "volume": 480,
+      "kd": 11,
+      "note": "accent product"
+    },
+    {
+      "keyword": "youtube thumbnail maker",
+      "volume": 4400,
+      "kd": 75,
+      "note": "lane 2: demand is marketplace-internal; tool-intent in search"
+    }
+  ],
+  "fetchedAt_note": "timestamp entered by hand during the operator session, accurate to the hour \u2014 not machine-recorded",
+  "produced_by": "Claude, in the operator session, via a live Semrush API keyword pull (report phrase_these, US database)",
+  "data_is_real": true
 }

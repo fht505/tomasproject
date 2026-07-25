@@ -230,11 +230,11 @@ function renderFeeds() {
   const gc = $('gridchat');
   gc.innerHTML = '';
   const runs = [];
-  if (S.files.signals) runs.push({ who: 'NOVA', what: `research run — ${S.files.signals.signals.length} signals`, when: S.files.signals.fetchedAt });
-  if (S.files.lanes) runs.push({ who: 'SCOUT', what: `lane research — ${S.files.lanes.lanes.length} lanes ranked`, when: S.files.lanes.fetchedAt });
-  if (S.files.art) runs.push({ who: 'FLORA', what: `art intake — ${S.files.art.ok.length} validated`, when: S.files.art.fetchedAt });
-  if (S.files.products) runs.push({ who: 'MERCH', what: `product sync`, when: S.files.products.fetchedAt });
-  if (S.files.orders) runs.push({ who: 'LEDGER', what: `orders pull`, when: S.files.orders.fetchedAt });
+  if (S.files.signals) runs.push({ who: 'RESEARCH', what: `research run — ${S.files.signals.signals.length} signals`, when: S.files.signals.fetchedAt });
+  if (S.files.lanes) runs.push({ who: 'LANE SCOUT', what: `lane research — ${S.files.lanes.lanes.length} lanes ranked`, when: S.files.lanes.fetchedAt });
+  if (S.files.art) runs.push({ who: 'ART INTAKE', what: `art intake — ${S.files.art.ok.length} validated`, when: S.files.art.fetchedAt });
+  if (S.files.products) runs.push({ who: 'PRODUCT SYNC', what: `product sync`, when: S.files.products.fetchedAt });
+  if (S.files.orders) runs.push({ who: 'LEDGER RUN', what: `orders pull`, when: S.files.orders.fetchedAt });
   if (!runs.length) gc.appendChild(el('div', 'panel-note', 'no agent runs recorded yet. first crew shift starts when the keys land.'));
   for (const r of runs) {
     gc.appendChild(el('div', 'chat-line',

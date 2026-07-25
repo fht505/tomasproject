@@ -1,14 +1,55 @@
 {
   "fetchedAt": "2026-07-25T21:40:00Z",
-  "source": "background scout agent run — platform policies + Semrush verified, full report in ops/LANES.md",
-  "agent": "SCOUT (lane research run)",
-  "queue": ["etsy-pod (LIVE PREP)", "etsy-digital (launch next — seasonal window open)", "kdp-coloring (start 30-day clock)", "notion-templates (join waitlist now, Gumroad meanwhile)", "fiverr-gigs (opportunistic)", "creative-fabrica (zero-cost syndication)"],
+  "source": "background scout agent run \u2014 platform policies + Semrush verified, full report in ops/LANES.md",
+  "queue": [
+    "etsy-pod (LIVE PREP)",
+    "etsy-digital (launch next \u2014 seasonal window open)",
+    "kdp-coloring (start 30-day clock)",
+    "notion-templates (join waitlist now, Gumroad meanwhile)",
+    "fiverr-gigs (opportunistic)",
+    "creative-fabrica (zero-cost syndication)"
+  ],
   "lanes": [
-    { "rank": 1, "name": "Etsy digital downloads", "automation": "95%", "startup": "$5-34", "firstDollar": "1-4 wks", "note": "printables/SVG/templates; shares lane-1 design pipeline; AI allowed with disclosure; 'notion templates' style long-tails verified" },
-    { "rank": 2, "name": "Amazon KDP coloring/activity books", "automation": "90-95%", "startup": "$0", "firstDollar": "sale <30d, cash ~75d", "note": "coloring pages for adults 18,100/mo; AI allowed with disclosure checkbox; price $9.99+ for 60% royalty" },
-    { "rank": 3, "name": "Notion templates (Marketplace + Gumroad)", "automation": "95%", "firstDollar": "days-wks via Gumroad", "startup": "$0", "note": "notion templates 22,200/mo; Marketplace is waitlisted — apply now, sell on Gumroad meanwhile" },
-    { "rank": 4, "name": "Fiverr productized AI-allowed gigs", "automation": "85%", "startup": "$0", "firstDollar": "1-3 wks", "note": "Fiverr explicitly permits AI in every category; sell the Etsy-SEO service our agents already do for ourselves" },
-    { "rank": 5, "name": "Creative Fabrica designer store", "automation": "95%", "startup": "$0", "firstDollar": "days-wks, small $", "note": "most AI-forward marketplace; pure syndication of designs from other lanes" }
+    {
+      "rank": 1,
+      "name": "Etsy digital downloads",
+      "automation": "95%",
+      "startup": "$5-34",
+      "firstDollar": "1-4 wks",
+      "note": "printables/SVG/templates; shares lane-1 design pipeline; AI allowed with disclosure; 'notion templates' style long-tails verified"
+    },
+    {
+      "rank": 2,
+      "name": "Amazon KDP coloring/activity books",
+      "automation": "90-95%",
+      "startup": "$0",
+      "firstDollar": "sale <30d, cash ~75d",
+      "note": "coloring pages for adults 18,100/mo; AI allowed with disclosure checkbox; price $9.99+ for 60% royalty"
+    },
+    {
+      "rank": 3,
+      "name": "Notion templates (Marketplace + Gumroad)",
+      "automation": "95%",
+      "firstDollar": "days-wks via Gumroad",
+      "startup": "$0",
+      "note": "notion templates 22,200/mo; Marketplace is waitlisted \u2014 apply now, sell on Gumroad meanwhile"
+    },
+    {
+      "rank": 4,
+      "name": "Fiverr productized AI-allowed gigs",
+      "automation": "85%",
+      "startup": "$0",
+      "firstDollar": "1-3 wks",
+      "note": "Fiverr explicitly permits AI in every category; sell the Etsy-SEO service our agents already do for ourselves"
+    },
+    {
+      "rank": 5,
+      "name": "Creative Fabrica designer store",
+      "automation": "95%",
+      "startup": "$0",
+      "firstDollar": "days-wks, small $",
+      "note": "most AI-forward marketplace; pure syndication of designs from other lanes"
+    }
   ],
   "doNotBother": [
     "Faceless YouTube (YPP thresholds + July 2025 inauthentic-content demonetization)",
@@ -18,5 +59,8 @@
     "Redbubble (50% platform fee on Standard accounts since Sept 2025)",
     "3D model marketplaces (default No-AI filters, need physical print photos)",
     "GPT Store (no reliable payment rail)"
-  ]
+  ],
+  "fetchedAt_note": "timestamp entered by hand during the operator session, accurate to the hour \u2014 not machine-recorded",
+  "produced_by": "background research agent run in the operator session; platform policies verified against 2025-2026 primary sources, demand figures from live Semrush pulls. Full report: ops/LANES.md",
+  "data_is_real": true
 }
