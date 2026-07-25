@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FHT ORBITAL — Autonomous Commerce Station</title>
+<link rel="stylesheet" href="css/station.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23031b0c'/><rect x='3' y='3' width='10' height='10' fill='none' stroke='%232cff6a'/><rect x='6' y='6' width='4' height='4' fill='%232cff6a'/></svg>">
+</head>
+<body>
+  <div id="boot-screen">
+    <pre id="boot-log"></pre>
+  </div>
+
+  <header id="hud">
+    <div class="hud-cell online-cell"><span class="online-dot"></span><span id="hud-online">ONLINE</span></div>
+    <div class="hud-cell"><span class="hud-k">REV</span><span class="hud-v" id="hud-rev">$0.00</span></div>
+    <div class="hud-cell"><span class="hud-k">ETSY</span><span class="hud-v" id="hud-etsy">$0.00</span></div>
+    <div class="hud-cell"><span class="hud-k">FIVERR</span><span class="hud-v" id="hud-fiverr">$0.00</span></div>
+    <div class="hud-cell"><span class="hud-k">ASSETS</span><span class="hud-v" id="hud-assets">$0.00</span></div>
+    <div class="hud-cell"><span class="hud-k">OPS</span><span class="hud-v" id="hud-ops">0 LINKED</span></div>
+    <div class="hud-cell wide">
+      <span class="hud-k">STATION LEVEL <b id="hud-level">1</b></span>
+      <div class="xpbar"><div id="hud-xp"></div></div>
+    </div>
+    <div class="hud-cell"><span class="hud-k">SOL</span><span class="hud-v" id="hud-clock">001 00:00</span></div>
+    <div class="hud-cell speed-cell">
+      <button class="spd" id="spd-pause" title="Pause">II</button>
+      <button class="spd on" id="spd-1">×1</button>
+      <button class="spd" id="spd-4">×4</button>
+      <button class="spd" id="spd-16">×16</button>
+    </div>
+    <div class="hud-cell"><button id="btn-settings" class="hud-btn" title="Uplink settings">UPLINK</button></div>
+  </header>
+
+  <div id="frame">
+    <aside id="rail-left">
+      <div class="rail-head" id="module-count">-- MODULES</div>
+      <div id="module-list"></div>
+      <div class="rail-head">CREW</div>
+      <div id="crew-list"></div>
+    </aside>
+
+    <main id="stage">
+      <canvas id="map-canvas"></canvas>
+      <div id="map-hint">CLICK A MODULE TO ENTER &middot; DRAG TO PAN &middot; WHEEL TO ZOOM</div>
+      <div id="minimap-wrap"><canvas id="minimap"></canvas></div>
+      <section id="room-view" class="hidden"></section>
+    </main>
+
+    <aside id="rail-right">
+      <div class="rail-head">OPERATIONS FEED</div>
+      <div id="ops-feed"></div>
+      <div class="rail-head">MISSION CONTROL</div>
+      <div id="mission-control"></div>
+      <div class="rail-head">DAILY OBJECTIVES</div>
+      <div id="objectives"></div>
+      <div class="rail-head">STATION GRIDCHAT</div>
+      <div id="gridchat"></div>
+    </aside>
+  </div>
+
+  <footer id="dock">
+    <button class="dock-btn" id="btn-map">MAP</button>
+    <button class="dock-btn" id="btn-milestones">MILESTONES</button>
+    <button class="dock-btn" id="btn-stats">STATS</button>
+    <div id="directive-wrap">
+      <span class="dir-label">DIRECTIVE&gt;</span>
+      <input id="directive-input" type="text" spellcheck="false"
+        placeholder="issue a station-wide directive… (e.g. push candles for fall season)">
+      <button class="dock-btn" id="btn-directive">TRANSMIT</button>
+    </div>
+    <div id="goal-wrap" title="Station survival contract">
+      <span class="dir-label">CONTRACT</span>
+      <div id="goal-bar"><div id="goal-fill"></div></div>
+      <span id="goal-text">$0 / $1T</span>
+    </div>
+  </footer>
+
+  <div id="modal-backdrop" class="hidden">
+    <div id="modal"></div>
+  </div>
+
+  <div id="toast-wrap"></div>
+  <div id="crt-overlay"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
