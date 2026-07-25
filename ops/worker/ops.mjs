@@ -6,6 +6,7 @@
 //   node ops.mjs verify          prove the Printify token + list shops
 //   node ops.mjs listings        regenerate listing copy from ops/config.json
 //   node ops.mjs art             validate design PNGs -> print masters
+//   node ops.mjs tm              trademark-screen every printed phrase (gate)
 //   node ops.mjs plan            resolve blueprints + REAL base costs/margins
 //   node ops.mjs stage           create drafts on Printify (margin-guarded)
 //   node ops.mjs review          list drafts, margins and status
@@ -27,6 +28,7 @@ import { join } from 'node:path';
 import { PATHS, env, loadConfig } from './config.mjs';
 
 const [cmd = 'status', ...rest] = process.argv.slice(2);
+const arg0 = rest[0];
 
 const C = {
   dim: (s) => `\x1b[2m${s}\x1b[0m`,
@@ -64,6 +66,13 @@ function status() {
   const approved = stagedItems.filter(i => i.approved).length;
   const published = stagedItems.filter(i => i.published).length;
   const unverifiedMargin = stagedItems.filter(i => !i.margin_verified).length;
+
+  const tm = state('tm-screen');
+  const phrases = listings ? new Set(listings.listings.map(l => l.phrase).filter(Boolean)) : new Set();
+  const phrasesTotal = phrases.size;
+  const verdicts = tm?.verdicts ?? {};
+  const phrasesCleared = [...phrases].filter(p => verdicts[p]?.verdict === 'PASS').length;
+  const phrasesRejected = [...phrases].filter(p => verdicts[p] && verdicts[p].verdict !== 'PASS').length;
 
   const steps = [
     {
@@ -109,6 +118,12 @@ function status() {
         ? `${Object.values(plan.plan || {}).filter(p => !p.error).length}/${Object.keys(plan.plan || {}).length} product types`
         : 'not run',
       next: 'node ops.mjs plan   (proves the products exist and prices the real margins — do this BEFORE drawing 34 designs)',
+    },
+    {
+      name: 'Printed phrases screened',
+      done: !!(tm && listings && phrasesTotal > 0 && phrasesCleared >= phrasesTotal),
+      detail: listings ? `${phrasesCleared}/${phrasesTotal} phrases${phrasesRejected ? ` · ${phrasesRejected} rejected` : ''}` : '—',
+      next: 'node ops.mjs tm   (trademark-screen every printed phrase — stage refuses unscreened ones)',
     },
     {
       name: 'Design art validated',
@@ -178,6 +193,7 @@ const COMMANDS = {
   ledger: () => run('ledger.mjs'),
   orders: () => run('orders.mjs', ['watch']),
   test: () => run('test-margin.mjs'),
+  tm: () => run('tm.mjs', [arg0 ?? 'list', ...rest.slice(1)]),
   blueprints: () => run('cli.mjs', ['blueprints', ...rest]),
   providers: () => run('cli.mjs', ['providers', ...rest]),
 };

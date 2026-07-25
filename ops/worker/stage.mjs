@@ -18,6 +18,7 @@
 
 import { makeClient } from './printify.mjs';
 import { PATHS, loadConfig, credentials, netMargin, minPriceFor, assertNoPlaceholders } from './config.mjs';
+import { tmBlocker } from './tm.mjs';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -390,6 +391,10 @@ async function stageRun(listings, cfg) {
     try {
       // never let an unsubstituted {PLACEHOLDER} reach a marketplace
       assertNoPlaceholders(l);
+
+      // fail closed: an unscreened phrase is a blocked phrase
+      const tm = tmBlocker(l);
+      if (tm) throw new Error(tm);
 
       // --force used to just overwrite the record, leaving the old Printify
       // product alive and unreachable — unstage iterates by code, so nothing

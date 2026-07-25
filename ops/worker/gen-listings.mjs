@@ -339,6 +339,9 @@ const listings = ROWS.map((row) => {
   if (title.length > 140) title = title.slice(0, 140).replace(/ [^ ]*$/, '');
   return {
     code,
+    // the words actually printed on the product — what the trademark screen
+    // screens, and the thing a strike would be about
+    phrase,
     art_file: `${artFrom || code}.png`,
     product: p.type,
     blueprint_hint: p.blueprintHint,

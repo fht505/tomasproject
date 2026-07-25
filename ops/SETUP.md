@@ -106,6 +106,7 @@ node ops.mjs verify             # proves the token, finds the shop id, writes it
 node ops.mjs listings           # generates the 40 listings from config.json
 node ops.mjs art                # validates your PNGs, builds print masters
 node ops.mjs plan               # resolves real blueprints, providers, costs, margins
+node ops.mjs tm                 # trademark-screen every printed phrase
 node ops.mjs stage --dry-run    # builds every payload, sends nothing
 node ops.mjs stage              # creates the drafts on Printify
 node ops.mjs review --mockups   # loads every mockup so you can actually look

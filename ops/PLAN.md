@@ -57,8 +57,13 @@ Etsy 2026 rules, baked into the pipeline as hard gates:
   disclosure and the "Designed by" attribution, written in by
   `gen-listings.mjs` from `ops/config.json`. Etsy's own listing-level
   attribution dropdown is set by the operator when the shop is created.
-- **No trademarked phrases** → checklist gate before publish (e.g. no team
-  names, no brand phrases, no celebrity references).
+- **No trademarked phrases** → `node ops.mjs tm` screens every phrase we
+  print and records a dated verdict; `stage` refuses to create a product
+  whose phrase has no recorded PASS. It fails closed — an unscreened phrase
+  is a blocked phrase. It cannot search on your behalf (there is no
+  trademark API here, and a guess would be worse than nothing), so it hands
+  over the exact USPTO and Etsy searches and keeps the record of what you
+  found, which is also what you would want if a claim ever arrived.
 - Research lab adapts *patterns* (niches, formats, price points) — never
   copies another seller's artwork or text.
 

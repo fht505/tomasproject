@@ -15,6 +15,8 @@ Printify token + image key land.
 1. **AI disclosure ON**, attribution "Designed by [shop]", never "Made by".
 2. **Printify declared** as production partner on the shop + listings.
 3. **Phrase screen** before any draft: no exact match to live trademarks.
+   Enforced, not just documented — `node ops.mjs tm` records a dated verdict
+   per printed phrase and `stage` refuses anything without a PASS.
    Known red-list from screening (2026-07-25):
    - `GIRL DAD` standalone on apparel — contested (2020 athletic-apparel
      filing; "GIRL DAD GANG" registered for embroidered clothing; sellers
