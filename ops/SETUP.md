@@ -150,9 +150,15 @@ the code to be staged again.
 
 ## 8. First-week rhythm
 
-- Daily: `node ops.mjs ledger` for real orders and revenue.
-- Watch for orders stuck without tracking — a failed Printify charge looks
-  like nothing at all from the Etsy side.
+- Daily: `node ops.mjs orders` first, then `node ops.mjs ledger`.
+  - `orders` is the alarm: it flags anything on payment hold, anything past
+    its ship-by with no tracking, and anything sitting unmoved past Printify's
+    auto-approve delay. A failed Printify charge looks like nothing at all
+    from the Etsy side, and this is what catches it. It exits non-zero when
+    something needs you, so it works in a cron job.
+  - `ledger` is the money: real orders, real revenue, real costs.
+- When `orders` raises something, `ops/RUNBOOK-FULFILLMENT.md` has the
+  who-pays decision table. Fill in its deadline table once, before you need it.
 - Weekly: kill listings with zero views after 3 weeks ($0.20 each, so testing
   is cheap and pruning should be ruthless).
 - Day 30: go/no-go on lane #2 (Etsy digital downloads) against the criteria

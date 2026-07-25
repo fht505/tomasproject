@@ -13,6 +13,7 @@
 //   node ops.mjs approve all     operator gate before anything goes live
 //   node ops.mjs publish         push approved drafts to Etsy
 //   node ops.mjs ledger          pull real orders -> revenue state
+//   node ops.mjs orders          ship-by clock + stuck-order alarm (run daily)
 //   node ops.mjs unstage A1,B7   delete those drafts (rollback)
 //
 // Every command is safe to re-run. Nothing publishes without `approve`, and
@@ -84,18 +85,6 @@ function status() {
       next: 'node ops.mjs verify   (prints the shop id → paste into .env)',
     },
     {
-      name: 'Listing copy generated',
-      done: !!listings,
-      detail: listings ? `${listings.count} listings` : 'not generated',
-      next: 'node ops.mjs listings',
-    },
-    {
-      name: 'Design art validated',
-      done: uniqueArt > 0 && artOk >= uniqueArt,
-      detail: listings ? `${artOk}/${uniqueArt} files` : '—',
-      next: `generate PNGs with ops/PROMPTS.md → save into ops/art/ → node ops.mjs art`,
-    },
-    {
       name: 'Etsy fee schedule confirmed',
       done: !!cfg?.fees?.fees_confirmed,
       detail: cfg?.fees?.fees_confirmed
@@ -104,12 +93,28 @@ function status() {
       next: 'check ops/config.json fees against Shop Manager → Finances, then set fees_confirmed: true',
     },
     {
+      name: 'Listing copy generated',
+      done: !!listings,
+      detail: listings ? `${listings.count} listings` : 'not generated',
+      next: 'node ops.mjs listings',
+    },
+    // Deliberately BEFORE art. Drawing 34 designs is the expensive human step,
+    // and the catalog decides whether they are worth drawing: if this account
+    // has no 9oz candle blueprint, twelve of them are wasted work. Find out
+    // first.
+    {
       name: 'Catalog + margins resolved',
       done: !!plan,
       detail: plan
         ? `${Object.values(plan.plan || {}).filter(p => !p.error).length}/${Object.keys(plan.plan || {}).length} product types`
         : 'not run',
-      next: 'node ops.mjs plan   (proves the products exist and prices the real margins)',
+      next: 'node ops.mjs plan   (proves the products exist and prices the real margins — do this BEFORE drawing 34 designs)',
+    },
+    {
+      name: 'Design art validated',
+      done: uniqueArt > 0 && artOk >= uniqueArt,
+      detail: listings ? `${artOk}/${uniqueArt} files` : '—',
+      next: `generate PNGs with ops/PROMPTS.md → save into ops/art/ → node ops.mjs art`,
     },
     {
       name: 'Drafts staged on Printify',
@@ -133,7 +138,7 @@ function status() {
       name: 'First real order',
       done: (ledger?.orders ?? 0) > 0,
       detail: ledger ? `${ledger.orders} orders · $${(ledger.revenue?.total ?? 0).toFixed(2)}` : 'no ledger yet',
-      next: 'node ops.mjs ledger   (run daily once live)',
+      next: 'node ops.mjs ledger   (run daily once live, alongside node ops.mjs orders)',
     },
   ];
 
@@ -149,7 +154,7 @@ function status() {
     console.log('  ' + C.b('NEXT: ') + next.name);
     console.log('  ' + C.g('  ' + next.next) + '\n');
   } else {
-    console.log('  ' + C.g('all launch gates passed — run `node ops.mjs ledger` daily') + '\n');
+    console.log('  ' + C.g('all launch gates passed — run `node ops.mjs orders` and `node ops.mjs ledger` daily') + '\n');
   }
   if (ledger && ledger.revenue) {
     console.log(`  revenue $${ledger.revenue.total.toFixed(2)} · costs $${ledger.costs.total.toFixed(2)} · net $${ledger.net.toFixed(2)}`);
@@ -171,6 +176,7 @@ const COMMANDS = {
   publish: () => run('publish.mjs', ['run', ...rest]),
   unstage: () => run('publish.mjs', ['unstage', ...rest]),
   ledger: () => run('ledger.mjs'),
+  orders: () => run('orders.mjs', ['watch']),
   test: () => run('test-margin.mjs'),
   blueprints: () => run('cli.mjs', ['blueprints', ...rest]),
   providers: () => run('cli.mjs', ['providers', ...rest]),

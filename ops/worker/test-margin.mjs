@@ -8,6 +8,7 @@
 
 import { netMargin, minPriceFor, loadConfig } from './config.mjs';
 import { baseCostFromProduct, baseCostFromCatalog, chooseVariants, marginDecision } from './stage.mjs';
+import { addDays, classify } from './orders.mjs';
 
 let pass = 0, fail = 0;
 const eq = (name, got, want) => {
@@ -152,6 +153,49 @@ eq('one cent under the floor does not',
   (({ accept, margin }) => ({ accept, net: margin.net }))(
     marginDecision({ ...tee, price_usd: 20 }, { variants: [{ is_enabled: true, cost: 1266 }] }, 0, CFG)),
   { accept: false, net: 4.99 });
+
+console.log('\nship-by clock (orders watch)');
+// Fri 2026-07-24 12:00Z + 5 business days = Fri 2026-07-31. Getting this wrong
+// by a weekend is the difference between "on time" and a voided Purchase
+// Protection claim, so it is pinned to an exact date.
+eq('business days skip the weekend',
+  addDays('2026-07-24T12:00:00Z', 5, true).toISOString().slice(0, 10),
+  '2026-07-31');
+
+eq('calendar days do not',
+  addDays('2026-07-24T12:00:00Z', 5, false).toISOString().slice(0, 10),
+  '2026-07-29');
+
+const W = 5;
+const lvl = (o) => classify({ windowDays: W, ...o }).level;
+
+eq('a payment hold is an alarm, however young the order',
+  lvl({ status: 'on-hold', hasTracking: false, ageHours: 1, hoursLeft: 100 }),
+  'ALARM');
+
+eq('past the ship-by with no tracking is an alarm',
+  lvl({ status: 'in-production', hasTracking: false, ageHours: 200, hoursLeft: -3 }),
+  'ALARM');
+
+eq('under half the window left and nothing moving is a warning',
+  lvl({ status: 'in-production', hasTracking: false, ageHours: 80, hoursLeft: 40 }),
+  'WARN');
+
+eq('tracking beats every deadline check',
+  lvl({ status: 'in-production', hasTracking: true, ageHours: 200, hoursLeft: -50 }),
+  'shipped');
+
+eq('a fresh order inside its window is fine',
+  lvl({ status: 'in-production', hasTracking: false, ageHours: 4, hoursLeft: 110 }),
+  'ok');
+
+eq('with no stated processing time, age alone still catches a stalled order',
+  lvl({ status: 'created', hasTracking: false, ageHours: 40, hoursLeft: null }),
+  'WARN');
+
+eq('cancelled orders are not counted as trouble',
+  lvl({ status: 'canceled', hasTracking: false, ageHours: 900, hoursLeft: -500 }),
+  'dead');
 
 console.log('\nlive config');
 const cfg = loadConfig();
