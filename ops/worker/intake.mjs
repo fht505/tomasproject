@@ -4,12 +4,14 @@
 //
 //   node intake.mjs            validate + upscale everything in ../art/
 //   node intake.mjs check      validate only (fast, no writes)
+//   node intake.mjs next       which design to make next, with its prompt
+//   node intake.mjs add <file> [CODE]   file a download under the right code
 //
 // Input:  ops/art/<CODE>.png        (A1.png, B7.png, …)
 // Output: ops/art/print/<CODE>.png  (long edge upscaled to print target)
 
 import sharp from 'sharp';
-import { readdirSync, mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, mkdirSync, existsSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -39,7 +41,8 @@ const family = (product) =>
   product.startsWith('candle') ? 'candle' :
   product.startsWith('mug') ? 'mug' : 'tote';
 
-const checkOnly = process.argv[2] === 'check';
+const mode = process.argv[2] || 'run';
+const checkOnly = mode === 'check';
 
 if (!existsSync(listingsPath)) {
   console.error('missing BATCH-01.listings.json — run gen-listings.mjs first');
@@ -62,8 +65,123 @@ for (const l of listings) {
   else { cur.target = Math.max(cur.target, target); cur.uses.push(l.code); cur.families.add(fam); }
 }
 
+// ------------------------------------------------------- guided intake
+// Generating 34 designs means 34 downloads that all arrive named something
+// like "ChatGPT Image Jul 25.png", and renaming them by hand — on a phone —
+// is the slowest step in the whole pipeline and the easiest place to put the
+// wrong design under the wrong code. `next` says what to make; `add` files it.
+const artOrder = [...byArt.keys()].sort((a, b) => {
+  const key = (f) => [f[0], parseInt(f.slice(1), 10) || 0];
+  const [la, na] = key(a), [lb, nb] = key(b);
+  return la === lb ? na - nb : la < lb ? -1 : 1;
+});
+const missingNow = () => artOrder.filter(f => !existsSync(join(artDir, f)));
+
+function promptFor(code) {
+  const promptsPath = join(here, '..', 'PROMPTS.md');
+  if (!existsSync(promptsPath)) return null;
+  const md = readFileSync(promptsPath, 'utf8');
+  // prompts are written as **CODE** followed by a > blockquote
+  const m = md.match(new RegExp(`\\*\\*${code}\\*\\*\\s*\\n((?:>.*\\n?)+)`));
+  return m ? m[1].split('\n').map(l => l.replace(/^>\s?/, '')).join('\n').trim() : null;
+}
+
+if (mode === 'next') {
+  const left = missingNow();
+  if (!left.length) {
+    console.log(`\n  all ${artOrder.length} designs present — next: node ops.mjs art\n`);
+    process.exit(0);
+  }
+  const code = left[0].replace(/\.png$/i, '');
+  const prompt = promptFor(code);
+  console.log(`\n  ${left.length} of ${artOrder.length} designs still to make. Next up: ${code}\n`);
+  if (prompt) {
+    console.log('  Paste this into ChatGPT:\n');
+    console.log(prompt.split('\n').map(l => '    ' + l).join('\n'));
+    console.log('\n  Check the spelling letter by letter before saving.');
+  } else {
+    console.log(`  (no prompt found for ${code} in ops/PROMPTS.md)`);
+  }
+  console.log(`\n  Then: node ops.mjs art add ~/Downloads/<whatever-it-saved-as>.png`);
+  console.log(`  It files the image as ${code}.png for you.\n`);
+  console.log(`  remaining: ${left.map(f => f.replace(/\.png$/i, '')).join(' ')}\n`);
+  process.exit(0);
+}
+
+if (mode === 'add') {
+  const src = process.argv[3];
+  const asCode = process.argv[4];  // optional explicit code
+  if (!src) {
+    console.error('usage: node ops.mjs art add <file.png> [CODE]');
+    process.exit(2);
+  }
+  if (!existsSync(src)) {
+    console.error(`no such file: ${src}`);
+    process.exit(1);
+  }
+  const left = missingNow();
+  const target = asCode ? `${asCode.toUpperCase().replace(/\.png$/i, '')}.png` : left[0];
+  if (!target) {
+    console.error('every design already has a file — pass an explicit code to replace one');
+    process.exit(1);
+  }
+  if (!byArt.has(target)) {
+    console.error(`${target} is not a design this batch uses. Expected one of: ${artOrder.map(f => f.replace(/\.png$/i, '')).join(' ')}`);
+    process.exit(1);
+  }
+  const code = target.replace(/\.png$/i, '');
+  const spec = byArt.get(target);
+
+  // Validate BEFORE filing. Filing a bad image and reporting the problem
+  // afterwards still drops it into the batch, so `art next` moves on and the
+  // defect surfaces at intake instead — and if it overwrote a good file, that
+  // good file is already gone.
+  let meta;
+  try {
+    meta = await sharp(src).metadata();
+  } catch (e) {
+    console.error(`could not read ${src}: ${e.message}`);
+    process.exit(1);
+  }
+  const long = Math.max(meta.width, meta.height);
+  const upscale = spec.target / long;
+  const wantsAlpha = [...spec.families].some(fam => NEEDS_ALPHA.has(fam));
+  const problems = [];
+  if (meta.format !== 'png') problems.push(`not a png (${meta.format})`);
+  if (long < MIN_SOURCE) problems.push(`too small (${meta.width}x${meta.height}, need ≥${MIN_SOURCE}px)`);
+  if (wantsAlpha && !meta.hasAlpha) {
+    problems.push(`no transparent background, and ${spec.uses.join('/')} print on fabric — ask for it again "on a transparent background, no mockup"`);
+  }
+  if (upscale > MAX_UPSCALE) {
+    problems.push(`needs ${upscale.toFixed(1)}x upscale — regenerate at ≥${Math.ceil(spec.target / MAX_UPSCALE)}px on the long edge`);
+  }
+
+  if (problems.length) {
+    console.log(`REJECTED  ${src}  (would be ${code})`);
+    for (const p of problems) console.log(`  · ${p}`);
+    console.log(`\nnot filed — ${code} is still outstanding. Regenerate and run the same command again.`);
+    process.exit(1);
+  }
+
+  mkdirSync(artDir, { recursive: true });
+  const dest = join(artDir, target);
+  const replacing = existsSync(dest);
+  copyFileSync(src, dest);
+  console.log(`${replacing ? 'REPLACED' : 'FILED'}  ${src}  ->  ops/art/${target}   (used by ${spec.uses.join(',')})`);
+  console.log(`  ok  ${meta.width}x${meta.height}, alpha=${meta.hasAlpha}, ${upscale.toFixed(1)}x to print size`);
+  if (upscale > WARN_UPSCALE) {
+    console.log(`  ! ${upscale.toFixed(1)}x is fine for bold one-ink text, soft for fine detail`);
+  }
+
+  const left2 = missingNow();
+  console.log(left2.length
+    ? `\n${left2.length} to go — next: node ops.mjs art next`
+    : `\nthat was the last one — next: node ops.mjs art`);
+  process.exit(0);
+}
+
 if (!existsSync(artDir)) {
-  console.error(`no art directory yet (${artDir}) — waiting on generated PNGs`);
+  console.error(`no art directory yet (${artDir}) — start with: node ops.mjs art next`);
   process.exit(1);
 }
 

@@ -74,11 +74,23 @@ Then: **Account → Connections → Generate API token**
 
 ## 4. Designs
 
-Use your ChatGPT app with `ops/PROMPTS.md` — 34 prompts, one per design. Save
-each with its exact code (`A1.png`, `B7.png`, …) into `station/ops/art/`.
+34 designs, one at a time, guided:
+
+```bash
+node ops.mjs art next                       # tells you which design is next,
+                                            # and prints its prompt to paste
+node ops.mjs art add ~/Downloads/image.png  # files it under the right code
+```
+
+`add` checks the image before it accepts it — resolution, and a transparent
+background on anything printed on fabric — and refuses rather than filing a
+design that would print a white box on a black shirt. A rejected image leaves
+that code outstanding, so `next` offers it again.
+
+You never have to rename a file or remember which code you are on.
 
 Check spelling letter by letter before saving. A misspelled print is a wasted
-listing and a refund.
+listing and a refund, and it is the one defect nothing downstream can catch.
 
 ## 5. Wiring it up
 
