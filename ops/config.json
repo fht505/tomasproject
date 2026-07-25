@@ -1,0 +1,32 @@
+{
+  "_comment": "Operator-editable shop settings. No secrets here — credentials live in ops/worker/.env (gitignored). Run `node ops.mjs` any time to see which of these still needs your attention.",
+  "shop_name": "",
+  "shop_name_note": "The exact Etsy shop name. It is printed in every listing description as the 'Designed by' attribution, so it must match the real shop. Set it before running: node ops.mjs listings",
+  "processing": {
+    "_comment": "Shipping speed is a promise, and a broken one voids Etsy Purchase Protection and costs Star Seller status. So it is blank until you know the real number. `node ops.mjs plan` prints the resolved provider's published production time; add carrier transit on top, put the result here, name where it came from in `source`, and only then does it appear in listing descriptions.",
+    "days": "",
+    "source": ""
+  },
+  "production_partner": "Printify network",
+  "ai_disclosure": true,
+  "attribution": "designed_by",
+  "min_margin_usd": 5,
+  "min_margin_note": "Net profit per unit after Printify base cost AND the fee schedule below. `node ops.mjs stage` deletes any draft that comes back under this — it will not leave a money-loser sitting in the shop.",
+  "max_products_per_run": 60,
+  "max_products_note": "Runaway guard for ONE invocation. A single stage run can never create more than this many products, no matter what the listing file says.",
+  "max_products_total": 45,
+  "max_products_total_note": "Runaway guard across ALL invocations. Before creating anything, stage counts the products that actually exist in the Printify shop and refuses if this run would push the total past this. A loop calling stage repeatedly dies on the second call, not the two-hundredth product.",
+  "fees": {
+    "_source": "Etsy's published seller fee schedule. NOT fetched from an API — you must confirm these against your own Etsy account (Shop Manager → Finances → Payment settings) because rates vary by country, currency, and whether Offsite Ads is mandatory for your shop.",
+    "_confirm": "Set fees_confirmed to true once you have checked these against your own account. Until then margin numbers are printed but marked UNCONFIRMED, and publish refuses to run.",
+    "fees_confirmed": false,
+    "transaction_pct": 6.5,
+    "payment_processing_pct": 3,
+    "payment_processing_flat_usd": 0.25,
+    "listing_fee_usd": 0.2,
+    "offsite_ads_pct": 0,
+    "offsite_ads_note": "Etsy charges 12% (or 15%) only on orders that came from an Offsite Ad. Leave at 0 for a per-unit floor; raise it if you want the margin guard to survive the worst case.",
+    "free_shipping": false,
+    "free_shipping_note": "false = the buyer pays shipping, so it passes straight through to Printify and does not touch margin. Set true only if you offer free shipping — then the margin guard pulls the REAL first-item US shipping rate from Printify and subtracts it, and refuses to stage anything if Printify will not give it that number."
+  }
+}

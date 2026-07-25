@@ -10,18 +10,19 @@
 //   ../state/products.json product sync (drafts + published counts)
 
 import { makeClient } from './printify.mjs';
+import { PATHS, loadConfig, credentials } from './config.mjs';
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const stateDir = join(here, '..', 'state');
+const stateDir = PATHS.state;
 const stagedPath = join(stateDir, 'staged.json');
 
-const token = process.env.PRINTIFY_API_TOKEN;
-const shop = process.env.PRINTIFY_SHOP_ID;
-if (!token || !shop) {
-  console.error('PRINTIFY_API_TOKEN and PRINTIFY_SHOP_ID must be set');
+let cfg, token, shop;
+try {
+  cfg = loadConfig();
+  ({ token, shopId: shop } = credentials(['token', 'shop']));
+} catch (e) {
+  console.error(e.message);
   process.exit(1);
 }
 const client = makeClient(token);
@@ -48,11 +49,43 @@ for (let page = 1; page <= 200; page++) {
   const last = res?.last_page;
   if (typeof last === 'number' && page >= last) break;
 }
-write('orders.json', {
+// Printify order payloads carry address_to: the buyer's name, email, phone and
+// street address. This file gets committed and the console fetches it over
+// HTTP, so writing orders verbatim would publish customer PII into permanent
+// git history and to anyone who can reach the served directory. Keep only the
+// fields the ledger and the console actually use.
+const redactOrder = (o) => ({
+  id: o.id,
+  status: o.status,
+  created_at: o.created_at,
+  total_price: o.total_price,
+  total_cost: o.total_cost,
+  total_shipping: o.total_shipping,
+  sales_channel: o.shop?.sales_channel ?? null,
+  line_items: (o.line_items || []).map(li => ({
+    product_id: li.product_id, variant_id: li.variant_id,
+    quantity: li.quantity, cost: li.cost,
+  })),
+});
+
+const redactedOrders = orders.map(redactOrder);
+const ordersEnvelope = {
   fetchedAt: new Date().toISOString(),
   source: `Printify GET /shops/${shop}/orders.json (${orderPages} pages walked)`,
-  data: orders,
-});
+  redacted_fields: ['address_to (buyer name, email, phone, street address)', 'metadata'],
+  redaction_reason: 'this file is committed and served to the browser; buyer PII must not be in either',
+  data: redactedOrders,
+};
+
+// Tripwire: if Printify moves PII to a field this projection does not know
+// about, fail loudly rather than write it. Cheaper than a git history rewrite.
+const leak = JSON.stringify(ordersEnvelope.data).match(/address|email|@|phone|first_name|last_name|\bzip\b/i);
+if (leak) {
+  console.error(`refusing to write orders.json — redaction missed something matching "${leak[0]}".`);
+  console.error('Printify\'s order shape has changed; update redactOrder in ledger.mjs before re-running.');
+  process.exit(1);
+}
+write('orders.json', ordersEnvelope);
 
 // ---- roll-up -------------------------------------------------------------
 // Printify order totals are in cents. total_price is what the customer paid
@@ -77,19 +110,24 @@ for (const o of counted) {
   const ch = (o.shop?.sales_channel || 'etsy').toLowerCase();
   byChannel[ch] = (byChannel[ch] || 0) + rev;
 }
-// Etsy's cut on a sale: 6.5% transaction + 3% + $0.25 processing, applied
-// once per ORDER (processing is per payment, not per item). This is a derived
-// figure, not an API value — it is labeled as such in the state file.
+// Etsy's cut on a sale, using the ONE fee schedule the operator maintains in
+// ops/config.json — the same numbers the margin guard prices with, so the
+// ledger can never disagree with what stage promised. Applied once per ORDER
+// (processing is per payment, not per item). This is a derived figure, not an
+// API value, and it is labeled as such in the state file.
+const f = cfg.fees;
+const feePct = (f.transaction_pct + f.payment_processing_pct + f.offsite_ads_pct) / 100;
 const etsyFees = counted.reduce((a, o) => {
   const r = cents(o.total_price);
-  return a + (r > 0 ? r * 0.095 + 0.25 : 0);
+  return a + (r > 0 ? r * feePct + f.payment_processing_flat_usd : 0);
 }, 0);
 const costs = production + shipping + etsyFees;
 
 write('ledger.json', {
   fetchedAt: new Date().toISOString(),
-  source: 'computed from Printify orders API; Etsy fee rates applied to real order totals',
+  source: 'computed from Printify orders API; Etsy fee rates from ops/config.json applied to real order totals',
   derived_fields: ['costs.platform_fees (Etsy fee formula applied to real order totals, not an API value)'],
+  fee_schedule: { ...f, confirmed_by_operator: !!f.fees_confirmed },
   excluded_orders: excludedOrders,
   revenue: {
     total: Number(revenue.toFixed(2)),
@@ -138,4 +176,7 @@ write('products.json', {
 
 console.log(`orders: ${counted.length} counted${excludedOrders ? ` (${excludedOrders} cancelled/refunded excluded)` : ''} · units: ${unitsSold} · revenue: $${revenue.toFixed(2)} · costs: $${costs.toFixed(2)} · net: $${(revenue - costs).toFixed(2)}`);
 console.log(`products: ${products.length} synced`);
+if (!f.fees_confirmed) {
+  console.log('! platform_fees uses an UNCONFIRMED fee schedule — check ops/config.json fees against your Etsy account and set fees_confirmed: true');
+}
 console.log('state written — the console will show these numbers on next refresh');

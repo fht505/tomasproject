@@ -134,10 +134,27 @@ vintage-wash 1–2 ink colors; must read from 6 feet away)*
 
 ---
 
-## Collection C — reuses A/B art (no new prompts)
+## Collection C — mostly reuses A/B art, plus two new mug designs
 
-C-series listings (mugs/totes/sweatshirt colorways) reuse: A9, A11, B1, B2,
-B14, B16, B18 art files. Nothing extra to generate.
+Most C-series listings (totes, sweatshirt colorways, the teacher and nurse
+mugs) reuse art you have already made: B1, B2, B10, B14, B16, B18.
+
+Two mugs need their own design. They used to borrow the A9 and A11 candle
+art, which would have printed the word **Candle** on a mug and built the
+joke on "smells like" — wording that only works on a candle.
+
+**C1**
+> Design a coffee mug print, isolated on transparent background, no mockup.
+> Prescription-label parody reading "EMOTIONAL SUPPORT COFFEE" in clean
+> pharmacy sans-serif capitals, thin rounded rectangle border, small
+> "REFILL AS NEEDED" line beneath, one ink color, faded black, dry humor,
+> highly legible.
+
+**C2**
+> Design a coffee mug print, isolated on transparent background, no mockup.
+> Hand-lettered "POWERED BY FINISHED TO-DO LISTS" in confident marker
+> capitals stacked on three lines, with a small checked-box icon, one ink
+> color, faded black, minimalist, clean and highly legible.
 
 ---
 

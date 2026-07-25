@@ -19,7 +19,10 @@ function el(tag, cls, html) {
 const esc = (s) => String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
 // --------------------------- real state --------------------------
-const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'inbox', 'lanes'];
+// No 'inbox': Etsy's Open API v3 exposes no messages/conversations endpoint, so
+// no state file can ever back an inbox feed. Listing one implied a connection
+// that cannot exist.
+const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'lanes'];
 const S = {
   files: {},           // name -> parsed json | null
   batch: null,
@@ -148,7 +151,9 @@ function renderClock() {
 
 // --------------------------- rails -------------------------------
 // an agent counts as having run only when a real state file proves it
-const AGENT_EVIDENCE = { nova: 'signals', scout: 'lanes', flora: 'art', merch: 'products', ledger: 'orders', echo: 'inbox' };
+// ECHO is absent on purpose: there is no API that could prove it ran, so it
+// reads as never-run rather than borrowing another agent's evidence.
+const AGENT_EVIDENCE = { nova: 'signals', scout: 'lanes', flora: 'art', merch: 'products', ledger: 'orders' };
 const agentHasRun = (id) => !!S.files[AGENT_EVIDENCE[id]];
 
 function moduleStatus(roomId) {
@@ -363,11 +368,10 @@ function buildRoom(root, roomId) {
       break;
     }
     case 'comms': {
-      const inbox = S.files.inbox;
       const body = panel(root, 'CHANNELS');
-      body.appendChild(el('div', 'panel-note', inbox
-        ? `inbox synced ${new Date(inbox.fetchedAt).toLocaleString()}`
-        : 'No channels connected yet. Etsy messages hook up after the shop exists; replies will be drafted for one-tap operator approval.'));
+      body.appendChild(el('div', 'panel-note',
+        'Etsy has no messages API — Open API v3 exposes no conversations endpoint, so nothing here can read or send buyer messages, now or later. '
+        + 'What is real: Etsy\'s own auto-reply answers first and counts toward the response-rate metric, and a pasted message can be drafted into a reply for the operator to send.'));
       break;
     }
     case 'warroom': {

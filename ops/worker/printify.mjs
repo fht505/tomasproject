@@ -33,8 +33,13 @@ export function makeClient(token) {
     blueprint: (id) => call('GET', `/catalog/blueprints/${id}.json`),
     providers: (blueprintId) =>
       call('GET', `/catalog/blueprints/${blueprintId}/print_providers.json`),
+    // the per-blueprint list often omits location; this one carries it, and
+    // location decides transit time for every US buyer
+    allProviders: () => call('GET', '/catalog/print_providers.json'),
     variants: (blueprintId, providerId) =>
       call('GET', `/catalog/blueprints/${blueprintId}/print_providers/${providerId}/variants.json`),
+    shipping: (blueprintId, providerId) =>
+      call('GET', `/catalog/blueprints/${blueprintId}/print_providers/${providerId}/shipping.json`),
 
     // --- artwork upload (url or base64 contents) ---
     uploadImageByUrl: (fileName, url) =>
@@ -49,6 +54,12 @@ export function makeClient(token) {
       call('GET', `/shops/${shopId}/products/${productId}.json`),
     listProducts: (shopId, page = 1) =>
       call('GET', `/shops/${shopId}/products.json?page=${page}`),
+    // rollback. On a product that was already published this also removes the
+    // Etsy listing, which is why unstage refuses published items without --force.
+    deleteProduct: (shopId, productId) =>
+      call('DELETE', `/shops/${shopId}/products/${productId}.json`),
+    unpublishProduct: (shopId, productId) =>
+      call('POST', `/shops/${shopId}/products/${productId}/unpublish.json`, {}),
     // publish pushes the product to the connected Etsy store
     // (rate limit: 200 publishes / 30 minutes)
     publishProduct: (shopId, productId, opts = {}) =>

@@ -42,12 +42,21 @@ public API, human-fronted. Revisit after lane #1 ships.
 
 Etsy 2026 rules, baked into the pipeline as hard gates:
 - **POD is allowed** with the production partner publicly disclosed →
-  Printify listed as partner on every listing. Automatic.
+  every listing description names the production partner, and Etsy's own
+  production-partner field must be set. **This is not automatic.** Printify
+  attaches the partner to a published listing only if a production partner
+  already exists in the Etsy account; if none does, the listing publishes as
+  "Made by seller", which is false and is a leading POD suspension trigger.
+  Create the partner in Etsy before the first publish (SETUP.md step 2), then
+  publish one listing and check the field on the live listing before the
+  other 39 follow.
 - **AI-assisted design is allowed when the seller directs creation** →
   the operator (Joe) sets creative direction via directives; agents execute
   and iterate. Prompts are ours, concepts are ours, no copied art.
-- **Disclosure** → every listing marked AI-assisted, attribution
-  "Designed by" not "Made by". Automatic field in the listing builder.
+- **Disclosure** → every listing description carries the AI-assisted
+  disclosure and the "Designed by" attribution, written in by
+  `gen-listings.mjs` from `ops/config.json`. Etsy's own listing-level
+  attribution dropdown is set by the operator when the shop is created.
 - **No trademarked phrases** → checklist gate before publish (e.g. no team
   names, no brand phrases, no celebrity references).
 - Research lab adapts *patterns* (niches, formats, price points) — never

@@ -9,8 +9,16 @@
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadConfig } from './config.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
+const cfg = loadConfig();
+const SHOP = (cfg.shop_name || '').trim();
+if (!SHOP) {
+  console.error('shop_name is empty in ops/config.json — set the real Etsy shop name, then re-run.');
+  console.error('(descriptions carry "Designed by <shop>"; publishing a placeholder would be visible to buyers)');
+  process.exit(1);
+}
 
 // ---------------------------------------------------------------- products
 const PRODUCTS = {
@@ -37,7 +45,13 @@ const T = {
     'grandma era', 'nana shirt', 'gigi gift', 'grandparents day', 'mimi shirt'],
   nurse: ['nurse shirt', 'nurse gift', 'nurse era', 'rn gift', 'nursing student',
     'scrub life', 'nurse week gift', 'er nurse gift', 'nurse tee', 'healthcare worker'],
-  apparelCore: ['gift for her', 'vintage style tee', 'comfort tee', 'graphic tee'],
+  // "comfort tee" is deliberately absent: Comfort Colors is a Gildan trademark
+  // and the garment this pipeline resolves is a Bella+Canvas 3001.
+  apparelCore: ['gift for her', 'vintage style tee', 'soft cotton tee', 'graphic tee'],
+  // sweatshirts need their own core: the tee tags are filtered out of a
+  // crewneck listing by nounSafe, which used to leave it padding with generics
+  sweatshirtCore: ['cozy sweatshirt', 'crewneck sweater', 'graphic sweatshirt',
+    'oversized crewneck', 'gift for her'],
   mug: ['coffee mug', 'funny mug', 'mug gift', 'office gift', 'coworker gift', 'ceramic mug 11oz'],
   tote: ['tote bag', 'canvas tote', 'market bag', 'book bag', 'shopping tote', 'gift for her'],
 };
@@ -46,46 +60,133 @@ const T = {
 const giftCore = ['gift for him', 'birthday gift', 'christmas gift', 'holiday gift',
   'stocking stuffer', 'secret santa gift', 'gift idea', 'unique gift'];
 
-const pickTags = (...banks) => {
-  const seen = [];
-  for (const bank of [...banks, giftCore]) for (const t of bank) {
-    if (t.length <= 20 && !seen.includes(t)) seen.push(t);
-    if (seen.length === 13) return seen;
-  }
-  return seen;
+// Etsy de-clumps results so one shop does not dominate a query: five listings
+// carrying the SAME 13 tags are not five shots at "teacher shirt", they are one
+// shot and four listings paying rent. So every listing leads with tags naming
+// the phrase actually printed on it, then draws a rotating slice of the shared
+// banks — siblings sharing a bank get different slices, not identical sets.
+// The shared banks cross product lines: T.dogmom holds "dog mom shirt", and a
+// tote drawing from it ended up titled "Dog Mama Tote Bag | … | Dog Mom Shirt".
+// A buyer reads the title as a description of the thing in the box, so a tag
+// naming someone else's product noun is filtered out for that listing.
+const PRODUCT_NOUNS = {
+  candle: ['candle', 'jar'],
+  tee: ['shirt', 'tee', 'tshirt'],
+  sweatshirt: ['sweatshirt', 'crewneck', 'sweater'],
+  mug: ['mug', 'cup'],
+  tote: ['tote', 'bag'],
 };
+const ALL_NOUNS = [...new Set(Object.values(PRODUCT_NOUNS).flat())];
+
+function nounSafe(productKey, tag) {
+  const mine = PRODUCT_NOUNS[productKey] || [];
+  const words = tag.toLowerCase().match(/[a-z0-9]+/g) || [];
+  return !words.some((w) => ALL_NOUNS.includes(w) && !mine.includes(w));
+}
+
+const bankRotation = new Map();
+function pickTags(productKey, phraseTags, banks) {
+  const signature = banks.map(b => b[0]).join('|');
+  const offset = bankRotation.get(signature) ?? 0;
+  bankRotation.set(signature, offset + 1);
+
+  const out = [];
+  const add = (t) => {
+    if (!t || t.length > 20 || out.includes(t) || out.length >= 13) return;
+    if (!nounSafe(productKey, t)) return;
+    out.push(t);
+  };
+  const rotate = (bank) => {
+    const k = bank.length ? offset % bank.length : 0;
+    return bank.slice(k).concat(bank.slice(0, k));
+  };
+
+  phraseTags.forEach(add);
+  for (const bank of banks) rotate(bank).forEach(add);
+  rotate(giftCore).forEach(add);
+  return out;
+}
+
+// Titles ran 56-87 characters against Etsy's 140 limit — 50+ characters of
+// matchable surface left silent on every listing. Extend each one with its own
+// tags, in tag order (most specific first), skipping anything the title already
+// says. Stops at 115 so the tail stays readable in a search result.
+// A tag earns its place only if it brings a word the title does not already
+// have. Without that test the padding produced "Funny Coffee Mug | Funny Gift
+// Mug | Funny Mug | Mug Gift" — length without reach, and it reads like spam.
+function padTitle(title, tags) {
+  const titleCase = (s) => s.replace(/\b[a-z]/g, (c) => c.toUpperCase());
+  const words = (s) => s.toLowerCase().match(/[a-z0-9]+/g) || [];
+  const count = new Map();
+  for (const w of words(title)) count.set(w, (count.get(w) ?? 0) + 1);
+
+  for (const t of tags) {
+    if (title.length >= 115) break;
+    const tagWords = words(t);
+    if (tagWords.every((w) => count.has(w))) continue;          // adds no new word
+    if (tagWords.some((w) => (count.get(w) ?? 0) >= 3)) continue; // would stutter
+    const segment = ' | ' + titleCase(t);
+    if (title.length + segment.length > 138) continue;
+    title += segment;
+    tagWords.forEach((w) => count.set(w, (count.get(w) ?? 0) + 1));
+  }
+  return title;
+}
+
+// Repetition is worth knowing about, but fixing it by deleting words wrecks
+// meaning — an earlier pass turned "New Grandma Gift" into "New Gift". So this
+// reports and the wording gets fixed by hand in the ROWS table above.
+function repeatedWords(title) {
+  const counts = new Map();
+  // "gift" recurring is how Etsy titles read; a niche noun four times is not
+  const generic = new Set(['gift', 'gifts', 'from', 'with', 'that', 'your']);
+  for (const w of title.toLowerCase().split(/[^a-z0-9]+/)) {
+    if (w.length > 3 && !generic.has(w)) counts.set(w, (counts.get(w) ?? 0) + 1);
+  }
+  return [...counts.entries()].filter(([, n]) => n >= 4).map(([w]) => w);
+}
 
 // ------------------------------------------------------------- description
-const partner = 'Printed and shipped by our trusted print partner (Printify network).';
-const disclosure = 'Original design by our studio, created with AI-assisted tools under our creative direction (disclosed per Etsy policy). Designed by {SHOP}.';
+const partner = `Printed and shipped by our production partner (${cfg.production_partner}).`;
+const disclosure = `Original design by ${SHOP}, created with AI-assisted tools under our creative direction (disclosed per Etsy policy). Designed by ${SHOP}.`;
+
+// A shipping claim only goes into a description when the operator has recorded a
+// real number AND said where it came from. Etsy shows the listing's processing
+// time either way, so an unsourced promise here adds nothing and risks
+// everything — a late ship voids Purchase Protection and Star Seller standing.
+const proc = cfg.processing || {};
+const shipLine = (proc.days || '').trim() && (proc.source || '').trim()
+  ? [`• Ships in ${proc.days.trim()}`]
+  : [];
+if (!shipLine.length) {
+  console.log('note: ops/config.json processing.days/source are blank, so no shipping');
+  console.log('      promise is written into the descriptions. Etsy still shows your');
+  console.log('      processing time. Fill both in once you know the real lead time.');
+}
 
 const DESC = {
   candle: (hook) => [hook, '',
     '• 9oz scented soy-blend candle, hand-poured by our production partner',
     '• Reusable glass vessel, cotton wick, 50+ hour burn time',
-    `• ${partner}`, `• ${disclosure}`,
-    '• Ships in 2–5 business days · Arrives gift-ready', '',
+    `• ${partner}`, `• ${disclosure}`, ...shipLine, '',
     'Trim wick to 1/4" before each burn. Never leave a burning candle unattended.'].join('\n'),
   tee: (hook) => [hook, '',
     '• Premium unisex tee (Bella+Canvas 3001) — soft ringspun cotton, retail fit',
-    '• True to size; size chart in images. Sizes S–3XL, multiple colors',
-    `• ${partner}`, `• ${disclosure}`,
-    '• Ships in 2–5 business days', '',
+    '• True to size. Sizes S–3XL, in a range of colors',
+    `• ${partner}`, `• ${disclosure}`, ...shipLine, '',
     'Machine wash cold inside-out, tumble dry low.'].join('\n'),
   sweatshirt: (hook) => [hook, '',
     '• Cozy heavyweight crewneck (Gildan 18000), fleece-lined',
-    '• Unisex fit, S–3XL, multiple colors — size chart in images',
-    `• ${partner}`, `• ${disclosure}`,
-    '• Ships in 2–5 business days', '',
+    '• Unisex fit, S–3XL, in a range of colors',
+    `• ${partner}`, `• ${disclosure}`, ...shipLine, '',
     'Machine wash cold inside-out, tumble dry low.'].join('\n'),
   mug: (hook) => [hook, '',
     '• 11oz ceramic mug, vivid wraparound print, dishwasher & microwave safe',
-    `• ${partner}`, `• ${disclosure}`,
-    '• Ships in 2–5 business days · Packed in a protective box'].join('\n'),
+    `• ${partner}`, `• ${disclosure}`, ...shipLine,
+    '• Packed in a protective box'].join('\n'),
   tote: (hook) => [hook, '',
     '• Sturdy cotton canvas tote, roomy enough for books, groceries, everything',
-    `• ${partner}`, `• ${disclosure}`,
-    '• Ships in 2–5 business days'].join('\n'),
+    `• ${partner}`, `• ${disclosure}`, ...shipLine].join('\n'),
 };
 
 // ---------------------------------------------------------------- listings
@@ -105,9 +206,9 @@ const ROWS = [
     [T.candleCore, T.candleFun, T.candleClassic], 'Ember-lit and a little smoky — Bonfire Nights without the smoke in your eyes.'],
   ['A7', 'candle', 'Hot Cider SZN', 'Funny Fall Candle | Autumn Kitchen Decor | Gift for Her | 9oz',
     [T.candleFun, T.candleClassic, T.candleCore], 'Warm spice and zero patience for summer — it is Hot Cider SZN.'],
-  ['A8', 'candle', 'Smells Like Fall', 'Minimalist Fall Candle | Modern Autumn Decor | Hostess Gift | 9oz',
+  ['A8', 'candle', 'Smells Like Fall', 'Minimalist Soy Candle | Modern Autumn Decor | Hostess Gift | 9oz',
     [T.candleCore, T.candleClassic, T.candleFun], 'Exactly what it says: it Smells Like Fall in the best possible way.'],
-  ['A9', 'candle', 'Emotional Support Candle', 'Funny Candle | Gift for Her | Best Friend Gift | Soy Blend 9oz',
+  ['A9', 'candle', 'Emotional Support Candle', 'Gift for Her | Best Friend Gift | Funny Soy Candle 9oz',
     [T.candleFun, T.candleCore, T.candleClassic], 'For daily use as needed: the Emotional Support Candle. Side effects include calm.'],
   ['A10', 'candle', 'Light Me When the Kids Are Asleep', 'Funny Candle | Mom Gift | Self Care Gift | 9oz',
     [T.candleFun, T.candleCore, T.candleClassic], 'The most honest candle in the house. You earned this one.'],
@@ -157,10 +258,13 @@ const ROWS = [
   ['B20', 'tee', 'Emotional Support Nurse', 'Shirt | Funny Nurse Tee | Nurse Week Gift | RN Gift',
     [T.nurse, T.apparelCore], 'Badge-certified: Emotional Support Nurse, on duty always.'],
 
-  ['C1', 'mug', 'Emotional Support Candle (Mug Edition)', 'Mug | Funny Coffee Mug | Best Friend Gift | 11oz',
-    [T.mug, T.candleFun], 'The Emotional Support lineup, now in coffee form.', 'A9'],
-  ['C2', 'mug', 'Smells Like a Finished To-Do List', 'Mug | Funny Office Mug | Coworker Gift | 11oz',
-    [T.mug, T.candleFun], 'Pairs with productivity. Refills encouraged.', 'A11'],
+  // C1/C2 get their own art. They used to reuse the A9/A11 candle designs,
+  // which meant shipping a mug with the word "Candle" printed on it and copy
+  // built on "smells like" — a joke that only works on a candle.
+  ['C1', 'mug', 'Emotional Support Coffee', 'Mug | Funny Coffee Mug | Best Friend Gift | 11oz',
+    [T.mug, T.candleFun], 'Prescribed daily, refilled hourly: Emotional Support Coffee.'],
+  ['C2', 'mug', 'Powered by Finished To-Do Lists', 'Mug | Funny Office Mug | Coworker Gift | 11oz',
+    [T.mug, T.candleFun], 'Pairs with productivity. Refills encouraged.'],
   ['C3', 'mug', 'Professional Chaos Coordinator', 'Mug | Funny Teacher Mug | Teacher Gift | 11oz',
     [T.mug, T.teacher], 'For the desk of the Professional Chaos Coordinator.', 'B2'],
   ['C4', 'mug', 'Nurse Era', 'Mug | Nurse Coffee Mug | Nurse Appreciation Gift | 11oz',
@@ -170,18 +274,69 @@ const ROWS = [
   ['C6', 'tote', 'Dog Mama', 'Tote Bag | Dog Mom Canvas Tote | Dog Lover Gift',
     [T.tote, T.dogmom], 'Treats, leash, poop bags, dignity — the Dog Mama tote holds it all.', 'B10'],
   ['C7', 'sweatshirt', 'Teacher Era', 'Sweatshirt | Cozy Teacher Crewneck | Teacher Appreciation Gift',
-    [T.teacher, T.apparelCore], 'The Teacher Era crewneck — for grading weather.', 'B1'],
+    [T.teacher, T.sweatshirtCore], 'The Teacher Era crewneck — for grading weather.', 'B1'],
   ['C8', 'sweatshirt', 'Grandma Era', 'Sweatshirt | Cozy Grandma Crewneck | Nana Gift',
-    [T.grandma, T.apparelCore], 'Grandma Era, fleece-lined.', 'B14'],
+    [T.grandma, T.sweatshirtCore], 'Grandma Era, fleece-lined.', 'B14'],
 ];
+
+// ------------------------------------------------------------ phrase tags
+// The phrase actually printed on the product is the least contested thing we
+// sell — nobody else is bidding on "outnumbered dad". Before this table not one
+// tag in the batch contained any of these, so the only differentiated search
+// surface we had was the one we never claimed. Two per listing, ≤20 chars,
+// placed ahead of the shared banks.
+const PHRASE_TAGS = {
+  A1: ['pumpkin season', 'pumpkin spice gift'],
+  A2: ['sweater weather', 'cozy candle gift'],
+  A3: ['cozy era', 'retro fall candle'],
+  A4: ['falling leaves', 'elegant fall decor'],
+  A5: ['harvest moon', 'amber candle'],
+  A6: ['bonfire candle', 'cabin decor gift'],
+  A7: ['hot cider szn', 'spiced cider candle'],
+  A8: ['smells like fall', 'minimalist candle'],
+  A9: ['emotional support', 'support candle'],
+  A10: ['mom candle gift', 'quiet time candle'],
+  A11: ['to do list candle', 'productivity gift'],
+  A12: ['first day of fall', 'fall 2026'],
+
+  B1: ['teacher era shirt', 'retro teacher tee'],
+  B2: ['chaos coordinator', 'funny teacher tee'],
+  B3: ['teach love inspire', 'vintage teacher'],
+  B4: ['coffee and lessons', 'lesson plan shirt'],
+  B5: ['best class ever', 'class of 2026 tee'],
+  B6: ['proud dad of girls', 'girl dad shirt'],
+  B7: ['outnumbered dad', 'funny dad tee'],
+  B8: ['best job ever', 'dad badge tee'],
+  B9: ['raising strong girl', 'girl dad tee'],
+  B10: ['dog mama shirt', 'retro dog mom tee'],
+  B11: ['dog cuddler shirt', 'funny dog mom tee'],
+  B12: ['dog is my therapist', 'dog therapy shirt'],
+  B13: ['belly rubs shirt', 'vintage dog tee'],
+  B14: ['grandma era shirt', 'retro grandma tee'],
+  B15: ['promoted to nana', 'new nana 2026'],
+  B16: ['garden club shirt', 'botanical grandma'],
+  B17: ['spoiling grandma', 'love language tee'],
+  B18: ['nurse era shirt', 'retro nurse tee'],
+  B19: ['coffee scrubs', 'scrub life tee'],
+  B20: ['support nurse tee', 'funny nurse tee'],
+
+  C1: ['support coffee mug', 'funny gift mug'],
+  C2: ['to do list mug', 'office humor mug'],
+  C3: ['chaos coordinator', 'teacher mug gift'],
+  C4: ['nurse era mug', 'rn coffee mug'],
+  C5: ['garden club tote', 'botanical tote'],
+  C6: ['dog mama tote', 'dog mom tote bag'],
+  C7: ['teacher crewneck', 'teacher sweatshirt'],
+  C8: ['grandma crewneck', 'nana sweatshirt', 'grandma sweatshirt'],
+};
 
 // ---------------------------------------------------------------- build
 const listings = ROWS.map((row) => {
   const [code, productKey, phrase, tail, banks, hook, artFrom] = row;
   const p = PRODUCTS[productKey];
-  let title = `${phrase} ${tail}`;
+  const tags = pickTags(productKey, PHRASE_TAGS[code] || [], banks);
+  let title = padTitle(`${phrase} ${tail}`, tags);
   if (title.length > 140) title = title.slice(0, 140).replace(/ [^ ]*$/, '');
-  const tags = pickTags(...banks);
   return {
     code,
     art_file: `${artFrom || code}.png`,
@@ -191,18 +346,56 @@ const listings = ROWS.map((row) => {
     title,
     tags,
     description: DESC[productKey](hook),
-    compliance: { ai_disclosure: true, attribution: 'designed_by', partner: 'printify' },
+    compliance: { ai_disclosure: cfg.ai_disclosure, attribution: cfg.attribution, partner: 'printify', shop: SHOP },
     status: 'spec',
   };
 });
 
-// sanity gates
+// ---------------------------------------------------------------- gates
+// These throw rather than warn. A listing file that violates one of these is
+// not a style problem — it is money spent on a listing that cannot be found,
+// or text a buyer will read and hold us to.
 for (const l of listings) {
+  const ph = (l.title + l.description + l.tags.join(' ')).match(/\{[A-Z_]+\}/);
+  if (ph) throw new Error(`${l.code}: unsubstituted placeholder ${ph[0]}`);
   if (l.title.length > 140) throw new Error(`${l.code}: title too long`);
   if (l.tags.length !== 13) throw new Error(`${l.code}: ${l.tags.length} tags (${l.tags.join('|')})`);
   for (const t of l.tags) if (t.length > 20) throw new Error(`${l.code}: tag too long "${t}"`);
+  if (!(PHRASE_TAGS[l.code] || []).length) {
+    throw new Error(`${l.code}: no phrase tags — the printed phrase is the one keyword nobody else owns, so it must be tagged`);
+  }
+  // Never claim a brand we do not print on. Comfort Colors is Gildan's.
+  const brand = l.title.match(/comfort colors|gildan(?! 18000)|nike|disney|stanley/i);
+  if (brand) throw new Error(`${l.code}: title names a brand we do not sell — "${brand[0]}"`);
 }
+
+// Two listings sharing a tag set are one listing competing with itself: Etsy
+// de-clumps a single shop's results, so the second one pays its fee and ranks
+// nowhere. Before this gate the 40 listings resolved to 13 distinct sets.
+const bySet = new Map();
+for (const l of listings) {
+  const key = [...l.tags].sort().join('|');
+  if (!bySet.has(key)) bySet.set(key, []);
+  bySet.get(key).push(l.code);
+}
+const collisions = [...bySet.values()].filter(codes => codes.length > 1);
+if (collisions.length) {
+  throw new Error(`identical tag sets — these listings would compete with each other: ${collisions.map(c => c.join('/')).join(', ')}`);
+}
+
+// Report, don't throw: title length is a judgement call, but 60 characters of
+// a 140-character budget is a lot of unclaimed search surface to leave silent.
+const short = listings.filter(l => l.title.length < 90);
+const stutter = listings.map(l => [l.code, repeatedWords(l.title)]).filter(([, w]) => w.length);
+const distinctTags = new Set(listings.flatMap(l => l.tags)).size;
 
 const out = join(here, '..', 'BATCH-01.listings.json');
 writeFileSync(out, JSON.stringify({ generatedAt: new Date().toISOString(), count: listings.length, listings }, null, 2));
 console.log(`wrote ${listings.length} listings -> ${out}`);
+console.log(`${bySet.size} distinct tag sets · ${distinctTags} distinct tags across ${listings.length * 13} slots`);
+if (short.length) {
+  console.log(`${short.length} titles under 90 chars — unused search surface: ${short.map(l => `${l.code}(${l.title.length})`).join(' ')}`);
+}
+if (stutter.length) {
+  console.log(`titles repeating a word 4+ times — reword the tail in ROWS: ${stutter.map(([c, w]) => `${c}(${w.join(',')})`).join(' ')}`);
+}

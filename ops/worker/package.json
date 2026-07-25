@@ -4,5 +4,9 @@
   "type": "module",
   "dependencies": {
     "sharp": "^0.34.0"
+  },
+  "scripts": {
+    "test": "node test-margin.mjs",
+    "ops": "node ops.mjs"
   }
 }

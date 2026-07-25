@@ -6,25 +6,20 @@
 //   node cli.mjs providers <bpId>    print providers for a blueprint
 //   node cli.mjs orders              pull real orders -> ../state/orders.json
 //
-// Config via env (never committed):
+// Credentials come from ops/worker/.env (gitignored) or the real environment.
 //   PRINTIFY_API_TOKEN   required
 //   PRINTIFY_SHOP_ID     required for product/order commands (verify prints it)
 
 import { makeClient } from './printify.mjs';
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { PATHS, credentials } from './config.mjs';
+import { writeFileSync, mkdirSync, appendFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const stateDir = join(here, '..', 'state');
+const stateDir = PATHS.state;
 
 const [cmd, ...args] = process.argv.slice(2);
-const client = () => makeClient(process.env.PRINTIFY_API_TOKEN);
-const shopId = () => {
-  const id = process.env.PRINTIFY_SHOP_ID;
-  if (!id) throw new Error('PRINTIFY_SHOP_ID is not set (run `verify` to list shops)');
-  return id;
-};
+const client = () => makeClient(credentials(['token']).token);
+const shopId = () => credentials(['token', 'shop']).shopId;
 
 const commands = {
   async verify() {
@@ -33,7 +28,26 @@ const commands = {
     for (const s of shops) {
       console.log(`  id=${s.id}  title="${s.title}"  channel=${s.sales_channel}`);
     }
-    if (!shops.length) console.log('  (none — connect the Etsy store in Printify first)');
+    if (!shops.length) {
+      console.log('  (none — connect the Etsy store in Printify first, then re-run)');
+      return;
+    }
+    // Save the operator a copy-paste step, but only when there is exactly one
+    // shop and nothing to overwrite. Anything ambiguous stays manual.
+    const current = credentials([]).shopId;
+    if (current) {
+      const known = shops.some(s => String(s.id) === String(current));
+      console.log(known
+        ? `\n.env PRINTIFY_SHOP_ID=${current} matches a real shop — connection verified`
+        : `\n! .env has PRINTIFY_SHOP_ID=${current} which is NOT in the list above — fix it`);
+      return;
+    }
+    if (shops.length === 1 && existsSync(PATHS.env)) {
+      appendFileSync(PATHS.env, `\nPRINTIFY_SHOP_ID=${shops[0].id}\n`);
+      console.log(`\nwrote PRINTIFY_SHOP_ID=${shops[0].id} into ops/worker/.env`);
+    } else {
+      console.log(`\nadd this line to ops/worker/.env:\n  PRINTIFY_SHOP_ID=${shops[0].id}`);
+    }
   },
 
   async blueprints(query) {

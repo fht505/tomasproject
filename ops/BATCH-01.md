@@ -110,8 +110,12 @@ back-to-school spike in August:
 - B19 "COFFEE · SCRUBS · REPEAT" stacked caps
 - B20 "EMOTIONAL SUPPORT NURSE" small-caps parody
 
-Title formula: `{Phrase} Shirt | {Niche} Gift | Comfort Colors Style Tee |
-{Occasion}`. Tag banks per niche assembled from the researched keywords
+Title formula: `{Phrase} Shirt | {Niche} Gift | {Style} Tee | {Occasion}`,
+then padded from the listing's own tags up to ~115 characters (Etsy allows
+140 and every unused character is search surface left silent). Never name a
+brand the garment is not: "Comfort Colors" is a Gildan trademark and this
+pipeline resolves a Bella+Canvas 3001, so `gen-listings.mjs` fails the build
+if a title contains it. Tag banks per niche assembled from the researched keywords
 (teacher gifts, nurse gifts, grandma shirt, dog mom shirt, gift for her,
 back to school, appreciation gift, …) — 13 tags each at draft time.
 
