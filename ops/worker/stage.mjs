@@ -17,7 +17,7 @@
 // config.min_margin_usd. A draft that never earns money never survives here.
 
 import { makeClient } from './printify.mjs';
-import { PATHS, loadConfig, credentials, netMargin, minPriceFor, assertNoPlaceholders } from './config.mjs';
+import { PATHS, loadConfig, credentials, netMargin, minPriceFor, assertNoPlaceholders, assertShippingClaimMatchesConfig } from './config.mjs';
 import { tmBlocker } from './tm.mjs';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -130,6 +130,23 @@ const COLOR_PREFERENCE = [
 const MAX_COLORS = 6;
 const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
+// Where the design sits inside the blueprint's print area. x/y are the centre
+// point and scale is a fraction of the print area's width, so the previous
+// single constant — {x:0.5, y:0.5, scale:1} — put a full-width design in the
+// vertical middle of a 12x16in tee panel: a collarbone-to-navel print on all
+// 22 apparel drafts.
+//
+// These are STARTING VALUES, not verified truth. Nobody has seen a mockup from
+// this account yet, so `review --mockups` before approving is what actually
+// confirms them, and this is the one number to adjust if the mockups look off.
+const PLACEMENT = {
+  tee_bella_3001: { x: 0.5, y: 0.42, scale: 0.85 },
+  sweatshirt_gildan_18000: { x: 0.5, y: 0.42, scale: 0.85 },
+  tote: { x: 0.5, y: 0.45, scale: 0.9 },
+  mug_11oz: { x: 0.5, y: 0.5, scale: 1 },      // wrap: full bleed is correct
+  candle_9oz: { x: 0.5, y: 0.5, scale: 1 },    // label: fills its own area
+};
+
 function chooseVariants(listing, resolved) {
   const isApparel = listing.product.startsWith('tee') || listing.product.startsWith('sweatshirt');
   let variants = resolved.variants;
@@ -175,6 +192,10 @@ function buildProductPayload(listing, resolved, uploadId, priceCents) {
   if (!placeholderPos) {
     throw new Error('blueprint variant exposes no print placeholder — inspect with node ops.mjs providers');
   }
+  const place = PLACEMENT[listing.product];
+  if (!place) {
+    throw new Error(`no print placement defined for ${listing.product} — add one to PLACEMENT in stage.mjs rather than letting it default to a full-width centred print`);
+  }
 
   return {
     title: listing.title,
@@ -191,7 +212,7 @@ function buildProductPayload(listing, resolved, uploadId, priceCents) {
       variant_ids: variants.map(v => v.id),
       placeholders: [{
         position: placeholderPos,
-        images: [{ id: uploadId, x: 0.5, y: 0.5, scale: 1, angle: 0 }],
+        images: [{ id: uploadId, x: place.x, y: place.y, scale: place.scale, angle: 0 }],
       }],
     }],
   };
@@ -389,22 +410,21 @@ async function stageRun(listings, cfg) {
     if (existing && !force) { skipped++; continue; }
     let productId = null;
     try {
-      // never let an unsubstituted {PLACEHOLDER} reach a marketplace
+      // never let an unsubstituted {PLACEHOLDER} reach a marketplace, and never
+      // let a stale listings file publish a delivery promise config.json does
+      // not make
       assertNoPlaceholders(l);
+      assertShippingClaimMatchesConfig(l, cfg);
 
       // fail closed: an unscreened phrase is a blocked phrase
       const tm = tmBlocker(l);
       if (tm) throw new Error(tm);
 
-      // --force used to just overwrite the record, leaving the old Printify
-      // product alive and unreachable — unstage iterates by code, so nothing
-      // could ever delete it. Retire the old draft first, and keep its id.
-      if (existing) {
-        if (existing.published) {
-          throw new Error(`${l.code} is already LIVE on Etsy — re-staging would leave a duplicate listing. Take it down first: node ops.mjs unstage ${l.code} --force`);
-        }
-        await client.deleteProduct(shop, existing.product_id);
-        console.log(`  retired previous draft ${existing.product_id} for ${l.code}`);
+      // --force replaces an existing draft. Refusing a LIVE one is checked
+      // here, up front, so a dry run reports it too — but the actual delete
+      // happens further down, immediately before the replacement is created.
+      if (existing && existing.published) {
+        throw new Error(`${l.code} is already LIVE on Etsy — re-staging would leave a duplicate listing. Take it down first: node ops.mjs unstage ${l.code} --force`);
       }
 
       // A dry run is most useful BEFORE the art exists — that is when you want
@@ -434,9 +454,21 @@ async function stageRun(listings, cfg) {
 
       if (dryRun) {
         dryPayloads.push({ code: l.code, payload });
-        console.log(`DRY   ${l.code}  ${payload.variants.length} variants @ ${money(l.price_usd)}  bp ${payload.blueprint_id}/pp ${payload.print_provider_id}  "${payload.print_areas[0].placeholders[0].position}"`);
+        const ph = payload.print_areas[0].placeholders[0];
+        const im = ph.images[0];
+        console.log(`DRY   ${l.code}  ${payload.variants.length} variants @ ${money(l.price_usd)}  bp ${payload.blueprint_id}/pp ${payload.print_provider_id}  "${ph.position}" x${im.x} y${im.y} scale${im.scale}`);
+        if (existing) console.log(`      would retire previous draft ${existing.product_id}`);
         created++;
         continue;
+      }
+
+      // Retire the superseded draft as late as possible — everything above can
+      // still throw (missing master, rate limit, blueprint failure), and doing
+      // this any earlier means a failure leaves a good draft deleted and no
+      // replacement created.
+      if (existing) {
+        await client.deleteProduct(shop, existing.product_id);
+        console.log(`  retired previous draft ${existing.product_id} for ${l.code}`);
       }
 
       const product = await client.createProduct(shop, payload);
@@ -482,8 +514,11 @@ async function stageRun(listings, cfg) {
     } catch (e) {
       failed++;
       console.log(`FAIL  ${l.code} — ${e.message}`);
-      // a product created but not recorded is the one state we cannot tolerate
-      if (productId && !staged.items[l.code]) {
+      // A product created but not recorded is the one state we cannot tolerate.
+      // Compare ids, not presence: on a --force run the OLD record still sits
+      // under this code, so a presence check would skip the rollback and leave
+      // the new product orphaned.
+      if (productId && staged.items[l.code]?.product_id !== productId) {
         try {
           await client.deleteProduct(shop, productId);
           console.log(`      rolled back orphan draft ${productId}`);

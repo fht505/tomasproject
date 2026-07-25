@@ -6,12 +6,13 @@
 //   node intake.mjs check      validate only (fast, no writes)
 //   node intake.mjs next       which design to make next, with its prompt
 //   node intake.mjs add <file> [CODE]   file a download under the right code
+//   node intake.mjs key <CODE>         remove a white background (adds alpha)
 //
 // Input:  ops/art/<CODE>.png        (A1.png, B7.png, …)
 // Output: ops/art/print/<CODE>.png  (long edge upscaled to print target)
 
 import sharp from 'sharp';
-import { readdirSync, mkdirSync, existsSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
+import { readdirSync, mkdirSync, existsSync, readFileSync, writeFileSync, copyFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -147,10 +148,12 @@ if (mode === 'add') {
   const upscale = spec.target / long;
   const wantsAlpha = [...spec.families].some(fam => NEEDS_ALPHA.has(fam));
   const problems = [];
+  let fixable = false;
   if (meta.format !== 'png') problems.push(`not a png (${meta.format})`);
   if (long < MIN_SOURCE) problems.push(`too small (${meta.width}x${meta.height}, need ≥${MIN_SOURCE}px)`);
   if (wantsAlpha && !meta.hasAlpha) {
-    problems.push(`no transparent background, and ${spec.uses.join('/')} print on fabric — ask for it again "on a transparent background, no mockup"`);
+    problems.push(`no transparent background, and ${spec.uses.join('/')} print on fabric`);
+    fixable = true;
   }
   if (upscale > MAX_UPSCALE) {
     problems.push(`needs ${upscale.toFixed(1)}x upscale — regenerate at ≥${Math.ceil(spec.target / MAX_UPSCALE)}px on the long edge`);
@@ -159,6 +162,15 @@ if (mode === 'add') {
   if (problems.length) {
     console.log(`REJECTED  ${src}  (would be ${code})`);
     for (const p of problems) console.log(`  · ${p}`);
+    if (fixable && problems.length === 1) {
+      // a white background is the one defect we can repair rather than reject
+      console.log(`\nfiling it anyway so it can be keyed:`);
+      mkdirSync(artDir, { recursive: true });
+      copyFileSync(src, join(artDir, target));
+      console.log(`  node ops.mjs art key ${code}     removes the white background`);
+      console.log(`  then check it looks right, and carry on with: node ops.mjs art next`);
+      process.exit(0);
+    }
     console.log(`\nnot filed — ${code} is still outstanding. Regenerate and run the same command again.`);
     process.exit(1);
   }
@@ -177,6 +189,78 @@ if (mode === 'add') {
   console.log(left2.length
     ? `\n${left2.length} to go — next: node ops.mjs art next`
     : `\nthat was the last one — next: node ops.mjs art`);
+  process.exit(0);
+}
+
+// ------------------------------------------------------------ keying
+// Apparel art must have a transparent background, and the ChatGPT app will not
+// produce an alpha channel however you ask. Without a way to add one, the
+// alpha gate above would make 22 of the 40 listings impossible to stage — a
+// rule that blocks the only tool the operator has is not a safety rail.
+//
+// This removes white ONLY where it is connected to the image border, by flood
+// fill. A global "delete every white pixel" would punch holes through the cream
+// outlines and light lettering several of these designs are built on; a border
+// fill cannot reach an enclosed interior region.
+async function keyOut(file, threshold = 244) {
+  const img = sharp(file).ensureAlpha();
+  const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+  const near = (i) => data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold;
+
+  const seen = new Uint8Array(width * height);
+  const stack = [];
+  const push = (x, y) => {
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    const p = y * width + x;
+    if (seen[p]) return;
+    seen[p] = 1;
+    if (near(p * channels)) stack.push(p);
+  };
+  for (let x = 0; x < width; x++) { push(x, 0); push(x, height - 1); }
+  for (let y = 0; y < height; y++) { push(0, y); push(width - 1, y); }
+
+  let cleared = 0;
+  while (stack.length) {
+    const p = stack.pop();
+    data[p * channels + 3] = 0;
+    cleared++;
+    const x = p % width, y = (p / width) | 0;
+    push(x - 1, y); push(x + 1, y); push(x, y - 1); push(x, y + 1);
+  }
+
+  const pct = (cleared / (width * height)) * 100;
+  return { data, width, height, channels, pct };
+}
+
+if (mode === 'key') {
+  const code = (process.argv[3] || '').toUpperCase().replace(/\.png$/i, '');
+  if (!code) {
+    console.error('usage: node ops.mjs art key <CODE>');
+    process.exit(2);
+  }
+  const file = join(artDir, `${code}.png`);
+  if (!existsSync(file)) {
+    console.error(`no such design: ops/art/${code}.png`);
+    process.exit(1);
+  }
+  const { data, width, height, channels, pct } = await keyOut(file);
+
+  if (pct < 2) {
+    console.log(`  ! only ${pct.toFixed(1)}% of ${code} was removed — its background may not be white, or the design may already reach the edges. Left unchanged.`);
+    process.exit(1);
+  }
+  if (pct > 97) {
+    console.log(`  ! ${pct.toFixed(1)}% of ${code} would be removed — that is almost the whole image. Left unchanged.`);
+    process.exit(1);
+  }
+
+  await sharp(data, { raw: { width, height, channels } }).png().toFile(file + '.tmp');
+  copyFileSync(file + '.tmp', file);
+  rmSync(file + '.tmp');
+  console.log(`KEYED ${code}  ${pct.toFixed(1)}% of the image is now transparent background`);
+  console.log('  Open it and check the design itself is intact — interior white is');
+  console.log('  preserved by design, but a background that leaks into the artwork will show.');
   process.exit(0);
 }
 

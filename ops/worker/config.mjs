@@ -135,6 +135,23 @@ export function credentials(need = ['token']) {
 
 // Guard: nothing containing an unsubstituted {placeholder} may ever be sent to
 // a marketplace. This caught 40 listings about to publish "Designed by {SHOP}".
+// A stale listings file can carry a shipping promise that config.json has
+// since blanked or changed — and unlike a visible {PLACEHOLDER}, "Ships in 2-5
+// business days" looks perfectly fine while being a commitment nobody verified.
+// A missed ship-by voids Etsy Purchase Protection, so this is checked at the
+// same gate.
+export function assertShippingClaimMatchesConfig(listing, cfg) {
+  const claim = String(listing.description || '').match(/Ships in ([^\n•]+)/);
+  const stated = (cfg.processing?.days || '').trim();
+  if (!claim) return;
+  if (!stated) {
+    throw new Error(`${listing.code}: description promises "Ships in ${claim[1].trim()}" but ops/config.json states no processing time — re-run \`node ops.mjs listings\``);
+  }
+  if (claim[1].trim() !== stated) {
+    throw new Error(`${listing.code}: description promises "Ships in ${claim[1].trim()}" but ops/config.json says "${stated}" — re-run \`node ops.mjs listings\``);
+  }
+}
+
 export function assertNoPlaceholders(listing) {
   const fields = ['title', 'description', ...(listing.tags || [])];
   for (const f of fields) {

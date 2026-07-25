@@ -24,7 +24,9 @@ if (!SHOP) {
 const PRODUCTS = {
   candle: { type: 'candle_9oz', price: 28.95, blueprintHint: 'scented candle 9oz' },
   tee: { type: 'tee_bella_3001', price: 23.95, blueprintHint: 'Bella+Canvas 3001' },
-  sweatshirt: { type: 'sweatshirt_gildan_18000', price: 34.95, blueprintHint: 'Gildan 18000' },
+  // 35.95, not 34.95: Etsy's US Free Shipping Guarantee triggers at $35 and a
+  // sweatshirt is the one item in this batch that sells alone above it.
+  sweatshirt: { type: 'sweatshirt_gildan_18000', price: 35.95, blueprintHint: 'Gildan 18000' },
   mug: { type: 'mug_11oz', price: 17.95, blueprintHint: 'ceramic mug 11oz' },
   tote: { type: 'tote', price: 19.95, blueprintHint: 'cotton tote' },
 };
@@ -48,6 +50,9 @@ const T = {
   // "comfort tee" is deliberately absent: Comfort Colors is a Gildan trademark
   // and the garment this pipeline resolves is a Bella+Canvas 3001.
   apparelCore: ['gift for her', 'vintage style tee', 'soft cotton tee', 'graphic tee'],
+  // same, minus the recipient assumption — a dad shirt tagged "gift for her"
+  // competes for a query it can never satisfy
+  apparelNeutral: ['vintage style tee', 'soft cotton tee', 'graphic tee'],
   // sweatshirts need their own core: the tee tags are filtered out of a
   // crewneck listing by nounSafe, which used to leave it padding with generics
   sweatshirtCore: ['cozy sweatshirt', 'crewneck sweater', 'graphic sweatshirt',
@@ -107,13 +112,23 @@ function pickTags(productKey, phraseTags, banks) {
   return out;
 }
 
-// Titles ran 56-87 characters against Etsy's 140 limit — 50+ characters of
-// matchable surface left silent on every listing. Extend each one with its own
-// tags, in tag order (most specific first), skipping anything the title already
-// says. Stops at 115 so the tail stays readable in a search result.
-// A tag earns its place only if it brings a word the title does not already
-// have. Without that test the padding produced "Funny Coffee Mug | Funny Gift
-// Mug | Funny Mug | Mug Gift" — length without reach, and it reads like spam.
+// Titles ran 56-87 characters against Etsy's 140 limit — real search surface
+// left silent. Extend each one with its own tags, most specific first.
+//
+// Two limits, both learned the hard way. A tag must bring a word the title does
+// not already have, or padding produces "Funny Coffee Mug | Funny Gift Mug |
+// Funny Mug | Mug Gift" — length without reach. And it stops at 95, not 115:
+// Etsy's 2025 guidance reads title, tags, attributes and description together,
+// so the title no longer has to carry every keyword, and occasion and
+// recipient terms belong in the tags where they already are. Padding to 115
+// was just re-stating the tag list in title case.
+const TITLE_EXCLUDE = new Set([
+  'gift for her', 'gift for him', 'birthday gift', 'christmas gift',
+  'holiday gift', 'stocking stuffer', 'secret santa gift', 'gift idea',
+  'unique gift', 'housewarming gift', 'best friend gift', 'appreciation gift',
+  'hostess gift',
+]);
+
 function padTitle(title, tags) {
   const titleCase = (s) => s.replace(/\b[a-z]/g, (c) => c.toUpperCase());
   const words = (s) => s.toLowerCase().match(/[a-z0-9]+/g) || [];
@@ -121,10 +136,11 @@ function padTitle(title, tags) {
   for (const w of words(title)) count.set(w, (count.get(w) ?? 0) + 1);
 
   for (const t of tags) {
-    if (title.length >= 115) break;
+    if (title.length >= 95) break;
+    if (TITLE_EXCLUDE.has(t)) continue;
     const tagWords = words(t);
     if (tagWords.every((w) => count.has(w))) continue;          // adds no new word
-    if (tagWords.some((w) => (count.get(w) ?? 0) >= 3)) continue; // would stutter
+    if (tagWords.some((w) => (count.get(w) ?? 0) >= 2)) continue; // would stutter
     const segment = ' | ' + titleCase(t);
     if (title.length + segment.length > 138) continue;
     title += segment;
@@ -138,12 +154,12 @@ function padTitle(title, tags) {
 // reports and the wording gets fixed by hand in the ROWS table above.
 function repeatedWords(title) {
   const counts = new Map();
-  // "gift" recurring is how Etsy titles read; a niche noun four times is not
+  // "gift" recurring is how Etsy titles read; a niche noun three times is not
   const generic = new Set(['gift', 'gifts', 'from', 'with', 'that', 'your']);
   for (const w of title.toLowerCase().split(/[^a-z0-9]+/)) {
     if (w.length > 3 && !generic.has(w)) counts.set(w, (counts.get(w) ?? 0) + 1);
   }
-  return [...counts.entries()].filter(([, n]) => n >= 4).map(([w]) => w);
+  return [...counts.entries()].filter(([, n]) => n >= 3).map(([w]) => w);
 }
 
 // ------------------------------------------------------------- description
@@ -228,13 +244,13 @@ const ROWS = [
   ['B5', 'tee', 'Best Class Ever Est. 2026', 'Shirt | Teacher Tee | First Day of School | Back to School',
     [T.teacher, T.apparelCore], 'Make it official: Best Class Ever, Est. 2026.'],
   ['B6', 'tee', 'Proud Dad of Girls', 'Shirt | Dad of Daughters Tee | Fathers Day Gift | Gift from Daughter',
-    [T.dad, T.apparelCore], 'Varsity-style and proud of it — for the Proud Dad of Girls.'],
+    [T.dad, T.apparelNeutral], 'Varsity-style and proud of it — for the Proud Dad of Girls.'],
   ['B7', 'tee', 'Outnumbered and Loving It', 'Shirt | Funny Dad Tee | Dad of Daughters | Fathers Day Gift',
-    [T.dad, T.apparelCore], 'Outnumbered & Loving It — the official shirt of dads who lost the majority vote.'],
+    [T.dad, T.apparelNeutral], 'Outnumbered & Loving It — the official shirt of dads who lost the majority vote.'],
   ['B8', 'tee', 'Dad of Daughters Best Job Ever', 'Shirt | Vintage Dad Badge Tee | Fathers Day Gift',
-    [T.dad, T.apparelCore], 'Dad of Daughters: Best Job Ever. Vintage patch style, permanent position.'],
+    [T.dad, T.apparelNeutral], 'Dad of Daughters: Best Job Ever. Vintage patch style, permanent position.'],
   ['B9', 'tee', 'Raising Strong Girls', 'Shirt | Dad Tee | Girl Dad Gift | Fathers Day | Gift for Him',
-    [T.dad, T.apparelCore], 'The mission statement, in hand-script: Raising Strong Girls.'],
+    [T.dad, T.apparelNeutral], 'The mission statement, in hand-script: Raising Strong Girls.'],
   ['B10', 'tee', 'Dog Mama', 'Shirt | Retro Dog Mom Tee | Dog Lover Gift | Fur Mama Gift',
     [T.dogmom, T.apparelCore], 'Retro script, paw-print flourish — Dog Mama, worn proudly.'],
   ['B11', 'tee', 'Professional Dog Cuddler', 'Shirt | Funny Dog Mom Tee | Dog Lover Gift',
@@ -368,8 +384,9 @@ for (const l of listings) {
     throw new Error(`${l.code}: no phrase tags — the printed phrase is the one keyword nobody else owns, so it must be tagged`);
   }
   // Never claim a brand we do not print on. Comfort Colors is Gildan's.
-  const brand = l.title.match(/comfort colors|gildan(?! 18000)|nike|disney|stanley/i);
-  if (brand) throw new Error(`${l.code}: title names a brand we do not sell — "${brand[0]}"`);
+  const surface = `${l.title} ${l.tags.join(' ')} ${l.description}`;
+  const brand = surface.match(/comfort colors|gildan(?! 18000)|nike|disney|stanley|carhartt/i);
+  if (brand) throw new Error(`${l.code}: names a brand we do not sell — "${brand[0]}"`);
 }
 
 // Two listings sharing a tag set are one listing competing with itself: Etsy
@@ -388,7 +405,7 @@ if (collisions.length) {
 
 // Report, don't throw: title length is a judgement call, but 60 characters of
 // a 140-character budget is a lot of unclaimed search surface to leave silent.
-const short = listings.filter(l => l.title.length < 90);
+const short = listings.filter(l => l.title.length < 70);
 const stutter = listings.map(l => [l.code, repeatedWords(l.title)]).filter(([, w]) => w.length);
 const distinctTags = new Set(listings.flatMap(l => l.tags)).size;
 
@@ -400,5 +417,5 @@ if (short.length) {
   console.log(`${short.length} titles under 90 chars — unused search surface: ${short.map(l => `${l.code}(${l.title.length})`).join(' ')}`);
 }
 if (stutter.length) {
-  console.log(`titles repeating a word 4+ times — reword the tail in ROWS: ${stutter.map(([c, w]) => `${c}(${w.join(',')})`).join(' ')}`);
+  console.log(`titles repeating a word 3+ times — reword the tail in ROWS: ${stutter.map(([c, w]) => `${c}(${w.join(',')})`).join(' ')}`);
 }

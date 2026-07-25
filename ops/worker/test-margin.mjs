@@ -6,7 +6,7 @@
 // bad blueprint price and a shop that sells at a loss. "It looks right" is not
 // good enough for the code that decides whether a product is allowed to exist.
 
-import { netMargin, minPriceFor, loadConfig } from './config.mjs';
+import { netMargin, minPriceFor, loadConfig, assertShippingClaimMatchesConfig } from './config.mjs';
 import { baseCostFromProduct, baseCostFromCatalog, chooseVariants, marginDecision } from './stage.mjs';
 import { addDays, classify } from './orders.mjs';
 
@@ -196,6 +196,20 @@ eq('with no stated processing time, age alone still catches a stalled order',
 eq('cancelled orders are not counted as trouble',
   lvl({ status: 'canceled', hasTracking: false, ageHours: 900, hoursLeft: -500 }),
   'dead');
+
+console.log('\nshipping-claim guard');
+const claims = (desc, days) => {
+  try { assertShippingClaimMatchesConfig({ code: 'X', description: desc }, { processing: { days } }); return 'allowed'; }
+  catch (e) { return e.message; }
+};
+eq('no claim in the description is always fine',
+  claims('• Premium unisex tee', ''), 'allowed');
+eq('a claim with no stated processing time is blocked',
+  /states no processing time/.test(claims('• Ships in 2-5 business days', '')), true);
+eq('a claim that disagrees with config is blocked',
+  /says "3-6 business days"/.test(claims('• Ships in 2-5 business days', '3-6 business days')), true);
+eq('a claim that matches config passes',
+  claims('• Ships in 2-5 business days', '2-5 business days'), 'allowed');
 
 console.log('\nlive config');
 const cfg = loadConfig();
