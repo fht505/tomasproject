@@ -1,5 +1,5 @@
 // ================================================================
-// FHT ORBITAL — boot, loop, wiring, persistence
+// PERPETUA ORBITAL — boot, loop, wiring, persistence
 // ================================================================
 import { BOOT_LINES, ROOM_BY_ID, fmtMoney } from './data.js';
 import {
@@ -15,7 +15,7 @@ import {
 import { buildRoomView } from './rooms.js';
 import { initLive, liveTick, liveConfigEl } from './live.js';
 
-const SAVE_KEY = 'fht-orbital-v1';
+const SAVE_KEY = 'perpetua-orbital-v1';
 let st = null;
 let openRoomId = null;
 let roomView = null;

@@ -1,5 +1,5 @@
 // ================================================================
-// FHT ORBITAL — DOM UI: HUD, rails, feeds, modals, toasts, art
+// PERPETUA ORBITAL — DOM UI: HUD, rails, feeds, modals, toasts, art
 // ================================================================
 import {
   ROOMS, ROOM_BY_ID, AGENTS, AGENT_BY_ID, SHOPS, SHOP_BY_ID,

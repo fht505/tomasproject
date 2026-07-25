@@ -1,5 +1,5 @@
 // ================================================================
-// FHT ORBITAL — canvas station map: rooms, corridors, crew sprites
+// PERPETUA ORBITAL — canvas station map: rooms, corridors, crew sprites
 // World units are tiles; TILE px at zoom 1.
 // ================================================================
 import { ROOMS, ROOM_BY_ID, SPINES, AGENTS, AGENT_BY_ID } from './data.js';

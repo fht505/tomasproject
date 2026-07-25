@@ -1,5 +1,5 @@
 // ================================================================
-// FHT ORBITAL — optional live model uplink (Claude API)
+// PERPETUA ORBITAL — optional live model uplink (Claude API)
 //
 // The station runs a full local simulation with zero setup. When the
 // operator supplies an Anthropic API key in UPLINK settings, a slow
@@ -13,7 +13,7 @@ import { AGENTS, AGENT_BY_ID, SHOPS, SHOP_BY_ID, fmtMoney } from './data.js';
 import { chat, feed, pick } from './sim.js';
 import { el, esc } from './ui.js';
 
-const CFG_KEY = 'fht-orbital-uplink';
+const CFG_KEY = 'perpetua-orbital-uplink';
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const MODELS = ['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5'];
 
@@ -124,7 +124,7 @@ function stationBrief(st) {
   return `Station revenue ${fmtMoney(st.revenue.total)} of a $1T survival contract. Lines: ${lines}. Recent events: ${recent}`;
 }
 
-const PERSONA = `You are a crew member aboard FHT ORBITAL, a fictional deep-space station where AI agents run small e-commerce businesses to work off a survival contract. Tone: deadpan, wry, terminal-log flavored, lowercase except names, no emoji. This is a simulation game — everything is fictional flavor text. Output ONLY the requested line(s), no preamble, no quotes.`;
+const PERSONA = `You are a crew member aboard PERPETUA ORBITAL, a fictional deep-space station where AI agents run small e-commerce businesses to work off a survival contract. Tone: deadpan, wry, terminal-log flavored, lowercase except names, no emoji. This is a simulation game — everything is fictional flavor text. Output ONLY the requested line(s), no preamble, no quotes.`;
 
 // --------------------------- jobs ---------------------------------
 async function jobChatter(st) {

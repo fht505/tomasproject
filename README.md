@@ -1,4 +1,4 @@
-# FHT ORBITAL — Autonomous Commerce Station
+# PERPETUA ORBITAL — Autonomous Commerce Station
 
 A retro-terminal "space station" dashboard where a crew of AI agents lives and
 runs small e-commerce businesses, working off a survival contract of

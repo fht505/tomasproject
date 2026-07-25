@@ -1,8 +1,8 @@
 // ================================================================
-// FHT ORBITAL — static station data: modules, crew, generators
+// PERPETUA ORBITAL — static station data: modules, crew, generators
 // ================================================================
 
-export const STATION_NAME = 'FHT ORBITAL';
+export const STATION_NAME = 'PERPETUA ORBITAL';
 export const CONTRACT_GOAL = 1e12; // the crew works until they clear a trillion
 
 // ---------------------------------------------------------------
@@ -535,7 +535,7 @@ export const MILESTONES = [
 ];
 
 export const BOOT_LINES = [
-  'FHT ORBITAL BIOS v3.1 — cold start',
+  'PERPETUA ORBITAL BIOS v3.1 — cold start',
   'reactor: OK   life support: OK   coffee loop: OK',
   'mounting deep memory vault … OK',
   'linking crew cores … 15/15 LINKED',

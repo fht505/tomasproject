@@ -1,5 +1,5 @@
 // ================================================================
-// FHT ORBITAL — room terminal views (build skeleton once, update live)
+// PERPETUA ORBITAL — room terminal views (build skeleton once, update live)
 // ================================================================
 import {
   ROOM_BY_ID, AGENTS, AGENT_BY_ID, SHOPS, SHOP_BY_ID, PIPELINES,

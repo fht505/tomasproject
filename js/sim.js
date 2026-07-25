@@ -1,5 +1,5 @@
 // ================================================================
-// FHT ORBITAL — simulation engine (pure state; no DOM)
+// PERPETUA ORBITAL — simulation engine (pure state; no DOM)
 // Time unit: sim minutes. 1 real second at ×1 = 2 sim minutes.
 // ================================================================
 import {
@@ -91,7 +91,7 @@ export function createState() {
   for (let i = 0; i < 2; i++) pushGen(st, 'factory2');
   rollObjectives(st);
   arch(st, 'sys', 'Station initialized. Survival contract armed: ' + fmtMoneyShort(CONTRACT_GOAL) + '.');
-  feed(st, 'sys', 'FHT ORBITAL cold start complete. 15 crew cores linked.');
+  feed(st, 'sys', 'PERPETUA ORBITAL cold start complete. 15 crew cores linked.');
   chat(st, null, 'MAGNUS: contract active. factories, spin up. research, find me demand.');
   return st;
 }
