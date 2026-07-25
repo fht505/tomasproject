@@ -82,6 +82,20 @@ for (const f of files) {
   }
 }
 
+// manifest for the console — which art actually exists, verified
+if (!checkOnly) {
+  const stateDir = join(here, '..', 'state');
+  mkdirSync(stateDir, { recursive: true });
+  const manifest = {
+    fetchedAt: new Date().toISOString(),
+    source: 'intake.mjs validation run over ops/art/',
+    ok: files.filter(f => wanted.has(f)),
+    missing,
+  };
+  const { writeFileSync } = await import('node:fs');
+  writeFileSync(join(stateDir, 'art.json'), JSON.stringify(manifest, null, 2));
+}
+
 console.log(`\n${ok} ok, ${bad} failed, ${missing.length} still missing`);
 if (missing.length) console.log('missing:', missing.join(', '));
 process.exit(bad ? 1 : 0);

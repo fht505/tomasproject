@@ -535,14 +535,12 @@ export const MILESTONES = [
 ];
 
 export const BOOT_LINES = [
-  'PERPETUA ORBITAL BIOS v3.1 — cold start',
-  'reactor: OK   life support: OK   coffee loop: OK',
-  'mounting deep memory vault … OK',
-  'linking crew cores … 15/15 LINKED',
-  'restoring commerce lanes: etsy ×3, gigs, assets, ventures … OK',
-  'arming survival contract: $1,000,000,000,000',
-  'the station remembers everything.',
-  'WELCOME BACK, OPERATOR.',
+  'PERPETUA ORBITAL OPS CONSOLE — real mode',
+  'policy: nothing simulated. empty panels are the honest truth.',
+  'reading ops/state … only real API pulls and verified runs render here',
+  'crew = scheduled agent runs; sprites are representation, numbers are real',
+  'contract target: $1,000,000,000,000. current: whatever the ledger says.',
+  'WELCOME, OPERATOR.',
 ];
 
 // objectives template (regenerated daily)

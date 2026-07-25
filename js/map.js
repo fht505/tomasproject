@@ -3,7 +3,17 @@
 // World units are tiles; TILE px at zoom 1.
 // ================================================================
 import { ROOMS, ROOM_BY_ID, SPINES, AGENTS, AGENT_BY_ID } from './data.js';
-import { mulberry32 } from './sim.js';
+
+// deterministic rng for baked visuals (starfield, furniture)
+export function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 const TILE = 10;
 const WORLD_W = 200, WORLD_H = 132;
@@ -698,10 +708,10 @@ function drawAgent(g, a, v, st) {
     g.fillStyle = '#ffd84d';
     g.fillRect(x - 1, y - 13, 2, 2);
   }
-  // low morale indicator
+  // offline indicator (agent has no live run backing it)
   const ag = st.agents[a.id];
-  if (ag.morale < 35 && a.id !== 'magnus') {
-    g.fillStyle = '#ff4d4d';
+  if (ag.offline) {
+    g.fillStyle = '#5a5a5a';
     g.fillRect(x + 3, y - 13, 2, 2);
   }
   // name tag at zoom
