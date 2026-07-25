@@ -31,17 +31,26 @@ const write = (name, obj) => {
 };
 const cents = (v) => (typeof v === 'number' ? v : 0) / 100;
 
-// ---- orders (paginate until a short page) --------------------------------
+// ---- orders --------------------------------------------------------------
+// Paginate until a page comes back EMPTY. Do not guess the page size: an
+// earlier version stopped at "fewer than 10 rows", which silently under-reports
+// revenue if Printify pages at 20 or 50. Under-reporting money is exactly the
+// class of error this project refuses to ship.
 const orders = [];
-for (let page = 1; page <= 20; page++) {
+let orderPages = 0;
+for (let page = 1; page <= 200; page++) {
   const res = await client.orders(shop, page);
   const rows = res?.data ?? [];
+  orderPages++;
+  if (!rows.length) break;
   orders.push(...rows);
-  if (rows.length < 10) break;
+  // honor the envelope's own page count when the API provides one
+  const last = res?.last_page;
+  if (typeof last === 'number' && page >= last) break;
 }
 write('orders.json', {
   fetchedAt: new Date().toISOString(),
-  source: `Printify GET /shops/${shop}/orders.json`,
+  source: `Printify GET /shops/${shop}/orders.json (${orderPages} pages walked)`,
   data: orders,
 });
 
@@ -50,9 +59,16 @@ write('orders.json', {
 // (as synced from the sales channel); total_shipping and the line item costs
 // are what we pay. Anything Printify doesn't report is left at 0 — never
 // estimated into the ledger.
+// Cancelled/refunded orders must not inflate revenue. Printify order status
+// values include canceled/cancelled and refunded variants; exclude them and
+// report the count separately rather than silently dropping them.
+const EXCLUDED = /cancel|refund|void/i;
+const counted = orders.filter(o => !EXCLUDED.test(String(o.status || '')));
+const excludedOrders = orders.length - counted.length;
+
 let revenue = 0, production = 0, shipping = 0, unitsSold = 0;
 const byChannel = {};
-for (const o of orders) {
+for (const o of counted) {
   const rev = cents(o.total_price);
   revenue += rev;
   production += cents(o.total_cost ?? o.line_items?.reduce((a, li) => a + (li.cost || 0) * (li.quantity || 1), 0));
@@ -61,8 +77,10 @@ for (const o of orders) {
   const ch = (o.shop?.sales_channel || 'etsy').toLowerCase();
   byChannel[ch] = (byChannel[ch] || 0) + rev;
 }
-// Etsy's cut on a sale: 6.5% transaction + 3% + $0.25 processing.
-const etsyFees = orders.reduce((a, o) => {
+// Etsy's cut on a sale: 6.5% transaction + 3% + $0.25 processing, applied
+// once per ORDER (processing is per payment, not per item). This is a derived
+// figure, not an API value — it is labeled as such in the state file.
+const etsyFees = counted.reduce((a, o) => {
   const r = cents(o.total_price);
   return a + (r > 0 ? r * 0.095 + 0.25 : 0);
 }, 0);
@@ -71,6 +89,8 @@ const costs = production + shipping + etsyFees;
 write('ledger.json', {
   fetchedAt: new Date().toISOString(),
   source: 'computed from Printify orders API; Etsy fee rates applied to real order totals',
+  derived_fields: ['costs.platform_fees (Etsy fee formula applied to real order totals, not an API value)'],
+  excluded_orders: excludedOrders,
   revenue: {
     total: Number(revenue.toFixed(2)),
     etsy: Number((byChannel.etsy || 0).toFixed(2)),
@@ -84,17 +104,20 @@ write('ledger.json', {
     platform_fees: Number(etsyFees.toFixed(2)),
   },
   net: Number((revenue - costs).toFixed(2)),
-  orders: orders.length,
+  orders: counted.length,
   units: unitsSold,
 });
 
 // ---- products sync -------------------------------------------------------
+// same pagination rule as orders: walk until a page is empty, never guess size
 const products = [];
-for (let page = 1; page <= 10; page++) {
+for (let page = 1; page <= 200; page++) {
   const res = await client.listProducts(shop, page);
   const rows = res?.data ?? [];
+  if (!rows.length) break;
   products.push(...rows);
-  if (rows.length < 10) break;
+  const last = res?.last_page;
+  if (typeof last === 'number' && page >= last) break;
 }
 // annotate with our spec codes where we staged them
 let specByProductId = {};
@@ -113,6 +136,6 @@ write('products.json', {
   })),
 });
 
-console.log(`orders: ${orders.length} · units: ${unitsSold} · revenue: $${revenue.toFixed(2)} · costs: $${costs.toFixed(2)} · net: $${(revenue - costs).toFixed(2)}`);
+console.log(`orders: ${counted.length} counted${excludedOrders ? ` (${excludedOrders} cancelled/refunded excluded)` : ''} · units: ${unitsSold} · revenue: $${revenue.toFixed(2)} · costs: $${costs.toFixed(2)} · net: $${(revenue - costs).toFixed(2)}`);
 console.log(`products: ${products.length} synced`);
 console.log('state written — the console will show these numbers on next refresh');

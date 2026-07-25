@@ -56,6 +56,19 @@ async function loadState(announce) {
   renderAll();
 }
 
+// Staleness: a state file is a snapshot, not a live feed. Anything older than
+// this is labelled in the UI so an old pull is never read as current money.
+const STALE_MS = 6 * 60 * 60 * 1000;
+function ageLabel(iso) {
+  if (!iso) return '';
+  const ms = Date.now() - new Date(iso).getTime();
+  if (ms < 60 * 1000) return 'just now';
+  if (ms < 60 * 60 * 1000) return Math.floor(ms / 60000) + 'm ago';
+  if (ms < 24 * 60 * 60 * 1000) return Math.floor(ms / 3600000) + 'h ago';
+  return Math.floor(ms / 86400000) + 'd ago';
+}
+const isStale = (iso) => !!iso && (Date.now() - new Date(iso).getTime()) > STALE_MS;
+
 // derived — all from real files, zeros when absent
 function revenue() {
   const led = S.files.ledger;
@@ -67,19 +80,28 @@ function revenue() {
   };
 }
 
+// how many distinct art files the batch actually needs — derived from the
+// batch spec, never a hardcoded number (the C-series reuses A/B artwork, so
+// this is fewer than the listing count and would drift if the batch changed)
+function artRequired() {
+  if (S.files.art?.required) return S.files.art.required;
+  if (!S.batch) return null;
+  return new Set(S.batch.listings.map(l => l.art_file)).size;
+}
+
 function checklist() {
   const art = S.files.art;
   const products = S.files.products;
   const orders = S.files.orders;
   const artOk = art?.ok?.length ?? 0;
-  const artNeeded = (art?.ok?.length ?? 0) + (art?.missing?.length ?? 32);
+  const artNeeded = artRequired();
   const drafts = products?.data?.length ?? 0;
   const published = products?.data?.filter?.((p) => p.external?.length || p.is_published)?.length ?? 0;
   const orderCount = orders?.data?.data?.length ?? orders?.data?.length ?? 0;
   return [
     { label: 'Niche research (real Semrush pull)', done: !!S.files.signals, detail: S.files.signals ? `${S.files.signals.signals.length} signals` : 'pending' },
     { label: 'Batch-01 spec authored', done: !!S.batch, detail: S.batch ? `${S.batch.count}/40 listings` : 'pending' },
-    { label: 'Design art generated + validated', done: artOk >= artNeeded && artOk > 0, detail: `${artOk}/${artNeeded || 32} files` },
+    { label: 'Design art generated + validated', done: artNeeded !== null && artOk >= artNeeded && artOk > 0, detail: artNeeded === null ? 'batch spec not loaded' : `${artOk}/${artNeeded} files` },
     { label: 'Printify token verified (shop linked)', done: !!products, detail: products ? 'connected' : 'waiting on operator' },
     { label: 'Drafts staged on Printify', done: drafts >= 40, detail: `${drafts}/40` },
     { label: 'Listings published to Etsy', done: published >= 40, detail: `${published}/40` },
@@ -104,6 +126,17 @@ function renderHUD() {
   const goalPct = Math.min(100, rev.total / CONTRACT_GOAL * 100);
   $('goal-fill').style.width = Math.max(rev.total > 0 ? 0.5 : 0, goalPct) + '%';
   $('goal-text').textContent = `${fmtMoney(rev.total)} / $1T`;
+
+  // never let an old pull read as current money
+  const led = S.files.ledger;
+  const onlineCell = $('hud-online');
+  if (led && isStale(led.fetchedAt)) {
+    onlineCell.textContent = `LEDGER ${ageLabel(led.fetchedAt)}`;
+    onlineCell.style.color = 'var(--amber)';
+  } else {
+    onlineCell.textContent = led ? 'LIVE' : 'NO LEDGER';
+    onlineCell.style.color = '';
+  }
 }
 
 function renderClock() {
@@ -114,6 +147,10 @@ function renderClock() {
 }
 
 // --------------------------- rails -------------------------------
+// an agent counts as having run only when a real state file proves it
+const AGENT_EVIDENCE = { nova: 'signals', scout: 'lanes', flora: 'art', merch: 'products', ledger: 'orders', echo: 'inbox' };
+const agentHasRun = (id) => !!S.files[AGENT_EVIDENCE[id]];
+
 function moduleStatus(roomId) {
   switch (roomId) {
     case 'factory1': return S.batch ? `${S.batch.count} spec` : '—';
@@ -140,11 +177,15 @@ function renderRailLeft() {
   }
   const crew = $('crew-list');
   crew.innerHTML = '';
+  // honest header: these are planned runs, not staff currently working
+  const ranCount = AGENTS.filter(a => agentHasRun(a.id)).length;
+  document.querySelectorAll('#rail-left .rail-head')[1].textContent =
+    `CREW — ${ranCount}/${AGENTS.length} HAVE RUN`;
   for (const a of AGENTS) {
     const row = el('div', 'crew-row');
     row.appendChild(el('span', 'crew-name', esc(a.name)));
     row.appendChild(el('span', 'crew-room', esc(a.role)));
-    row.appendChild(el('span', 'crew-room', a.id === 'nova' && S.files.signals ? 'RAN' : 'QUEUED'));
+    row.appendChild(el('span', 'crew-room', agentHasRun(a.id) ? 'RAN' : 'NOT YET RUN'));
     row.onclick = () => openAgent(a.id);
     crew.appendChild(row);
   }
@@ -270,9 +311,22 @@ function buildRoom(root, roomId) {
       const body = panel(root, 'REAL LEDGER');
       body.appendChild(el('div', 'trow', `<span class="tk">REVENUE RECORDED</span><span class="tv">${fmtMoney(rev.total)}</span>`));
       body.appendChild(el('div', 'trow', `<span class="tk">COSTS RECORDED</span><span class="tv">${fmtMoney(rev.costs)}</span>`));
-      body.appendChild(el('div', 'panel-note', S.files.ledger
-        ? `ledger fetched ${new Date(S.files.ledger.fetchedAt).toLocaleString()}`
-        : 'No money has moved yet. Planned launch spend: Etsy shop setup ~$15 · 40 listings $8 · image gen $0 (operator ChatGPT sub). Fulfillment charges only on real orders.'));
+      if (S.files.ledger) {
+        const led = S.files.ledger;
+        body.appendChild(el('div', 'trow', `<span class="tk">ORDERS COUNTED</span><span class="tv">${led.orders ?? 0}</span>`));
+        if (led.excluded_orders) {
+          body.appendChild(el('div', 'trow', `<span class="tk">EXCLUDED (cancelled/refunded)</span><span class="tv">${led.excluded_orders}</span>`));
+        }
+        body.appendChild(el('div', 'panel-note',
+          `ledger fetched ${new Date(led.fetchedAt).toLocaleString()} (${ageLabel(led.fetchedAt)})` +
+          (isStale(led.fetchedAt) ? ' — STALE, re-run ledger.mjs before trusting these figures' : '')));
+        if (led.derived_fields) {
+          body.appendChild(el('div', 'panel-note', 'derived (not raw API values): ' + esc(led.derived_fields.join('; '))));
+        }
+      } else {
+        body.appendChild(el('div', 'panel-note',
+          'No money has moved yet. Planned launch spend: Etsy shop setup ~$15 · 40 listings $8 · image gen $0 (operator ChatGPT sub). Fulfillment charges only on real orders.'));
+      }
       break;
     }
     case 'factory2': {
@@ -344,7 +398,7 @@ function buildRoom(root, roomId) {
         const row = el('div', 'trow',
           `<span class="tk">${esc(a.name)} — ${esc(a.role)}</span>` +
           `<span class="dim">${esc(a.duty)}</span>` +
-          `<span class="tv">${a.id === 'nova' && S.files.signals ? 'RAN' : 'QUEUED'}</span>`);
+          `<span class="tv">${agentHasRun(a.id) ? 'RAN' : 'NOT YET RUN'}</span>`);
         row.style.cursor = 'pointer';
         row.onclick = () => openAgent(a.id);
         roster.appendChild(row);
@@ -398,7 +452,9 @@ function openAgent(id) {
   f('RUNTIME', 'Scheduled agent run (Claude) — not yet armed');
   f('DUTY', a.duty);
   f('FUNCTION', a.func);
-  f('STATUS', a.id === 'nova' && S.files.signals ? 'FIRST RUN COMPLETE (research pull)' : 'QUEUED — awaiting launch gates');
+  f('STATUS', agentHasRun(a.id)
+    ? `HAS RUN — evidence: ops/state/${AGENT_EVIDENCE[a.id]}.json`
+    : 'NOT YET RUN — no real output exists for this agent');
   fields.appendChild(el('div', 'agent-directive', '&raquo; ' + esc(a.directive)));
   card.appendChild(fields);
   const port = el('div', 'agent-portrait');
@@ -447,10 +503,7 @@ const mapState = {
 };
 
 function syncMapState() {
-  mapState.agents.nova.offline = !S.files.signals;
-  mapState.agents.flora.offline = !S.files.art;
-  mapState.agents.merch.offline = !S.files.products;
-  mapState.agents.ledger.offline = !S.files.orders;
+  for (const a of AGENTS) mapState.agents[a.id].offline = !agentHasRun(a.id);
   mapState.simMinutes = new Date().getHours() * 60 + new Date().getMinutes();
 }
 

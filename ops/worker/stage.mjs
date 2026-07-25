@@ -80,7 +80,20 @@ function buildProductPayload(listing, resolved, uploadId, priceCents) {
       wanted.includes(v.options?.size) && (!firstColor || v.options?.color === firstColor));
     if (!variants.length) variants = resolved.variants.slice(0, 6);
   }
-  const placeholderPos = resolved.variants[0]?.placeholders?.[0]?.position || 'front';
+  // Guard: every enabled variant gets the SAME price. If a blueprint has many
+  // variants with different base costs (oversized apparel, multi-size totes),
+  // a flat price can sell below cost. Cap and warn rather than silently listing.
+  if (variants.length > 24) {
+    console.log(`  ! ${listing.code}: ${variants.length} variants at one price — capping to 24; review pricing`);
+    variants = variants.slice(0, 24);
+  }
+  if (!variants.length) throw new Error('no variants resolved for this blueprint/provider');
+  // The placeholder position must come from the blueprint, not a guess: a mug
+  // wrap or candle label is not 'front'. Fail loudly if we cannot read one.
+  const placeholderPos = resolved.variants[0]?.placeholders?.[0]?.position;
+  if (!placeholderPos) {
+    throw new Error('blueprint variant exposes no print placeholder — inspect with cli.mjs providers');
+  }
 
   return {
     title: listing.title,
@@ -163,9 +176,18 @@ async function main() {
       };
       created++;
       console.log(`DRAFT ${l.code} -> ${product.id}  ${l.title.slice(0, 60)}`);
+      // persist immediately: a crash or rate-limit mid-run must never leave a
+      // draft live on Printify with no local record, or a re-run duplicates it
+      staged.fetchedAt = new Date().toISOString();
+      staged.source = 'stage.mjs run against Printify API';
+      saveState('staged.json', staged);
     } catch (e) {
       failed++;
       console.log(`FAIL  ${l.code} — ${e.message}`);
+      if (/429|rate limit/i.test(e.message)) {
+        console.log('rate limited — stopping cleanly. Re-run to continue where this left off.');
+        break;
+      }
     }
   }
 

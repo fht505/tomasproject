@@ -9,7 +9,7 @@
 // Output: ops/art/print/<CODE>.png  (long edge upscaled to print target)
 
 import sharp from 'sharp';
-import { readdirSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
+import { readdirSync, mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -36,7 +36,20 @@ if (!existsSync(listingsPath)) {
   process.exit(1);
 }
 const { listings } = JSON.parse(readFileSync(listingsPath, 'utf8'));
-const wanted = new Map(listings.map(l => [l.art_file, l]));
+
+// One art file can serve SEVERAL listings across different products — the
+// C-series reuses A/B artwork on mugs, totes and sweatshirts. Keying a Map by
+// art_file would keep only the last listing and size that master for the wrong
+// product (e.g. B18 used by a tee at 4500px and a mug at 2700px would be built
+// at 2700 and print soft on the shirt). Size every master for the LARGEST
+// target that uses it; Printify scales down cleanly, never up.
+const byArt = new Map();
+for (const l of listings) {
+  const target = TARGET[family(l.product)];
+  const cur = byArt.get(l.art_file);
+  if (!cur) byArt.set(l.art_file, { target, uses: [l.code] });
+  else { cur.target = Math.max(cur.target, target); cur.uses.push(l.code); }
+}
 
 if (!existsSync(artDir)) {
   console.error(`no art directory yet (${artDir}) — waiting on generated PNGs`);
@@ -50,11 +63,11 @@ if (!files.length) {
 }
 
 let ok = 0, bad = 0;
-const missing = [...new Set([...wanted.keys()])].filter(f => !files.includes(f));
+const missing = [...byArt.keys()].filter(f => !files.includes(f));
 
 for (const f of files) {
-  const listing = wanted.get(f);
-  if (!listing) { console.log(`SKIP ${f} — no listing uses this file`); continue; }
+  const spec = byArt.get(f);
+  if (!spec) { console.log(`SKIP ${f} — no listing uses this file`); continue; }
   try {
     const img = sharp(join(artDir, f));
     const meta = await img.metadata();
@@ -64,8 +77,7 @@ for (const f of files) {
 
     if (!checkOnly) {
       mkdirSync(outDir, { recursive: true });
-      const target = TARGET[family(listing.product)];
-      const scale = target / long;
+      const scale = spec.target / long;
       await img
         .resize(Math.round(meta.width * scale), Math.round(meta.height * scale), {
           kernel: sharp.kernel.lanczos3, fit: 'fill',
@@ -74,7 +86,8 @@ for (const f of files) {
         .png({ compressionLevel: 9 })
         .toFile(join(outDir, f));
     }
-    console.log(`OK   ${f}  ${meta.width}x${meta.height}${checkOnly ? '' : ` -> ${TARGET[family(listing.product)]}px print master`}  alpha=${meta.hasAlpha}`);
+    const used = spec.uses.length > 1 ? ` [${spec.uses.join(',')}]` : '';
+    console.log(`OK   ${f}  ${meta.width}x${meta.height}${checkOnly ? '' : ` -> ${spec.target}px master`}${used}  alpha=${meta.hasAlpha}`);
     ok++;
   } catch (e) {
     console.log(`FAIL ${f} — ${e.message}`);
@@ -89,10 +102,10 @@ if (!checkOnly) {
   const manifest = {
     fetchedAt: new Date().toISOString(),
     source: 'intake.mjs validation run over ops/art/',
-    ok: files.filter(f => wanted.has(f)),
+    required: byArt.size,
+    ok: files.filter(f => byArt.has(f)),
     missing,
   };
-  const { writeFileSync } = await import('node:fs');
   writeFileSync(join(stateDir, 'art.json'), JSON.stringify(manifest, null, 2));
 }
 
