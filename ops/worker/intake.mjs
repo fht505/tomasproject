@@ -36,6 +36,30 @@ const WARN_UPSCALE = 3.0;
 // wraps can legitimately be full-bleed, so this is enforced where it matters.
 const NEEDS_ALPHA = new Set(['tee', 'sweatshirt', 'tote']);
 
+// `hasAlpha` only says the file has an alpha channel — it is true for a PNG
+// whose alpha is fully opaque, which is exactly what an image editor produces
+// when it "adds transparency support" without removing anything. That file
+// would pass an hasAlpha check and still print a white box on a black shirt.
+// So test the pixels: sample the border, where a keyed background must be
+// transparent, at a downscale that keeps this cheap.
+async function borderIsTransparent(file) {
+  const size = 64;
+  const { data, info } = await sharp(file)
+    .ensureAlpha()
+    .resize(size, size, { fit: 'fill' })
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const a = (x, y) => data[(y * info.width + x) * info.channels + 3];
+  let clear = 0, total = 0;
+  for (let i = 0; i < size; i++) {
+    for (const [x, y] of [[i, 0], [i, size - 1], [0, i], [size - 1, i]]) {
+      total++;
+      if (a(x, y) < 32) clear++;
+    }
+  }
+  return { fraction: clear / total, ok: clear / total > 0.5 };
+}
+
 const family = (product) =>
   product.startsWith('tee') ? 'tee' :
   product.startsWith('sweatshirt') ? 'sweatshirt' :
@@ -151,9 +175,12 @@ if (mode === 'add') {
   let fixable = false;
   if (meta.format !== 'png') problems.push(`not a png (${meta.format})`);
   if (long < MIN_SOURCE) problems.push(`too small (${meta.width}x${meta.height}, need ≥${MIN_SOURCE}px)`);
-  if (wantsAlpha && !meta.hasAlpha) {
-    problems.push(`no transparent background, and ${spec.uses.join('/')} print on fabric`);
-    fixable = true;
+  if (wantsAlpha) {
+    const border = meta.hasAlpha ? await borderIsTransparent(src) : { fraction: 0, ok: false };
+    if (!border.ok) {
+      problems.push(`background is not transparent (${Math.round(border.fraction * 100)}% of the border is clear), and ${spec.uses.join('/')} print on fabric`);
+      fixable = true;
+    }
   }
   if (upscale > MAX_UPSCALE) {
     problems.push(`needs ${upscale.toFixed(1)}x upscale — regenerate at ≥${Math.ceil(spec.target / MAX_UPSCALE)}px on the long edge`);
@@ -294,8 +321,11 @@ for (const f of files) {
 
     // These two are print-fatal, so they stop the file rather than annotate it.
     const wantsAlpha = [...spec.families].some(fam => NEEDS_ALPHA.has(fam));
-    if (wantsAlpha && !meta.hasAlpha) {
-      throw new Error(`no alpha channel, but ${spec.uses.join('/')} print on fabric — regenerate with a transparent background (the print would carry a white box)`);
+    if (wantsAlpha) {
+      const border = meta.hasAlpha ? await borderIsTransparent(join(artDir, f)) : { fraction: 0, ok: false };
+      if (!border.ok) {
+        throw new Error(`background is not transparent (${Math.round(border.fraction * 100)}% of the border is clear) but ${spec.uses.join('/')} print on fabric — the print would carry a white box. Fix with: node ops.mjs art key ${f.replace(/\.png$/i, '')}`);
+      }
     }
     if (upscale > MAX_UPSCALE) {
       throw new Error(`would need ${upscale.toFixed(1)}x upscale to reach ${spec.target}px — regenerate at a higher resolution (need ≥${Math.ceil(spec.target / MAX_UPSCALE)}px on the long edge)`);
