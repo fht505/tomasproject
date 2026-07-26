@@ -22,7 +22,11 @@ const esc = (s) => String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').re
 // No 'inbox': Etsy's Open API v3 exposes no messages/conversations endpoint, so
 // no state file can ever back an inbox feed. Listing one implied a connection
 // that cannot exist.
-const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'lanes'];
+const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'lanes', 'shops'];
+
+// Channels a customer can actually buy from, vs internal/API stores. The
+// custom_integration store exists so cost probes never touch a storefront.
+const LIVE_CHANNELS = new Set(['etsy', 'amazon', 'shopify', 'ebay', 'walmart', 'wix', 'squarespace', 'bigcommerce', 'woocommerce', 'tiktok']);
 const S = {
   files: {},           // name -> parsed json | null
   batch: null,
@@ -397,6 +401,33 @@ function buildRoom(root, roomId) {
       break;
     }
     case 'bridge': {
+      // Every sales channel connected in Printify is a real route to a
+      // customer. Rendered from state/shops.json, so an empty panel means
+      // nothing is connected rather than nothing has been checked.
+      const shops = S.files.shops;
+      const ch = panel(root, `SALES CHANNELS${shops ? ` — ${shops.count} CONNECTED` : ''}`);
+      if (!shops) {
+        ch.appendChild(el('div', 'panel-note',
+          'No channel data yet. Run: node ops.mjs verify'));
+      } else if (!shops.shops.length) {
+        ch.appendChild(el('div', 'panel-note',
+          'Printify reports no connected stores. Connect one in Printify → My stores.'));
+      } else {
+        for (const s of shops.shops) {
+          // A blank title means Printify has the connection but the storefront
+          // has not finished setup — worth showing, not hiding.
+          const name = s.title || '(unnamed — store setup incomplete)';
+          const live = LIVE_CHANNELS.has(s.sales_channel);
+          ch.appendChild(el('div', 'trow',
+            `<span class="tk">${esc(String(s.sales_channel).toUpperCase().replace(/_/g, ' '))}</span>` +
+            `<span class="dim">${esc(name)} · id ${esc(String(s.id))}</span>` +
+            `<span class="tv">${live ? 'STOREFRONT' : 'INTERNAL'}</span>`));
+        }
+        ch.appendChild(el('div', 'panel-note',
+          `checked ${ageLabel(shops.fetchedAt)}. STOREFRONT = a marketplace customers can buy from; ` +
+          `INTERNAL = an API/custom store with no public listing, which is where cost probes run.`));
+      }
+
       const roster = panel(root, 'CREW ROSTER — PLANNED RUNS');
       for (const a of AGENTS) {
         const row = el('div', 'trow',

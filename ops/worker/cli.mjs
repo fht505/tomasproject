@@ -28,6 +28,23 @@ const commands = {
     for (const s of shops) {
       console.log(`  id=${s.id}  title="${s.title}"  channel=${s.sales_channel}`);
     }
+
+    // Persist for the console. Every sales channel connected in Printify is a
+    // real route to a customer, so the station should show them rather than
+    // assuming Etsy is the only one.
+    mkdirSync(stateDir, { recursive: true });
+    writeFileSync(join(stateDir, 'shops.json'), JSON.stringify({
+      fetchedAt: new Date().toISOString(),
+      source: 'Printify GET /shops.json',
+      produced_by: 'cli.mjs verify',
+      count: shops.length,
+      shops: shops.map(s => ({
+        id: s.id,
+        title: s.title || null,          // Printify leaves this blank until the store finishes setup
+        sales_channel: s.sales_channel,
+      })),
+    }, null, 2));
+
     if (!shops.length) {
       console.log('  (none — connect the Etsy store in Printify first, then re-run)');
       return;
