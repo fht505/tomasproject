@@ -1,0 +1,28 @@
+# Credentials — never committed, anywhere in the tree.
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+node_modules/
+
+__pycache__/
+*.pyc
+
+# Design source and print masters: large binaries, and the print masters are
+# regenerable from the sources with `node ops.mjs art`.
+ops/art/
+
+# Live operational state pulled from Printify. orders.json is redacted before
+# it is written (see ledger.mjs), but it and the product/ledger rolls are
+# per-shop runtime data, not source — they do not belong in git history.
+ops/state/*
+!ops/state/README.md
+!ops/state/signals.json
+!ops/state/lanes.json
+
+# Generated from gen-listings.mjs + config.json. It bakes in the real shop
+# name, so it is built locally rather than committed with a placeholder in it.
+ops/BATCH-01.listings.json

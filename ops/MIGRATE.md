@@ -1,53 +1,40 @@
-# Moving this into its own repo
+# Repository move — record, and the one step still open
 
-This currently lives inside `fht505/fht` as `station/`. It is a separate
-business and belongs in its own repository. Everything needed to do that is
-below — it takes about two minutes and keeps the full commit history.
+This project used to live inside `fht505/fht` as `station/`. It now has its
+own repository, `fht505/tomasproject`, with the full commit history.
 
-## 1. Make the empty repo
-
-On GitHub: **New repository** → name it (e.g. `perpetua-orbital`) → Private is
-fine → **no** README, **no** .gitignore, **no** license. It must be empty, or
-step 3 needs an extra merge.
-
-## 2. Split `station/` out, with its history
-
-From the root of the `fht` clone:
+## What was done
 
 ```bash
+# in the fht clone
 git subtree split --prefix=station -b perpetua-only
+git push https://github.com/fht505/tomasproject perpetua-only:main
 ```
 
-That produces a branch whose root is `station/` — every commit that touched
-this project, with paths rewritten, and nothing else from `fht`.
+`git subtree split` rewrites every commit that touched `station/` so that
+directory becomes the repository root, and drops everything else. 17 commits
+came across. `ops/`, `js/`, `css/`, `index.html`, `README.md` and
+`START-HERE.md` now sit at the top level.
 
-## 3. Push it
+**The root `.gitignore` did not come with it** — it lived at `fht/.gitignore`,
+one level *above* `station/`, so it was outside the split. That mattered: with
+no ignore rules at the new root, the first `git add -A` here would have
+committed `ops/worker/.env` (the Printify token), `ops/state/orders.json`
+(redacted, but still per-shop runtime data) and every print master in
+`ops/art/`. A `.gitignore` was written for the new root and verified against
+real files — ten checks, five that must be ignored and five that must stay
+tracked.
 
-```bash
-git push git@github.com:<you>/perpetua-orbital.git perpetua-only:main
-```
+If you ever split another subdirectory out of a repo, that is the trap: ignore
+rules living above the split prefix are silently left behind.
 
-## 4. Clone it fresh and fix the paths
+## Still open: remove it from `fht`
 
-```bash
-git clone git@github.com:<you>/perpetua-orbital.git
-cd perpetua-orbital
-node ops/worker/fix-paths.mjs    # rewrites .gitignore for the new root
-cd ops/worker && npm install
-node ops.mjs doctor
-```
-
-`fix-paths.mjs` exists because `.gitignore` currently names paths like
-`station/ops/state/*`, which stop matching once `station/` is the root. It
-rewrites them and tells you what it changed. Run it once, commit, delete it if
-you like.
-
-## 5. Remove it from the fht repo
-
-Only after the new repo is confirmed working:
+Do this only once you have confirmed this repo works on your machine —
+`npm install`, `node ops.mjs doctor`, `npm test`.
 
 ```bash
-cd ../fht
+cd <your fht clone>
 git rm -r --cached station
 rm -rf station
 git commit -m "Move the Perpetua Orbital project to its own repository"
@@ -55,24 +42,13 @@ git push
 ```
 
 The history stays in `fht`'s past commits, which is fine — the working tree is
-what matters.
+what matters, and the full history lives here now.
 
----
-
-## If `git subtree` is unavailable
-
-History is not load-bearing here. A clean start is acceptable:
+## First run here
 
 ```bash
-cp -r station ../perpetua-orbital
-cd ../perpetua-orbital
-node ops/worker/fix-paths.mjs
-rm -rf ops/art ops/state/*.json ops/BATCH-01.listings.json ops/worker/node_modules
-git init && git add -A && git commit -m "Perpetua Orbital — initial import"
-git remote add origin git@github.com:<you>/perpetua-orbital.git
-git push -u origin main
+cd ops/worker
+npm install
+node ops.mjs doctor
+node ops.mjs
 ```
-
-Check `git status` before that first commit and confirm `.env` is **not**
-listed. It is gitignored, but it holds the Printify token and this is the one
-moment the ignore rules are being rewritten.
