@@ -123,6 +123,159 @@ mining before spending another listing dollar.
    photo requirements (MakerWorld) we can't meet without hardware.
 7. **GPT Store** — US-only engagement pilot, no general payment rail.
 
+---
+
+# Round 2 — lanes beyond the original five
+
+*Research run 2026-07-26. Primary sources fetched directly wherever possible;
+several vendor help centres return 403 to normal fetching and were read via
+curl with a browser user-agent. Everything below is either quoted from a live
+page or explicitly marked UNVERIFIED. Self-reported and vendor-marketing
+figures are labelled as such.*
+
+## Newly disqualified (do not re-research)
+
+8. **Envato (Market + Elements)** — four independent blockers, any one fatal.
+   New author accounts **cannot be created** ("we're not accepting
+   applications for Envato Elements, and new Envato Market author accounts
+   cannot be created at this time" — page edited 2026-07-01, no reopening
+   date). When intake reopens it explicitly **excludes** Theme, Code, Photo,
+   Audio and Graphics. AI content is **banned in the download file across all
+   content types**, not just audio ("Authors are not allowed to sell
+   AI-generated content… This extends to all content types, across Market and
+   Elements" — edited 2026-05-18, so it survived the Shutterstock
+   acquisition); AI is permitted in previews only. Revenue share flattened to
+   **50%** from 1 July 2026, and Envato states Elements "continues to be our
+   core focus".
+9. **Skillshare** — new teacher onboarding is **paused** in Development, Home
+   & Lifestyle, Writing & Publishing, Personal Development, Marketing &
+   Business, Music & Audio, and Productivity — essentially every category an
+   agent operation would target. The platform has publicly framed its
+   strategy against us: "more of the internet is being optimized for scale,
+   automation, and infinite content… Skillshare is making a deliberate choice
+   to invest in being more human." It also published that **90% of the
+   teachers cut by the new 50-follower threshold earned under $5/month**.
+10. **Figma paid files** — "We are not approving new creators to sell paid
+    files on Community at this time." Only plugins/widgets remain open, which
+    is engineering behind an approval with no published SLA, and cash arrives
+    30 US business days after each sale.
+11. **Walmart Marketplace** — requires US EIN, product catalog, and Walmart
+    explicitly prioritises sellers with an established ecommerce track
+    record. Revisit only once Etsy volume is provable.
+
+## Flagged, not disqualified
+
+- **Amazon Merch on Demand** — $0 and enormous traffic, but three problems.
+  Application is a lottery (2 weeks–3 months, no communication, approval not
+  guaranteed). A June 2026 royalty restructure is reported by four
+  independent tool vendors to cut royalties **~50% for sellers who bring no
+  external traffic** — consistent across sources but **UNVERIFIED against
+  Amazon**, whose policy pages are auth-gated. And in June 2026 Amazon
+  launched its own AI prompt-to-merch generator inside the shopping app, so
+  the platform now competes directly with the product. Apply anyway (free,
+  long queue) but do not plan around it until the royalty page is read from
+  a logged-in account.
+- **Printify → Amazon ≠ Merch on Demand.** The connected Amazon channel is
+  Seller Central: **$39.99/mo Professional plan** plus a GTIN/UPC exemption
+  per category. Not the free route.
+- **TikTok Shop** — clearest AI policy of any lane (AI imagery allowed with a
+  visible "AI-generated" label), but a mandatory **31-day introductory
+  settlement freeze**, no meaningful organic product search, and an all-in
+  cost of sale of **35–55%** once fees, affiliate commission, shipping and
+  returns are counted. On POD margins that is near zero.
+- **Udemy** — permissive on tooling (AI voice and video explicitly accepted)
+  but restrictive on exactly what makes this model work: "Udemy does not
+  accept courses that are entirely AI-generated", and "Using AI to rapidly
+  generate multiple low-quality courses… may even lead to removal". Revenue
+  share is 15% subscription / 37% organic / 97% only if you bring the
+  traffic. Not a volume lane.
+- **Civitai Creator Program** — real cash, but pool-share with no published
+  per-Buzz rate, so yield is diluted by everyone else's activity. Platform's
+  own figures: **$43K paid across 254 creators, average $226/month**
+  (self-reported marketing). Payment-processor history around adult content
+  is a live risk and was **not researched**.
+
+## Worth testing
+
+- **eBay** — the cheapest reversible test found. Native Printify integration
+  (~15 min), $0–7.95/mo, no application to be rejected from, eBay brings its
+  own buyers so no ad budget is needed, and the existing designs are reused at
+  zero marginal cost. **Two gaps to close first:** no published eBay policy on
+  AI-generated designs was found (a gap, not permission), and new-seller
+  limits plus a reported 21-day payment hold are UNVERIFIED for 2026.
+- **Framer** — **100% revenue share** ("Framer takes a 0% cut"), and templates
+  publish with **no manual review**. Framer does not process payments, so you
+  bring your own processor and the payout lag is theirs. The risk is the
+  mirror of the opportunity: no review gate means no scarcity, so discovery
+  rather than production becomes the constraint — which is the wrong side of
+  the bottleneck for a throughput advantage.
+- **Webflow** — submissions are **open** (a previously assumed closure is out
+  of date), revenue share is **95%**, not the widely-quoted 80%, and review is
+  3–5 days. Best demand data of any lane here, from a named creator with 16
+  published templates: **year 1 ~$4,800 on 11 templates; year 2 (7 months)
+  ~$10,750 on 5** — roughly $29–64 per sale and ~25 lifetime sales per
+  template. ~7,000 templates against ~300 approved creators, with a bar that
+  is explicitly tightening.
+
+## The two policy findings that generalise
+
+**1. Disclosure, not abstention.** Figma, Framer, Webflow and Creative Market
+all permit AI-generated resources. Each prohibits the same narrow thing —
+**representing AI output as solely human-generated**. Creative Market makes it
+an explicit upload question and warns "inaccurate disclosures risk damaging
+shop reputation and sales performance". That is exactly the posture BATCH-01
+already takes on Etsy.
+
+**2. The binding constraint is often AUTOMATION, not AI — and this is the
+sharpest risk found anywhere in this research.** Redbubble publishes no
+AI-content policy at all (zero AI articles across 90 help-centre results), but
+its Community Guidelines say users are prohibited from "using bots, multiple
+accounts, or scrapers", and list as an account-deletion trigger:
+
+> "User uploads content using any bot, scraper, or other automated means for
+> any purpose without our written permission."
+
+That does not restrict AI *generation*. It restricts automated *uploading* —
+which is the operating model itself. Every guru post claiming "Redbubble
+allows AI art in 2026" ignores this clause entirely. Redbubble also prices
+volume out rather than banning it: Standard tier is **50%** and is explicitly
+defined by "high volumes of low-effort designs, use of unmodified clip art,
+poor file quality, and tag spamming", with a hard 30-uploads/day ceiling.
+
+**Action for every future lane: check the automation clause separately from
+the AI clause.** They are different rules and the automation one is usually
+stricter. Where a platform is otherwise attractive, ask for the written
+permission its terms contemplate rather than assuming.
+
+## Surface pattern / POD notes
+
+- **Spoonflower** — 10% royalty rising to 15% by volume tier, and the **fastest
+  time-to-cash verified anywhere**: payouts every 14 days, $10 minimum. AI
+  policy **UNVERIFIED** — the seller agreement returned 403. Check before use.
+- **Redbubble** — see the automation clause above. Disqualified on that basis
+  unless written permission is obtained.
+- **Creative Market** — AI allowed with mandatory disclosure. Watch for the
+  planned buyer-side AI filter, which will throttle demand on labelled
+  listings once it ships. Commission split is **not published anywhere**.
+- **Fonts (MyFonts / Creative Market)** — the weakest lane examined. Monotype
+  has **no AI clause at all**; the gate is a human quality review, and working
+  type designers report AI output fails on spacing, kerning and numerals.
+  Build tooling is fully scriptable; the aesthetic bar is not. Display faces
+  are plausible, text faces are not. Do not commit without a real test
+  submission.
+
+## Compliance lines worth knowing
+
+- **California Delete Act** — 2026 data-broker registration is **$6,000/yr**,
+  due 31 January, **$200/day** for failing to register. That fixed cost
+  precedes the first dollar and kills any B2B-data or lead-list lane for a
+  solo operator in California.
+- **FTC Consumer Reviews Rule** (effective 21 Oct 2024) — up to **$51,744 per
+  violation**. Responding to reviews with AI is fine and no platform prohibits
+  it. Generating reviews is a federal offence. Keep that line bright.
+
+---
+
 ## Recommended queue
 
 Lane #2 = **Etsy digital downloads** (launch now; seasonal window + shared
