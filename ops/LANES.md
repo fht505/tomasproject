@@ -519,6 +519,133 @@ window** — Temu's seller agreement, and Society6's artist-transition notices
 terms it imposed on sellers is telling you something about how it will handle
 the next change.
 
+## Payment rails — and the automation lens inverting
+
+"Marketplace vs self-hosted" is a false binary. The third option is a
+**$0-fixed-cost hosted checkout that is also a merchant of record**: it removes
+every gate self-hosting removes, costs nothing when you do not sell, and hands
+the sales-tax liability to someone else.
+
+**None of this solves the actual bottleneck.** Every rail below is checkout
+plumbing; not one supplies a buyer. Pick a cheap permissive MoR-backed rail and
+spend the saved energy on demand.
+
+**Gumroad inverts the Redbubble pattern.** It is not merely tolerant of
+agent automation — it is built for it. The official CLI README reads
+*"Designed for humans and AI agents alike"*; it documents
+`GUMROAD_ACCESS_TOKEN` "for CI / agents"; the public API supports
+`POST /v2/products` for full programmatic creation; the codebase carries an
+`ai_product_details_generations` endpoint; and multiple accounts are
+explicitly permitted. Its automation clause bans **scraping only**.
+
+**The general rule: use the official API, never script the admin UI.** Every
+rail restricts *reading* and sanctions *publishing via its own API*. Shopify
+draws it sharpest — bulk `productCreate` is fine, "automating administrative
+functions of the Merchant Store Admin" is prohibited.
+
+**AI-content policy is a GAP on all of them** — Gumroad, Whop, Paddle,
+Shopify, Polar and Lemon Squeezy have zero mentions of AI-generated products.
+What will actually be applied to you are IP-ownership warranties.
+
+### Real cost, and the pricing decision that outweighs platform choice
+
+Gumroad's pricing page says "10% + $0.50". **Its own help article says that
+excludes card processing (2.9% + $0.30)** — a genuine discrepancy on a public
+pricing page that roughly doubles the cost at low price points.
+
+| Price | Gumroad | Gumroad Discover | Polar | Stripe MP | Paddle |
+|---|---|---|---|---|---|
+| $5 | **29%** | 30% | 15% | 12.4% | 15% |
+| $10 | **21%** | 30% | 10% | 9.4% | 10% |
+| $20 | 17% | 30% | 8% | 7.9% | 7.5% |
+| $35 | 15% | 30% | 6% | 7.3% | 6.4% |
+
+**Bundling $3 printables into $25–35 packs roughly halves the effective take
+rate on every rail. That single pricing decision is worth more than choosing
+between platforms.**
+
+### Verified corrections
+
+- **Gumroad's payout minimum did rise $10 → $100**, confirmed three ways: the
+  live help page, Wayback snapshots either side, and a commit in Gumroad's own
+  open-source repo dated **2026-03-23**. At $10 products that is ~50 sales
+  before you see money.
+- **Whop's "3% marketplace fee" is FALSE** — it went to **0%**, per Whop's own
+  changelog (2025-05-12); the real cost is 2.7% + $0.30. The widely-quoted
+  "$8,413 average creator earnings" appears on **no Whop-owned page**;
+  independent analytics estimates **87.8% of Whop products earn $0/mo, median
+  $74/mo**. Irreconcilable — treat as marketing.
+- **Lemon Squeezy is being sunset into Stripe** (CEO post 2026-01-28, no
+  product updates since Aug 2025). Do not build there.
+
+### Tax — the EU/UK threshold for a US seller is ZERO
+
+- EU: the €10,000 threshold *"does not apply to… supplies made by a supplier
+  not established in the EU"*. **One €8 sale to Germany creates German VAT
+  liability on that sale.**
+- UK, HMRC VAT Notice 700/1 (updated 2025-08-04): *"you'll have to register
+  for VAT if you make taxable supplies of **any value** in the UK"*.
+- Plain Stripe leaves liability on you — Stripe Tax *calculates* but does not
+  assume liability or file.
+- At ~$2k/mo, Stripe Managed Payments' 3.5% (~$70/mo) is **cheaper and
+  lower-liability** than Stripe Tax Complete (from $90/mo, and you still hold
+  the registrations). The MoR wins on both axes at this scale.
+- An MoR never removes income tax. And for **direct card acceptance** the IRS
+  issues a 1099-K "no matter how many payments you got or how much they were
+  for" — the $20k/200 threshold is for marketplaces, not you.
+
+**Three things that genuinely need a professional:** (1) **your home state's
+digital-goods sales tax** — the one obligation that can start at $0 revenue
+with no threshold, and the one Stripe structurally cannot help with; do this
+first, one CPA consult settles it; (2) the register-vs-MoR decision if you
+stay on plain Stripe, especially with EU "ViDA" changes landing 2027-01-01;
+(3) entity structure, which changes 1099-K posture and state filings.
+
+### Shopify is the worst of both worlds here
+
+Its own Terms (updated 2026-05-11) say twice that *"the Services are not a
+marketplace"* and *"You are the seller or merchant of record for all sales."*
+There is **no Shopify MoR path for a digital-only seller** — Managed Markets
+prohibits digital goods and states that a digital-only order makes you MoR
+automatically. So the real cost is not $29/mo; it is $29/mo **plus** carrying
+EU/UK VAT registration personally from the first international sale.
+
+### The traffic reality, and a genuinely interesting counterpoint
+
+US monthly organic visits (Semrush estimates, third-party): **Etsy 36.4M ·
+Gumroad 191,600 · Whop 190,040 · Polar 2,611 · a new Shopify domain 0.**
+Gumroad's own organic footprint is shrinking, and its `/discover` hub draws
+only ~273 visits/mo — its traffic is product pages and brand search, not
+browse discovery.
+
+**But organic in printables does work — for publishers, not stores.**
+`printabulls.com` pulls **467,390** US organic visits/mo on 80,262 keywords
+with zero paid spend, more than Gumroad's entire domain.
+`worldofprintables.com` does 114,879. Meanwhile `hemlockandoak.com`, a real
+DTC printables brand, gets 7,031. Both winners are **free-printables content
+sites** monetising via ads and upsells, built over 4+ years. The search intent
+confirms it: the highest-volume related terms are *"**free** notion templates"*
+and *"notion templates **free**"*.
+
+That is a **publishing play, not a storefront play** — 12–24 months of content
+at scale, which an agent operation is unusually suited to, but do not confuse
+the two. Note it also collides with the ad-network floors recorded above.
+
+### If a rail is needed
+
+Start on **Gumroad** — $0 fixed, true worldwide MoR, instant signup, official
+API and CLI explicitly built for agents, multiple accounts allowed. You pay
+for it (21% at $10), so price in bundles. Keep **Polar** or **Stripe Managed
+Payments** as the migration target once volume justifies it; both roughly
+halve the rate. Polar explicitly permits "Templates, eBooks, PDFs, code,
+icons, fonts, design assets".
+
+**Never buy PLR/MRR packs to resell** — Gumroad bans reselling outright and
+names our exact categories: "ebooks, courses, prompts, notion planners,
+templates, video clips, fonts, and presets". Generating our own is fine.
+Separately, Gumroad's ban on "AI services" means selling *access to* AI tools,
+not products *made with* AI — different thing, do not conflate.
+
 ## Compliance lines worth knowing
 
 - **California Delete Act** — 2026 data-broker registration is **$6,000/yr**,
