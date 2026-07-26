@@ -577,6 +577,9 @@ async function main() {
 
 // exported so the margin logic can be tested without touching the live API
 export { baseCostFromProduct, baseCostFromCatalog, chooseVariants, marginDecision };
+// catalog.mjs reuses the same blueprint search and provider ranking, so what it
+// proves is exactly what staging would later create — not a parallel guess.
+export { BLUEPRINT_SEARCH, chooseProvider };
 
 const invokedDirectly = process.argv[1] &&
   resolve(process.argv[1]) === fileURLToPath(import.meta.url);

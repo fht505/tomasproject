@@ -10,6 +10,7 @@ import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from './config.mjs';
+import { PRODUCTS } from './products.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cfg = loadConfig();
@@ -20,16 +21,8 @@ if (!SHOP) {
   process.exit(1);
 }
 
-// ---------------------------------------------------------------- products
-const PRODUCTS = {
-  candle: { type: 'candle_9oz', price: 28.95, blueprintHint: 'scented candle 9oz' },
-  tee: { type: 'tee_bella_3001', price: 23.95, blueprintHint: 'Bella+Canvas 3001' },
-  // 35.95, not 34.95: Etsy's US Free Shipping Guarantee triggers at $35 and a
-  // sweatshirt is the one item in this batch that sells alone above it.
-  sweatshirt: { type: 'sweatshirt_gildan_18000', price: 35.95, blueprintHint: 'Gildan 18000' },
-  mug: { type: 'mug_11oz', price: 17.95, blueprintHint: 'ceramic mug 11oz' },
-  tote: { type: 'tote', price: 19.95, blueprintHint: 'cotton tote' },
-};
+// Products and prices live in products.mjs so `ops.mjs catalog` prices the
+// real Printify costs against the same numbers these listings are built from.
 
 // ---------------------------------------------------------------- tag banks
 const T = {

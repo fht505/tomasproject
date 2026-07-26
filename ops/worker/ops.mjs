@@ -6,6 +6,8 @@
 //   node ops.mjs console         serve the operations console + open a browser
 //   node ops.mjs                 where am I, what do I do next
 //   node ops.mjs verify          prove the Printify token + list shops
+//   node ops.mjs catalog         do our products exist, and do the prices work?
+//                                (token only — no Etsy shop needed)
 //   node ops.mjs listings        regenerate listing copy from ops/config.json
 //   node ops.mjs art             validate design PNGs -> print masters
 //   node ops.mjs tm              trademark-screen every printed phrase (gate)
@@ -195,6 +197,7 @@ const COMMANDS = {
   ledger: () => run('ledger.mjs'),
   orders: () => run('orders.mjs', ['watch']),
   console: () => run('serve.mjs', rest),
+  catalog: () => run('catalog.mjs'),
   doctor: () => run('doctor.mjs'),
   test: () => run('test-margin.mjs'),
   tm: () => run('tm.mjs', [arg0 ?? 'list', ...rest.slice(1)]),
