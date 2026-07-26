@@ -399,6 +399,126 @@ markdown via curl and comparing. For any make-or-break policy sentence, fetch
 raw and grep the text. A summary that omits the deciding clause reads exactly
 like a summary that found no such clause.
 
+## Sort platforms by automation stance first — it predicts viability
+
+Three groups, and group C is unworkable however friendly the AI policy is:
+
+| Group | Meaning | Platforms |
+|---|---|---|
+| **A — sanctioned API** | automation expressly permitted via an official upload API | **eBay, Printify, Printful, Temu** |
+| **B — no rule found** | no anti-bot clause located; unallocated risk, NOT permission | **Displate, Spoonflower** (upload side) |
+| **C — explicit prohibition** | automated access contractually banned | **Fine Art America, Threadless, Society6, Zazzle, Redbubble** |
+
+## eBay — settled, and it is the top pick
+
+- **AI: better than silence.** The User Agreement (effective 2026-06-28) §7
+  binds you to responsibility for "listing content created using tools offered
+  by eBay or third parties such as translation, image editing, and
+  **generative artificial intelligence tools**". That is contract-level
+  acknowledgment that gen-AI listing content is permitted. Note it covers
+  listing *content*; product *designs* are still unaddressed.
+- **Automation: prohibited "except with the prior express permission of
+  eBay"** — and the Developers Program is that permission, with a self-serve
+  Sell Inventory API. Redbubble's equivalent clause has no such carve-out.
+  The new LLM language in that clause targets the *buy* side ("place orders").
+- **The 21-day hold is REFUTED** — zero occurrences of "21 day" on the live
+  holds page. Reality: funds ~2 days after delivery confirmation with an eBay
+  label, or 31 days without tracking. Graduating to 48-hour payouts takes 10
+  completed sales totalling $150+.
+- **Dropshipping from a wholesale supplier is expressly allowed**; only buying
+  from another retailer is banned. Printify/Printful fulfilment is on the
+  right side of that line.
+- Fees: 250 free listings/mo then $0.35; FVF **13.6%** + $0.30/$0.40.
+- Real constraints: eBay publishes **no** new-seller limit number (the
+  ubiquitous "10 items / $500" is vendor-blog only), and "a large increase in
+  order volume" is a listed payment-hold trigger. Ramp deliberately.
+
+## Corrections to earlier findings
+
+- **Creative Market's commission IS published — 50% default.** The premise
+  that it was secret was wrong; it sits in the help centre, not on /sell. The
+  40%/30% claims trace to a seller blog about *Creative Market's own cut*
+  rising 30%→40%, i.e. historical and superseded. $20 minimum, funds by the
+  10th. AI permitted with mandatory disclosure; buyer-facing AI filters are
+  planned, which has direct revenue consequences.
+- **Displate's AI ban is REFUTED.** Every source asserting it is an SEO
+  content farm. The live FAQ says the opposite — Verified Creator covers work
+  "whether created entirely by hand or with assistance from the latest
+  technologies like AI". But there is **no upload API and SMS identity
+  verification before first publication**, which blocks headless automation in
+  practice. The clause that actually bites is anti-duplication: re-uploading
+  with "only minor changes to the color palette, composition" is prohibited,
+  and zero-sale designs are removed after 3 months.
+- **Society6 is confirmed CLOSED to new sellers** — "We're not accepting new
+  applications right now", plus mass artist-account closures in two 2025 waves
+  with "no appeals process". The *company* is not shutting down (it appears in
+  Graham Holdings' Q1 2026 10-Q), so that rumour is corrected. Economics are
+  the worst reviewed: 5% markup on most products, of base price not retail.
+  **Do not build toward it.**
+
+## Spoonflower — a new one-shot gate
+
+The 403 was a bot-block, not a dead page; the Seller Agreement (effective
+2025-12-19) fetched fine via curl and contains **zero** mentions of AI,
+automation, bots or scraping. Its automation clause is read-side only ("not to
+crawl, scrape, or spider"), so automated *uploading* is unprohibited.
+
+But as of **2026-05-28** there is now an **Artist Application**: 5 distinct
+sample designs, tax documents, human review in 3–5 business days, and —
+
+> "If I'm denied, can I re-apply later? **No, you may not re-apply if your
+> application is denied.**"
+
+One shot, human-juried, permanent denial. For an AI-design pipeline that is a
+serious non-recoverable risk. (Weekly listing limit is **50**/artist/week, not
+the 25 that search snippets claimed.)
+
+## Fulfilment — and a risk-concentration warning
+
+**Printify Pop-Up Store** — free storefront, 37 countries, you are Merchant of
+Record, **public self-serve API with no approval** (600 req/min). Published AI
+terms permit AI output while disclaiming exclusive rights to it. Payout 15th
+monthly, no minimum, with a Stripe 7-day unwaivable first-payout hold.
+⚠️ A rumoured Pop-Up percentage fee **could not be confirmed on four primary
+pages** and probably originates in misreading the payout formula — verify
+in-dashboard before modelling. ⚠️ Also: "If your profit margin is unable to
+cover taxes, the order will be canceled and auto-refunded" — a silent
+order-killer at thin margins.
+
+**Printful** — public API but **mockup generation throttled to 2 requests per
+minute for new stores**, which is the real day-one ceiling. On integrations you
+float every order's cost on a card before being paid.
+
+🚩 **Printful and Printify publish near-identical AI and IP policies naming the
+same AI providers. Running both is not risk diversification** — one policy
+change hits both at once.
+
+## Ruled out, with reasons
+
+- **Temu** — automation is expressly sanctioned and signup is open, but POD
+  fulfilment is fatal: ~1 operating day handling time, $5/order late
+  penalties, you pay return shipping. Commission unpublished, and Temu
+  **withdrew its seller agreement from public access** during 2025.
+- **Wayfair** — disqualifiers are model-level: physical inventory or 3PL,
+  **$1M/$2M liability insurance**, Net 60 with setoff, unpublished Platform
+  Access Fee, one-listing-per-product (aimed straight at variant economics),
+  and a **$75,000-per-file** liquidated-damages clause for competitive use of
+  site materials.
+- **Zazzle, Threadless, Fine Art America** — AI is fine on all three;
+  automation is banned on all three. Threadless additionally reserves the
+  right to "remove designs that appear to be generated in bulk using
+  artificial intelligence tools", and its Marketplace is juried. Fine Art
+  America's terms are dated **June 2020**, pre-generative-AI, so its AI
+  silence is an artifact that could close overnight.
+
+## Counterparty signal worth remembering
+
+**Two seller documents were withdrawn from public view during this research
+window** — Temu's seller agreement, and Society6's artist-transition notices
+(now 404, surviving only in the Internet Archive). A platform that deletes the
+terms it imposed on sellers is telling you something about how it will handle
+the next change.
+
 ## Compliance lines worth knowing
 
 - **California Delete Act** — 2026 data-broker registration is **$6,000/yr**,
