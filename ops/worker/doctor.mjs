@@ -151,4 +151,9 @@ if (fails) {
 } else {
   console.log('  \x1b[32meverything checks out\x1b[0m — run \x1b[1mnode ops.mjs\x1b[0m\n');
 }
-process.exit(fails ? 1 : 0);
+// Set the code and let the loop drain, rather than process.exit(). On Windows,
+// exiting while sharp's libuv handles are still closing aborts the process with
+// `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` — after all the
+// output, so the check looks fine but returns a junk exit code. This command
+// exists to be trusted by scripts, so its exit code has to mean something.
+process.exitCode = fails ? 1 : 0;

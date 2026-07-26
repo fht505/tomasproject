@@ -111,11 +111,16 @@ function promptFor(code) {
   return m ? m[1].split('\n').map(l => l.replace(/^>\s?/, '')).join('\n').trim() : null;
 }
 
-if (mode === 'next') {
+// Each mode is a function so it can `return` instead of calling process.exit().
+// On Windows, exiting while sharp's libuv handles are still closing aborts the
+// process with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` — after
+// the work succeeded and the output was printed, so it looks like a crash that
+// isn't one, and the exit code becomes meaningless.
+async function modeNext() {
   const left = missingNow();
   if (!left.length) {
     console.log(`\n  all ${artOrder.length} designs present — next: node ops.mjs art\n`);
-    process.exit(0);
+    return;
   }
   const code = left[0].replace(/\.png$/i, '');
   const prompt = promptFor(code);
@@ -130,29 +135,28 @@ if (mode === 'next') {
   console.log(`\n  Then: node ops.mjs art add ~/Downloads/<whatever-it-saved-as>.png`);
   console.log(`  It files the image as ${code}.png for you.\n`);
   console.log(`  remaining: ${left.map(f => f.replace(/\.png$/i, '')).join(' ')}\n`);
-  process.exit(0);
 }
 
-if (mode === 'add') {
+async function modeAdd() {
   const src = process.argv[3];
   const asCode = process.argv[4];  // optional explicit code
   if (!src) {
     console.error('usage: node ops.mjs art add <file.png> [CODE]');
-    process.exit(2);
+    process.exitCode = 2; return;
   }
   if (!existsSync(src)) {
     console.error(`no such file: ${src}`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
   const left = missingNow();
   const target = asCode ? `${asCode.toUpperCase().replace(/\.png$/i, '')}.png` : left[0];
   if (!target) {
     console.error('every design already has a file — pass an explicit code to replace one');
-    process.exit(1);
+    process.exitCode = 1; return;
   }
   if (!byArt.has(target)) {
     console.error(`${target} is not a design this batch uses. Expected one of: ${artOrder.map(f => f.replace(/\.png$/i, '')).join(' ')}`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
   const code = target.replace(/\.png$/i, '');
   const spec = byArt.get(target);
@@ -166,7 +170,7 @@ if (mode === 'add') {
     meta = await sharp(src).metadata();
   } catch (e) {
     console.error(`could not read ${src}: ${e.message}`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
   const long = Math.max(meta.width, meta.height);
   const upscale = spec.target / long;
@@ -196,10 +200,10 @@ if (mode === 'add') {
       copyFileSync(src, join(artDir, target));
       console.log(`  node ops.mjs art key ${code}     removes the white background`);
       console.log(`  then check it looks right, and carry on with: node ops.mjs art next`);
-      process.exit(0);
+      return;
     }
     console.log(`\nnot filed — ${code} is still outstanding. Regenerate and run the same command again.`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
 
   mkdirSync(artDir, { recursive: true });
@@ -216,7 +220,6 @@ if (mode === 'add') {
   console.log(left2.length
     ? `\n${left2.length} to go — next: node ops.mjs art next`
     : `\nthat was the last one — next: node ops.mjs art`);
-  process.exit(0);
 }
 
 // ------------------------------------------------------------ keying
@@ -260,26 +263,26 @@ async function keyOut(file, threshold = 244) {
   return { data, width, height, channels, pct };
 }
 
-if (mode === 'key') {
+async function modeKey() {
   const code = (process.argv[3] || '').toUpperCase().replace(/\.png$/i, '');
   if (!code) {
     console.error('usage: node ops.mjs art key <CODE>');
-    process.exit(2);
+    process.exitCode = 2; return;
   }
   const file = join(artDir, `${code}.png`);
   if (!existsSync(file)) {
     console.error(`no such design: ops/art/${code}.png`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
   const { data, width, height, channels, pct } = await keyOut(file);
 
   if (pct < 2) {
     console.log(`  ! only ${pct.toFixed(1)}% of ${code} was removed — its background may not be white, or the design may already reach the edges. Left unchanged.`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
   if (pct > 97) {
     console.log(`  ! ${pct.toFixed(1)}% of ${code} would be removed — that is almost the whole image. Left unchanged.`);
-    process.exit(1);
+    process.exitCode = 1; return;
   }
 
   await sharp(data, { raw: { width, height, channels } }).png().toFile(file + '.tmp');
@@ -288,97 +291,108 @@ if (mode === 'key') {
   console.log(`KEYED ${code}  ${pct.toFixed(1)}% of the image is now transparent background`);
   console.log('  Open it and check the design itself is intact — interior white is');
   console.log('  preserved by design, but a background that leaks into the artwork will show.');
-  process.exit(0);
 }
 
-if (!existsSync(artDir)) {
-  console.error(`no art directory yet (${artDir}) — start with: node ops.mjs art next`);
-  process.exit(1);
-}
+async function modeRun() {
+  if (!existsSync(artDir)) {
+    console.error(`no art directory yet (${artDir}) — start with: node ops.mjs art next`);
+    process.exitCode = 1; return;
+  }
 
-const files = readdirSync(artDir).filter(f => f.toLowerCase().endsWith('.png'));
-if (!files.length) {
-  console.error('art directory is empty — nothing to intake');
-  process.exit(1);
-}
+  const files = readdirSync(artDir).filter(f => f.toLowerCase().endsWith('.png'));
+  if (!files.length) {
+    console.error('art directory is empty — nothing to intake');
+    process.exitCode = 1; return;
+  }
 
-let ok = 0, bad = 0;
-const passed = [];
-const details = [];
-const missing = [...byArt.keys()].filter(f => !files.includes(f));
+  let ok = 0, bad = 0;
+  const passed = [];
+  const details = [];
+  const missing = [...byArt.keys()].filter(f => !files.includes(f));
 
-for (const f of files) {
+  for (const f of files) {
   const spec = byArt.get(f);
   if (!spec) { console.log(`SKIP ${f} — no listing uses this file`); continue; }
-  try {
-    const img = sharp(join(artDir, f));
-    const meta = await img.metadata();
-    const long = Math.max(meta.width, meta.height);
-    const upscale = spec.target / long;
+    try {
+      const img = sharp(join(artDir, f));
+      const meta = await img.metadata();
+      const long = Math.max(meta.width, meta.height);
+      const upscale = spec.target / long;
 
-    if (meta.format !== 'png') throw new Error(`not a png (${meta.format})`);
-    if (long < MIN_SOURCE) throw new Error(`too small (${meta.width}x${meta.height}, need ≥${MIN_SOURCE})`);
+      if (meta.format !== 'png') throw new Error(`not a png (${meta.format})`);
+      if (long < MIN_SOURCE) throw new Error(`too small (${meta.width}x${meta.height}, need ≥${MIN_SOURCE})`);
 
-    // These two are print-fatal, so they stop the file rather than annotate it.
-    const wantsAlpha = [...spec.families].some(fam => NEEDS_ALPHA.has(fam));
-    if (wantsAlpha) {
-      const border = meta.hasAlpha ? await borderIsTransparent(join(artDir, f)) : { fraction: 0, ok: false };
-      if (!border.ok) {
-        throw new Error(`background is not transparent (${Math.round(border.fraction * 100)}% of the border is clear) but ${spec.uses.join('/')} print on fabric — the print would carry a white box. Fix with: node ops.mjs art key ${f.replace(/\.png$/i, '')}`);
+      // These two are print-fatal, so they stop the file rather than annotate it.
+      const wantsAlpha = [...spec.families].some(fam => NEEDS_ALPHA.has(fam));
+      if (wantsAlpha) {
+        const border = meta.hasAlpha ? await borderIsTransparent(join(artDir, f)) : { fraction: 0, ok: false };
+        if (!border.ok) {
+          throw new Error(`background is not transparent (${Math.round(border.fraction * 100)}% of the border is clear) but ${spec.uses.join('/')} print on fabric — the print would carry a white box. Fix with: node ops.mjs art key ${f.replace(/\.png$/i, '')}`);
+        }
       }
-    }
-    if (upscale > MAX_UPSCALE) {
-      throw new Error(`would need ${upscale.toFixed(1)}x upscale to reach ${spec.target}px — regenerate at a higher resolution (need ≥${Math.ceil(spec.target / MAX_UPSCALE)}px on the long edge)`);
-    }
-    if (upscale > WARN_UPSCALE) {
-      console.log(`  ! ${f}: ${upscale.toFixed(1)}x upscale — fine for bold one-ink text, soft for fine detail`);
-    }
+      if (upscale > MAX_UPSCALE) {
+        throw new Error(`would need ${upscale.toFixed(1)}x upscale to reach ${spec.target}px — regenerate at a higher resolution (need ≥${Math.ceil(spec.target / MAX_UPSCALE)}px on the long edge)`);
+      }
+      if (upscale > WARN_UPSCALE) {
+        console.log(`  ! ${f}: ${upscale.toFixed(1)}x upscale — fine for bold one-ink text, soft for fine detail`);
+      }
 
-    if (!checkOnly) {
-      mkdirSync(outDir, { recursive: true });
-      const scale = spec.target / long;
-      await img
-        .resize(Math.round(meta.width * scale), Math.round(meta.height * scale), {
-          kernel: sharp.kernel.lanczos3, fit: 'fill',
-        })
-        .sharpen({ sigma: 1, m1: 0.5, m2: 2 })
-        .png({ compressionLevel: 9 })
-        .toFile(join(outDir, f));
+      if (!checkOnly) {
+        mkdirSync(outDir, { recursive: true });
+        const scale = spec.target / long;
+        await img
+          .resize(Math.round(meta.width * scale), Math.round(meta.height * scale), {
+            kernel: sharp.kernel.lanczos3, fit: 'fill',
+          })
+          .sharpen({ sigma: 1, m1: 0.5, m2: 2 })
+          .png({ compressionLevel: 9 })
+          .toFile(join(outDir, f));
+      }
+      const used = spec.uses.length > 1 ? ` [${spec.uses.join(',')}]` : '';
+      console.log(`OK   ${f}  ${meta.width}x${meta.height}${checkOnly ? '' : ` -> ${spec.target}px master`}${used}  alpha=${meta.hasAlpha}`);
+      passed.push(f);
+      details.push({
+        file: f, uses: spec.uses, source: `${meta.width}x${meta.height}`,
+        target_px: spec.target, upscale: Number(upscale.toFixed(2)), alpha: !!meta.hasAlpha,
+      });
+      ok++;
+    } catch (e) {
+      console.log(`FAIL ${f} — ${e.message}`);
+      bad++;
     }
-    const used = spec.uses.length > 1 ? ` [${spec.uses.join(',')}]` : '';
-    console.log(`OK   ${f}  ${meta.width}x${meta.height}${checkOnly ? '' : ` -> ${spec.target}px master`}${used}  alpha=${meta.hasAlpha}`);
-    passed.push(f);
-    details.push({
-      file: f, uses: spec.uses, source: `${meta.width}x${meta.height}`,
-      target_px: spec.target, upscale: Number(upscale.toFixed(2)), alpha: !!meta.hasAlpha,
-    });
-    ok++;
-  } catch (e) {
-    console.log(`FAIL ${f} — ${e.message}`);
-    bad++;
   }
+
+  // manifest for the console — which art actually exists, verified
+  if (!checkOnly) {
+    const stateDir = join(here, '..', 'state');
+    mkdirSync(stateDir, { recursive: true });
+    // `ok` must mean "passed validation and has a print master", not "a file with
+    // this name exists". It used to be the latter, so a failed PNG still counted
+    // toward the art gate on the status board.
+    const manifest = {
+      fetchedAt: new Date().toISOString(),
+      source: 'intake.mjs validation run over ops/art/',
+      produced_by: 'intake.mjs',
+      required: byArt.size,
+      ok: passed,
+      failed: bad,
+      missing,
+      files: details,
+    };
+    writeFileSync(join(stateDir, 'art.json'), JSON.stringify(manifest, null, 2));
+  }
+
+  console.log(`\n${ok} ok, ${bad} failed, ${missing.length} still missing`);
+  if (missing.length) console.log('missing:', missing.join(', '));
+  process.exitCode = bad ? 1 : 0;
 }
 
-// manifest for the console — which art actually exists, verified
-if (!checkOnly) {
-  const stateDir = join(here, '..', 'state');
-  mkdirSync(stateDir, { recursive: true });
-  // `ok` must mean "passed validation and has a print master", not "a file with
-  // this name exists". It used to be the latter, so a failed PNG still counted
-  // toward the art gate on the status board.
-  const manifest = {
-    fetchedAt: new Date().toISOString(),
-    source: 'intake.mjs validation run over ops/art/',
-    produced_by: 'intake.mjs',
-    required: byArt.size,
-    ok: passed,
-    failed: bad,
-    missing,
-    files: details,
-  };
-  writeFileSync(join(stateDir, 'art.json'), JSON.stringify(manifest, null, 2));
+// ---------------------------------------------------------------- dispatch
+if (mode === 'next') await modeNext();
+else if (mode === 'add') await modeAdd();
+else if (mode === 'key') await modeKey();
+else if (mode === 'run' || mode === 'check') await modeRun();
+else {
+  console.error(`unknown art command "${mode}" — expected: next | add | key | check | (nothing)`);
+  process.exitCode = 2;
 }
-
-console.log(`\n${ok} ok, ${bad} failed, ${missing.length} still missing`);
-if (missing.length) console.log('missing:', missing.join(', '));
-process.exit(bad ? 1 : 0);
