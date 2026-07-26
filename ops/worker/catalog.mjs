@@ -73,7 +73,7 @@ for (const [key, product] of Object.entries(PRODUCTS)) {
     continue;
   }
 
-  const { chosen, reason } = await chooseProvider(client, providers);
+  const { chosen, reason } = await chooseProvider(client, providers, spec.providerId);
   const { variants } = await client.variants(bp.id, chosen.id);
 
   // Cost is exposed here on some accounts and only on a created product on

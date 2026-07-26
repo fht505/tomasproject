@@ -198,6 +198,7 @@ const COMMANDS = {
   orders: () => run('orders.mjs', ['watch']),
   console: () => run('serve.mjs', rest),
   catalog: () => run('catalog.mjs'),
+  probe: () => run('probe.mjs', rest),
   doctor: () => run('doctor.mjs'),
   test: () => run('test-margin.mjs'),
   tm: () => run('tm.mjs', [arg0 ?? 'list', ...rest.slice(1)]),

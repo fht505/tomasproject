@@ -52,27 +52,41 @@ const dryRun = args.includes('--dry-run');
 // contradicted and nothing noticed, because a loose search that matches many
 // things still returns exactly one answer. Hence both the pin and, below, the
 // hard failure when a fallback search is ambiguous.
+//
+// `providerId` is pinned from MEASURED cost, not reputation or list order —
+// see state/costs.json, written by `ops.mjs probe`. Provider choice turned out
+// to be the single biggest lever on whether this batch makes money: the same
+// Bella 3001 tee ranged $6.08–$21.69 across seven US providers, an $8.48 spread
+// per unit. Picking "first US in the list" put 20 tee listings on a fine-art
+// printer at $1.60 net, under the floor.
 const BLUEPRINT_SEARCH = {
   tee_bella_3001: {
     id: 12, expect: /bella.*canvas.*unisex jersey short sleeve/i,
+    providerId: 99, providerNote: 'Printify Choice — measured $6.08-13.21, nets $8.01 at $23.95 (Marco Fine Arts netted $1.60)',
     match: /bella.*canvas.*3001|unisex jersey short sleeve/i, label: 'Bella+Canvas 3001 tee',
   },
   sweatshirt_gildan_18000: {
     id: 49, expect: /gildan.*unisex heavy blend.*crewneck/i,
+    providerId: 217, providerNote: 'Fulfill Engine — measured $19.97 flat, nets $12.11 at $35.95',
     match: /gildan.*18000|unisex heavy blend.*crewneck/i, label: 'Gildan 18000 crewneck',
   },
   candle_9oz: {
     // 9oz soy in a glass jar — what the listing copy actually describes
     id: 755, expect: /candle builders.*scented soy candles.*9oz/i,
+    providerId: 91, providerNote: 'Candle Builders — measured $11.27-11.67, nets $14.08 at $28.95',
     match: /scented soy candles with white lid, 9oz/i, label: '9oz scented soy candle',
   },
   mug_11oz: {
     id: 68, expect: /mug 11oz/i,
+    providerId: 1, providerNote: 'SPOKE Custom Products — measured $6.44 flat, nets $9.35 at $17.95',
     match: /^mug 11oz$|mug.*11oz/i, label: '11oz ceramic mug',
   },
   tote: {
-    id: 507, expect: /canvas tote bag/i,
-    match: /canvas tote bag/i, label: 'canvas tote bag',
+    // Was blueprint 507 at Colorway: $18.41-19.69 against a $19.95 price, a
+    // $2.09 LOSS per unit. This one is half the cost for the same product.
+    id: 1313, expect: /liberty bags.*cotton canvas tote/i,
+    providerId: 99, providerNote: 'Printify Choice — measured $9.48 flat, nets $8.12 at $19.95',
+    match: /liberty bags.*cotton canvas tote/i, label: 'cotton canvas tote bag',
   },
 };
 
@@ -96,7 +110,35 @@ let providerLocations = null;
 // The print provider decides ship-from country, and therefore the transit half
 // of the delivery date Etsy shows a US buyer. This used to be `providers[0]` —
 // the most important fulfillment decision in the pipeline, made by array order.
-async function chooseProvider(client, providers) {
+async function chooseProvider(client, providers, pinnedId = null) {
+  // A measured pin beats any heuristic. Fall through to ranking only if the
+  // pinned provider is not offered for this blueprint on this account.
+  if (pinnedId) {
+    const hit = providers.find(p => p.id === pinnedId);
+    if (hit) {
+      const country = await providerCountry(client, hit);
+      return {
+        chosen: { id: hit.id, title: hit.title, country },
+        ranked: [{ id: hit.id, title: hit.title, country }],
+        reason: 'pinned from measured base cost (state/costs.json)',
+      };
+    }
+    console.log(`  ! pinned provider ${pinnedId} not offered here — ranking instead`);
+  }
+  return rankProviders(client, providers);
+}
+
+async function providerCountry(client, p) {
+  if (!providerLocations) {
+    try {
+      const all = await client.allProviders();
+      providerLocations = new Map((all || []).map(x => [x.id, x.location?.country || null]));
+    } catch { providerLocations = new Map(); }
+  }
+  return providerLocations.get(p.id) ?? p.location?.country ?? null;
+}
+
+async function rankProviders(client, providers) {
   if (!providerLocations) {
     try {
       const all = await client.allProviders();
@@ -152,7 +194,7 @@ async function resolveProduct(client, productType) {
   const bp = await resolveBlueprint(client, productType);
   const providers = await client.providers(bp.id);
   if (!providers.length) throw new Error(`blueprint ${bp.id} has no print providers`);
-  const { chosen, ranked, reason } = await chooseProvider(client, providers);
+  const { chosen, ranked, reason } = await chooseProvider(client, providers, spec.providerId);
   const { variants } = await client.variants(bp.id, chosen.id);
   if (!variants?.length) throw new Error(`blueprint ${bp.id} / provider ${chosen.id} returned no variants`);
   return { blueprint: bp, provider: chosen, providerRanking: ranked, providerReason: reason, variants };
