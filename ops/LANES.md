@@ -320,6 +320,85 @@ Framer payout. The likeliest explanation is that one describes template sales
 and the other referral commissions, but that is a guess. Read the terms
 directly before planning around either.
 
+## The content-traffic lane is closed to a new domain (2026)
+
+Write pages → rank on Google → monetise with ads or affiliate. That lane is
+not "hard" now, it is structurally gated, and the gate closed recently.
+
+**The traffic side, measured:**
+- Pew (2025-07-22, 900 US adults, 68,879 searches): click rate **8%** when an
+  AI summary is present vs **15%** without; only **1%** click a source inside
+  the summary.
+- SparkToro (2026-06-09, Similarweb panel): **68.01%** of US Google searches
+  ended without a click in Jan–Apr 2026, up from 60.45% in 2024.
+- Seer Interactive (2026-04-24, 5.47M queries): organic CTR **2.36%** with an
+  AI Overview vs **3.82%** without.
+
+*Reported fairly:* Seer also found CTR on AIO queries recovered from a 1.3%
+floor in Dec 2025 to 2.4% by Feb 2026, reversing their own projection. Google
+claims click volume is "relatively stable" but publishes no numbers or
+methodology to support it.
+
+**The monetisation side — every floor moved up in the last 12 months:**
+
+| Network | Entry gate | AI stance |
+|---|---|---|
+| Ezoic | **250,000 monthly active users** (as of 2026-02-19) | AI-assisted OK if "meticulously reviewed" |
+| Raptive | 25,000 pageviews/mo **+ domain ≥6 months old** | requires "meaningful human involvement" |
+| Mediavine Journey | 1,000 sessions/30 days | terminates for "excessive use of Artificial Intelligence" |
+| Mediavine Official | **$5,000+ annual ad revenue** (changed Jan 2026) | same |
+| AdSense | no traffic minimum | **no AI clause found — a gap** |
+
+**Ezoic was the beginner on-ramp and it is gone.** Mediavine and Raptive both
+permit AI-*assisted* and terminate for AI-*generated*.
+
+**Amazon Associates** has **no AI-content clause at all** (verified by
+grepping the 77KB Operating Agreement and 133KB Policies — zero hits). But the
+automation clause is sharp — no "artificially generate clicks or impressions…
+whether by way of a robot or software program" — and the real killer for a new
+site is **180 days to refer a qualifying sale or the application is withdrawn
+and cannot be reinstated**. Cookie is 24 hours; rates run 1–10%.
+
+## Newsletters and courses
+
+**beehiiv** — a prior round reported a 1,000-subscriber and 20% open-rate gate.
+**Both REFUTED**; neither exists. The real gate is the **Scale plan at $43/mo**.
+The unadvertised trap: ad revenue is CPM on unique opens, so at a $5 CPM you
+need roughly **8,600 unique opens/month just to cover the subscription**.
+Strictest AI policy of the three: "Publications that rely entirely on
+AI-generated material without meaningful human input are not permitted."
+
+**Substack** — no AI ban, but shipped **Pangram AI detection on 2026-07-21**:
+every post now carries a reader-visible human-vs-AI percentage, and disabling
+it displays "AI detection unavailable". Takes 10% + Stripe.
+
+**Kit** — no AI policy (gap), harshest penalties: violations mean the account
+"may be closed immediately and without prior notice. A refund will not be
+provided."
+
+All three ban purchased, scraped and harvested lists; Substack also bans
+importing your own contacts. **You cannot buy or import your way to a list** —
+beehiiv's own docs price cross-promo acquisition at ~$2.50/subscriber.
+
+**Course platforms — four of five are shops, not channels.** Podia, Teachable
+and Kajabi have no discovery surface at all ( /marketplace and /discover 404 ),
+so paying Kajabi $179/mo with no audience is buying a shop on a road with no
+cars. Maven requires **live human teaching** and gates listing behind 100 leads
+or 2 paid enrollments. **Whop** is the only open door: $0/mo, 2.7%+$0.30, real
+discovery, no AI policy, and automation clauses aimed at scraping rather than
+automated listing. Caveats: its **marketplace service fee is not published**
+anywhere (the widely-cited 3% is unverified), and July 2026 seller terms added
+mandatory KYC, a <1% dispute requirement, 180-day reserves, and power to claw
+back withdrawals from your bank account.
+
+## Method note — do not trust summarised fetches on policy text
+
+WebFetch's summariser **silently dropped** the load-bearing "Scale plan" line
+from beehiiv's Ad Network FAQ. It was recovered only by pulling the raw
+markdown via curl and comparing. For any make-or-break policy sentence, fetch
+raw and grep the text. A summary that omits the deciding clause reads exactly
+like a summary that found no such clause.
+
 ## Compliance lines worth knowing
 
 - **California Delete Act** — 2026 data-broker registration is **$6,000/yr**,
