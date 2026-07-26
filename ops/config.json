@@ -1,6 +1,6 @@
 {
   "_comment": "Operator-editable shop settings. No secrets here — credentials live in ops/worker/.env (gitignored). Run `node ops.mjs` any time to see which of these still needs your attention.",
-  "shop_name": "",
+  "shop_name": "FondlyMade",
   "shop_name_note": "The exact Etsy shop name. It is printed in every listing description as the 'Designed by' attribution, so it must match the real shop. Set it before running: node ops.mjs listings",
   "processing": {
     "_comment": "Shipping speed is a promise, and a broken one voids Etsy Purchase Protection and costs Star Seller status. So it is blank until you know the real number. `node ops.mjs plan` prints the resolved provider's published production time; add carrier transit on top, put the result here, name where it came from in `source`, and only then does it appear in listing descriptions.",

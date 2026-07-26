@@ -32,8 +32,12 @@ const T = {
   candleClassic: ['pumpkin candle', 'sweater weather', 'harvest decor', 'fall aesthetic', 'thanksgiving decor'],
   teacher: ['teacher shirt', 'teacher gift', 'back to school', 'teacher era', 'teacher tee',
     'appreciation gift', 'new teacher gift', 'teacher outfit', 'school shirt', 'educator gift'],
+  // No 'fathers day gift'. These four designs are evergreen — a girl-dad shirt
+  // sells for birthdays and Q4 gifting all year — but the holiday tag pointed
+  // them at a date eleven months out, during the back-to-school peak.
   dad: ['dad shirt', 'dad gift', 'father daughter', 'girl dad gift', 'dad of daughters',
-    'fathers day gift', 'new dad gift', 'dad tee', 'daddy shirt', 'husband gift'],
+    'gift for dad', 'new dad gift', 'dad tee', 'daddy shirt', 'husband gift',
+    'dad birthday gift', 'christmas gift dad'],
   dogmom: ['dog mom shirt', 'dog mom gift', 'dog lover gift', 'dog mama', 'pet lover shirt',
     'dog owner gift', 'fur mama shirt', 'dog lover tee', 'dog mom era', 'rescue dog mom'],
   grandma: ['grandma shirt', 'grandma gift', 'nana gift', 'grandmother gift', 'new grandma gift',
@@ -236,13 +240,13 @@ const ROWS = [
     [T.teacher, T.apparelCore], 'Running entirely on Coffee & Lesson Plans — and honestly thriving.'],
   ['B5', 'tee', 'Best Class Ever Est. 2026', 'Shirt | Teacher Tee | First Day of School | Back to School',
     [T.teacher, T.apparelCore], 'Make it official: Best Class Ever, Est. 2026.'],
-  ['B6', 'tee', 'Proud Dad of Girls', 'Shirt | Dad of Daughters Tee | Fathers Day Gift | Gift from Daughter',
+  ['B6', 'tee', 'Proud Dad of Girls', 'Shirt | Dad of Daughters Tee | Gift from Daughter | Gift for Dad',
     [T.dad, T.apparelNeutral], 'Varsity-style and proud of it — for the Proud Dad of Girls.'],
-  ['B7', 'tee', 'Outnumbered and Loving It', 'Shirt | Funny Dad Tee | Dad of Daughters | Fathers Day Gift',
+  ['B7', 'tee', 'Outnumbered and Loving It', 'Shirt | Funny Dad Tee | Dad of Daughters | Gift for Dad',
     [T.dad, T.apparelNeutral], 'Outnumbered & Loving It — the official shirt of dads who lost the majority vote.'],
-  ['B8', 'tee', 'Dad of Daughters Best Job Ever', 'Shirt | Vintage Dad Badge Tee | Fathers Day Gift',
+  ['B8', 'tee', 'Dad of Daughters Best Job Ever', 'Shirt | Vintage Dad Badge Tee | Gift for Dad',
     [T.dad, T.apparelNeutral], 'Dad of Daughters: Best Job Ever. Vintage patch style, permanent position.'],
-  ['B9', 'tee', 'Raising Strong Girls', 'Shirt | Dad Tee | Girl Dad Gift | Fathers Day | Gift for Him',
+  ['B9', 'tee', 'Raising Strong Girls', 'Shirt | Dad Tee | Girl Dad Gift | Gift for Him',
     [T.dad, T.apparelNeutral], 'The mission statement, in hand-script: Raising Strong Girls.'],
   ['B10', 'tee', 'Dog Mama', 'Shirt | Retro Dog Mom Tee | Dog Lover Gift | Fur Mama Gift',
     [T.dogmom, T.apparelCore], 'Retro script, paw-print flourish — Dog Mama, worn proudly.'],
@@ -398,6 +402,16 @@ if (collisions.length) {
 
 // Report, don't throw: title length is a judgement call, but 60 characters of
 // a 140-character budget is a lot of unclaimed search surface to leave silent.
+// A listing aimed at a dated holiday only earns during a window. Four dad
+// shirts shipped tagged "fathers day gift" in late July — eleven months early —
+// because nothing ever said so out loud. Reporting, not throwing: Christmas
+// tags in August are correct, Father's Day tags in August are not, and only a
+// person knows which is which.
+const HOLIDAYS = /fathers day|mothers day|valentine|halloween|christmas|thanksgiving|easter|new year|graduation/i;
+const seasonal = listings
+  .map(l => [l.code, [...new Set([...(l.title.match(HOLIDAYS) || []), ...l.tags.flatMap(t => t.match(HOLIDAYS) || [])])]])
+  .filter(([, hits]) => hits.length);
+
 const short = listings.filter(l => l.title.length < 70);
 const stutter = listings.map(l => [l.code, repeatedWords(l.title)]).filter(([, w]) => w.length);
 const distinctTags = new Set(listings.flatMap(l => l.tags)).size;
@@ -408,6 +422,9 @@ console.log(`wrote ${listings.length} listings -> ${out}`);
 console.log(`${bySet.size} distinct tag sets · ${distinctTags} distinct tags across ${listings.length * 13} slots`);
 if (short.length) {
   console.log(`${short.length} titles under 90 chars — unused search surface: ${short.map(l => `${l.code}(${l.title.length})`).join(' ')}`);
+}
+if (seasonal.length) {
+  console.log(`${seasonal.length} listings name a dated holiday — check each is still ahead of you: ${seasonal.map(([c, h]) => `${c}(${h.join('/')})`).join(' ')}`);
 }
 if (stutter.length) {
   console.log(`titles repeating a word 3+ times — reword the tail in ROWS: ${stutter.map(([c, w]) => `${c}(${w.join(',')})`).join(' ')}`);
