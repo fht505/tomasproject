@@ -264,6 +264,62 @@ permission its terms contemplate rather than assuming.
   are plausible, text faces are not. Do not commit without a real test
   submission.
 
+## The throughput-compatibility trap
+
+Ranking these lanes by revenue share gives the wrong answer, and this is the
+most useful thing round 2 produced.
+
+**Framer** pays **100%** ("Framer takes a 0% cut") with **no review gate** —
+the best raw terms found anywhere — and published an article on 2026-07-24
+actively urging creators to build "AI-ready templates". It should be first.
+It isn't, because **Framer is a GUI canvas app with no authoring API**. Agents
+can do research, copy, imagery, SEO and the listing; a human still has to
+assemble the canvas. Realistic automation **60–80%**, not 90–95%. Its removal
+of the review gate also means no scarcity — 2,000+ templates and creators
+publicly unhappy about the flood.
+
+**Webflow** pays 95% but requires **three sites you have already built in
+Webflow** before you may apply. A chicken-and-egg cost before dollar one.
+
+**Shopify Theme Store** pays 85% and has the **best payout terms found
+anywhere in either research round** — twice monthly, $25 threshold, ~5
+business days after period end. No AI policy exists in the theme
+requirements. But the bar is brutal: original code only (Dawn/Horizon
+derivatives ineligible), Lighthouse ≥60 performance and ≥90 accessibility,
+20+ mandatory features, Theme Store exclusivity. That is a coding-agent
+project measured in months, not an asset-pipeline project.
+
+**Creative Market** pays least of the four and is the best fit, because it is
+the only one that consumes the pipeline we already have at zero marginal cost.
+Its AI position is a **documented yes** — an actual labelling system announced
+2025-05-02 — rather than the silence Framer, Webflow and Shopify offer.
+Silence can be reinterpreted overnight; a published labelling regime cannot.
+
+**Rank lanes by whether our throughput advantage applies, then by rate.**
+
+### If one lane gets tested next, it is Creative Market
+- AI allowed with mandatory disclosure — same posture as BATCH-01 on Etsy
+- ~90%+ automatable; consumes existing assets directly
+- Startup cost ≈ $0, plus a shop application (portfolio + 3 finished products,
+  human-reviewed, a few days)
+- **Kill criteria, decided in advance:** if the shop application is rejected,
+  or if listings get flagged under Creative Market's May 2025 policy to
+  "elevate unique work and discourage repetitive submissions", stop. That
+  policy is aimed squarely at batch-generated variants and is the single most
+  likely thing to end this lane.
+- **Verify before committing:** the actual commission split (sources conflict
+  between 40%, 50% and 30% exclusive — Creative Market publishes none of them)
+  and the payout schedule. Both UNVERIFIED.
+
+### Unresolved conflict to settle before acting on Framer
+Two independent agents disagree on whether Framer disburses payment at all.
+One quotes Community Terms v1.0 §6.3 (effective 2026-06-01): "Framer does not
+process, collect, hold, or disburse any payments between Creators and End
+Users." The other describes a $200 minimum, monthly, two-months-in-arrears
+Framer payout. The likeliest explanation is that one describes template sales
+and the other referral commissions, but that is a guess. Read the terms
+directly before planning around either.
+
 ## Compliance lines worth knowing
 
 - **California Delete Act** — 2026 data-broker registration is **$6,000/yr**,
