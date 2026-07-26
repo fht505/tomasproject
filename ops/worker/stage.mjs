@@ -39,15 +39,41 @@ const force = args.includes('--force');
 // is the only way to look at it without creating 40 real products to find out.
 const dryRun = args.includes('--dry-run');
 
-// Which catalog blueprint to use per product type. Resolved by searching the
-// live catalog for these terms — verified against the real API at plan time,
-// never hardcoded IDs (blueprint ids differ per account/provider availability).
+// Which catalog blueprint to use per product type.
+//
+// Pinned by id, with `expect` asserting the title still reads how we think it
+// does. Printify's blueprint ids are global to the catalog, not per-account, so
+// pinning is safe — and the assertion means a silently repointed id fails loudly
+// instead of printing the wrong product.
+//
+// This used to be regex-only, and `candle: /candle/i` matched the FIRST of 13
+// candle blueprints: an 11oz jar, while all twelve candle listings say 9oz in
+// their title and description. The search picked a product our own copy
+// contradicted and nothing noticed, because a loose search that matches many
+// things still returns exactly one answer. Hence both the pin and, below, the
+// hard failure when a fallback search is ambiguous.
 const BLUEPRINT_SEARCH = {
-  tee_bella_3001: { match: /bella.*canvas.*3001|unisex jersey short sleeve/i, label: 'Bella+Canvas 3001 tee' },
-  sweatshirt_gildan_18000: { match: /gildan.*18000|unisex heavy blend.*crewneck/i, label: 'Gildan 18000 crewneck' },
-  candle_9oz: { match: /candle/i, label: 'scented candle' },
-  mug_11oz: { match: /mug.*11|11oz.*mug|white ceramic mug/i, label: '11oz ceramic mug' },
-  tote: { match: /tote/i, label: 'cotton tote bag' },
+  tee_bella_3001: {
+    id: 12, expect: /bella.*canvas.*unisex jersey short sleeve/i,
+    match: /bella.*canvas.*3001|unisex jersey short sleeve/i, label: 'Bella+Canvas 3001 tee',
+  },
+  sweatshirt_gildan_18000: {
+    id: 49, expect: /gildan.*unisex heavy blend.*crewneck/i,
+    match: /gildan.*18000|unisex heavy blend.*crewneck/i, label: 'Gildan 18000 crewneck',
+  },
+  candle_9oz: {
+    // 9oz soy in a glass jar — what the listing copy actually describes
+    id: 755, expect: /candle builders.*scented soy candles.*9oz/i,
+    match: /scented soy candles with white lid, 9oz/i, label: '9oz scented soy candle',
+  },
+  mug_11oz: {
+    id: 68, expect: /mug 11oz/i,
+    match: /^mug 11oz$|mug.*11oz/i, label: '11oz ceramic mug',
+  },
+  tote: {
+    id: 507, expect: /canvas tote bag/i,
+    match: /canvas tote bag/i, label: 'canvas tote bag',
+  },
 };
 
 const load = (p) => JSON.parse(readFileSync(p, 'utf8'));
@@ -89,12 +115,41 @@ async function chooseProvider(client, providers) {
   return { chosen, ranked, reason };
 }
 
+// Resolve one blueprint: pinned id first, ambiguity-checked search as fallback.
+// Exported so `catalog` proves exactly what `stage` would build.
+export async function resolveBlueprint(client, productType) {
+  const spec = BLUEPRINT_SEARCH[productType];
+  if (!spec) throw new Error(`no blueprint rule for ${productType}`);
+  if (!blueprintCache) blueprintCache = await client.blueprints();
+  const title = (b) => `${b.brand} ${b.title}`;
+
+  if (spec.id) {
+    const pinned = blueprintCache.find(b => b.id === spec.id);
+    if (pinned) {
+      // The id resolved — but is it still the product we think it is?
+      if (spec.expect && !spec.expect.test(title(pinned))) {
+        throw new Error(`blueprint ${spec.id} is "${title(pinned)}", which no longer looks like ${spec.label}. Printify may have repointed it — re-check with: node ops.mjs blueprints ${spec.label.split(' ')[0]}`);
+      }
+      return pinned;
+    }
+    console.log(`  ! blueprint ${spec.id} (${spec.label}) not visible on this account — falling back to search`);
+  }
+
+  // Fallback search. If it is ambiguous, STOP: picking the first of several is
+  // exactly how twelve listings ended up pointed at an 11oz jar.
+  const hits = blueprintCache.filter(b => spec.match.test(title(b)));
+  if (hits.length > 1) {
+    const list = hits.slice(0, 8).map(b => `\n    id=${b.id}  ${title(b)}`).join('');
+    throw new Error(`"${spec.label}" matches ${hits.length} blueprints — refusing to guess. Pin one by id in BLUEPRINT_SEARCH:${list}`);
+  }
+  const bp = hits[0];
+  if (!bp) throw new Error(`no blueprint matched "${spec.label}" — inspect with: node ops.mjs blueprints ${spec.label.split(' ')[0]}`);
+  return bp;
+}
+
 async function resolveProduct(client, productType) {
   const spec = BLUEPRINT_SEARCH[productType];
-  if (!spec) throw new Error(`no blueprint search rule for ${productType}`);
-  if (!blueprintCache) blueprintCache = await client.blueprints();
-  const bp = blueprintCache.find(b => spec.match.test(`${b.brand} ${b.title}`));
-  if (!bp) throw new Error(`no blueprint matched "${spec.label}" — inspect with: node ops.mjs blueprints ${spec.label.split(' ')[0]}`);
+  const bp = await resolveBlueprint(client, productType);
   const providers = await client.providers(bp.id);
   if (!providers.length) throw new Error(`blueprint ${bp.id} has no print providers`);
   const { chosen, ranked, reason } = await chooseProvider(client, providers);

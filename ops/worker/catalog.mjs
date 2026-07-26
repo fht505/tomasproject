@@ -19,7 +19,7 @@
 import { makeClient } from './printify.mjs';
 import { PATHS, loadConfig, credentials, netMargin, minPriceFor } from './config.mjs';
 import { PRODUCTS } from './products.mjs';
-import { BLUEPRINT_SEARCH, chooseProvider } from './stage.mjs';
+import { BLUEPRINT_SEARCH, chooseProvider, resolveBlueprint } from './stage.mjs';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -53,12 +53,14 @@ let missing = 0, thin = 0, unpriced = 0;
 
 for (const [key, product] of Object.entries(PRODUCTS)) {
   const spec = BLUEPRINT_SEARCH[product.type];
-  const bp = blueprints.find(b => spec.match.test(`${b.brand} ${b.title}`));
-
-  if (!bp) {
-    console.log(`  MISSING  ${key.padEnd(11)} no blueprint matches "${spec.label}"`);
-    console.log(`           ${product.count} listings depend on this — search manually: node ops.mjs blueprints ${spec.label.split(' ')[0]}\n`);
-    rows.push({ key, type: product.type, found: false, listings_at_risk: product.count });
+  let bp;
+  try {
+    // same resolver stage uses, so this proves the real thing
+    bp = await resolveBlueprint(client, product.type);
+  } catch (e) {
+    console.log(`  MISSING  ${key.padEnd(11)} ${e.message}`);
+    console.log(`           ${product.count} of 40 listings depend on this\n`);
+    rows.push({ key, type: product.type, found: false, error: e.message, listings_at_risk: product.count });
     missing++;
     continue;
   }
