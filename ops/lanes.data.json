@@ -1,0 +1,435 @@
+{
+  "_comment": "Canonical structured record of every revenue lane researched. The Obsidian vault under 'PERPETUA ORBITAL/' is GENERATED from this file by `node ops.mjs vault` — edit here, never edit the notes directly, or the next regeneration overwrites them. LANES.md keeps the narrative reasoning; this keeps the facts.",
+  "_verdicts": {
+    "building": "in progress right now",
+    "candidate": "worth testing, gates understood",
+    "flagged": "possible but with a serious caveat",
+    "disqualified": "do not re-research, reason recorded",
+    "unresearched": "no findings — absence of data, not a negative"
+  },
+  "_policyValues": {
+    "ai": "allowed-written | allowed-disclosed | none-found | banned",
+    "automation": "sanctioned-api | none-found | prohibited",
+    "note": "none-found means NO RULE WAS LOCATED. That is a gap and unallocated risk, never permission."
+  },
+  "generatedNote": "Dates are when the policy page itself was last verified, not when we read about it second-hand.",
+
+  "lanes": [
+    {
+      "name": "Etsy", "category": "POD marketplace", "verdict": "building",
+      "ai": "allowed-disclosed", "automation": "sanctioned-api",
+      "economics": "6.5% transaction + 3% + $0.25 processing + $0.20/listing",
+      "timeToCash": "reserve possible on new shops",
+      "checked": "2026-07-25",
+      "summary": "Lane 1. Etsy's 2025 Creativity Standards explicitly accommodate AI goods with 'Designed by' attribution plus disclosure. All five product types verified against the live Printify catalog, all US-fulfilled, all clearing the $5 margin floor on measured costs.",
+      "risks": ["Production partner must be declared in Etsy BEFORE publishing or listings read 'Made by seller' — a leading POD suspension trigger", "New-shop payment reserve delays cash"],
+      "sources": ["ops/PLAN.md", "ops/state/costs.json"]
+    },
+    {
+      "name": "eBay", "category": "POD marketplace", "verdict": "candidate",
+      "ai": "allowed-written", "automation": "sanctioned-api",
+      "economics": "13.6% FVF + $0.30/$0.40; 250 free listings/mo then $0.35; Basic Store $27.95/mo",
+      "timeToCash": "~2 days after delivery with tracking; 31 days without",
+      "checked": "2026-07-26",
+      "summary": "Best-founded alternative marketplace. The User Agreement (effective 2026-06-28) binds you to responsibility for 'listing content created using tools offered by eBay or third parties such as translation, image editing, and generative artificial intelligence tools' — contract-level acknowledgment rather than silence. Its automation ban carries 'except with the prior express permission of eBay', and the Developers Program is that permission. Dropshipping from a wholesale supplier is expressly allowed, so Printify fulfilment is compliant.",
+      "risks": ["AI clause covers listing CONTENT, not explicitly product DESIGNS", "eBay publishes no new-seller limit number; the ubiquitous '10 items/$500' is vendor-blog only", "'A large increase in order volume' is a listed payment-hold trigger — ramp deliberately"],
+      "corrections": ["The widely-reported 21-day new-seller hold is REFUTED — zero occurrences of '21 day' on the live holds page"],
+      "sources": ["https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement"]
+    },
+    {
+      "name": "Creative Market", "category": "Digital assets", "verdict": "candidate",
+      "ai": "allowed-disclosed", "automation": "none-found",
+      "economics": "50% to seller by default",
+      "timeToCash": "$20 minimum, funds by the 10th",
+      "checked": "2026-07-26",
+      "summary": "Best fit for the existing asset pipeline — the only top-ranked digital lane that consumes what we already produce at zero marginal cost. AI position is a documented yes (a labelling system announced 2025-05-02) rather than the silence others offer. Silence can be reinterpreted overnight; a published labelling regime cannot.",
+      "risks": ["A May 2025 policy 'to elevate unique work and discourage repetitive submissions' is aimed squarely at batch-generated variants — the single most likely thing to end this lane", "Buyer-facing AI filters are planned, which will throttle demand on labelled listings"],
+      "corrections": ["Commission is NOT unpublished — 50% default, in the help centre. The conflicting 40%/30% figures trace to a blog about Creative Market's own cut changing years ago"],
+      "killCriteria": "Stop if the shop application is rejected, or if listings get flagged under the repetitive-submissions policy.",
+      "sources": ["https://creativemarket.com/blog/destination-design-vision"]
+    },
+    {
+      "name": "Vecteezy", "category": "Stock imagery", "verdict": "candidate",
+      "ai": "allowed-written", "automation": "sanctioned-api",
+      "economics": "not recorded",
+      "timeToCash": "6-12 weeks: ~21-day review, then a sale, then $25 payout floor",
+      "checked": "2026-07-24",
+      "summary": "The ONLY platform across both research rounds whose binding contract authorises BOTH AI content and automated publishing. Contributor Agreement s3(e) permits uploading 'using internal Vecteezy tools or other tools approved by Vecteezy (e.g., FTP)', names approved third-party uploaders, and its AI policy accepts AI-rendered images with no release required for text-prompt-only work. Everywhere else the best case was an unwritten gap — and a written yes is not the same asset.",
+      "risks": ["The binding constraint is the weekly Submission Quota, which tightens on low approval rate, where REJECTED FILES STILL CONSUME QUOTA and technically-rejected files can never be resubmitted. A high-volume low-quality pipeline throttles itself into a corner", "The lane itself is shrinking — Shutterstock's content revenue went $789M (2022) to $760M (2024) while its AI training-data line grew 4.5x to $175M"],
+      "killCriteria": "Treat as a cheap bounded experiment, not a business line. Quality gate before upload is the whole game.",
+      "sources": ["Vecteezy Contributor Agreement s3(e)"]
+    },
+    {
+      "name": "Gumroad", "category": "Payment rail", "verdict": "candidate",
+      "ai": "none-found", "automation": "sanctioned-api",
+      "economics": "10% + $0.50 PLUS 2.9% + $0.30 processing — 29% at $5, 21% at $10, 15% at $35",
+      "timeToCash": "$100 payout minimum (raised from $10 on 2026-03-23)",
+      "checked": "2026-07-26",
+      "summary": "Inverts the Redbubble pattern — actively built FOR agent automation. The official CLI README reads 'Designed for humans and AI agents alike', it documents GUMROAD_ACCESS_TOKEN for CI and agents, exposes POST /v2/products for programmatic creation, carries an ai_product_details_generations endpoint, and explicitly permits multiple accounts. True worldwide merchant of record, so it carries the EU/UK VAT liability.",
+      "risks": ["The advertised '10% + $0.50' EXCLUDES card processing — its own help article says so. Real cost roughly doubles at low price points", "$100 payout minimum means ~50 sales at $10 before you see money", "Bans reselling PLR/MRR outright, naming our exact categories: ebooks, courses, prompts, notion planners, templates, fonts, presets"],
+      "corrections": ["The $100 threshold claim was TRUE — pinned to a commit in Gumroad's own open-source repo dated 2026-03-23, corroborated by Wayback snapshots either side"],
+      "sources": ["Gumroad open-source repo commit #4038"]
+    },
+    {
+      "name": "Framer", "category": "Digital assets", "verdict": "flagged",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "100% revenue share — 'Framer takes a 0% cut' — plus 50% of referred subscriptions",
+      "timeToCash": "DISPUTED — see risks",
+      "checked": "2026-07-26",
+      "summary": "Best raw terms found anywhere: 100% revenue share, no manual review gate, and an article dated 2026-07-24 actively urging creators to build 'AI-ready templates'. It should rank first and does not.",
+      "risks": ["Framer is a GUI canvas app with NO authoring API. Agents can do research, copy, imagery, SEO and the listing; a human must assemble the canvas. Realistic automation 60-80%, not 90-95%", "No review gate means no scarcity — 2,000+ templates and creators publicly unhappy about the flood", "UNRESOLVED CONFLICT: one agent quotes Community Terms s6.3 saying Framer 'does not process, collect, hold, or disburse any payments'; another describes a $200 minimum monthly payout. Read the terms directly before planning around either"],
+      "sources": ["https://www.framer.com/creators", "https://www.framer.com/help/articles/build-ai-ready-template/"]
+    },
+    {
+      "name": "Webflow", "category": "Digital assets", "verdict": "flagged",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "95% to creator since Oct 2025 (not the widely-quoted 80%)",
+      "timeToCash": "paid ~15th of the following month, so 15-45 days",
+      "checked": "2026-07-26",
+      "summary": "Submissions are open — a previously assumed closure is out of date. Best demand data of any digital lane, from a named creator with 16 published templates: year 1 ~$4,800 on 11 templates, year 2 (7 months) ~$10,750 on 5. Roughly $29-64 per sale, ~25 lifetime sales per template.",
+      "risks": ["Requires THREE sites you have already built in Webflow before you may apply — a chicken-and-egg cost before dollar one", "~7,000 templates against ~300 approved creators, with an explicitly tightening bar", "Review screens for 'visual flair, polished typography, interactions' — the exact profile an AI-volume strategy fails"],
+      "sources": ["https://webflow.com/updates/template-creator-enhancements"]
+    },
+    {
+      "name": "Whop", "category": "Audience / community", "verdict": "flagged",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "0% marketplace fee + 2.7% + $0.30",
+      "timeToCash": "not recorded",
+      "checked": "2026-07-26",
+      "summary": "The only course/community platform with a real discovery surface and zero fixed cost. Podia, Teachable and Kajabi have no marketplace at all — their /discover and /marketplace URLs 404 — so paying Kajabi $179/mo with no audience is buying a shop on a road with no cars.",
+      "risks": ["Marketplace service fee is NOT published anywhere — the widely-cited 3% is unverified, so margins cannot be modelled", "July 2026 seller terms added mandatory KYC, a <1% dispute requirement, 180-day reserves, and power to claw back withdrawals from your bank account", "Merchant of record for card settlement ONLY; its binding seller terms cover just 18 US states for tax while its help centre implies all 50"],
+      "corrections": ["The '3% marketplace fee' is FALSE — it went to 0% per Whop's own changelog (2025-05-12)", "The '$8,413 average creator earnings' figure appears on NO Whop-owned page; independent estimates put 87.8% of Whop products at $0/mo, median $74/mo"],
+      "sources": ["Whop changelog 2025-05-12"]
+    },
+    {
+      "name": "Amazon Merch on Demand", "category": "POD marketplace", "verdict": "flagged",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "royalty-based; a June 2026 restructure reportedly halves royalties without external traffic",
+      "timeToCash": "~60 days (UNVERIFIED)",
+      "checked": "2026-07-26",
+      "summary": "$0 cost and enormous traffic, but three problems. Amazon's public content guidelines contain no mention of AI at all, and Amazon itself launched an AI prompt-to-merch generator in June 2026 — so it will not ban AI designs. That same launch is the threat: the platform now competes directly with the product.",
+      "risks": ["Application is a lottery — 2 weeks to 3 months, no communication, approval not guaranteed", "A June 2026 royalty restructure is reported by four independent tool vendors to cut royalties ~50% for sellers with no external traffic. UNVERIFIED against Amazon, whose policy pages are auth-gated", "Starts at 10 upload slots"],
+      "corrections": ["Printify's Amazon channel is NOT Merch on Demand — it is Seller Central, requiring a $39.99/mo Professional plan plus a GTIN exemption per category"],
+      "sources": ["https://www.aboutamazon.com/news/retail/design-merch-with-ai-alexa-for-shopping"]
+    },
+    {
+      "name": "Spoonflower", "category": "POD marketplace", "verdict": "flagged",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "10% royalty scaling to 15% by volume tier",
+      "timeToCash": "every 14 days, $10 minimum — the fastest verified anywhere",
+      "checked": "2026-07-26",
+      "summary": "Seller Agreement (effective 2025-12-19) contains zero mentions of AI, automation, bots or scraping. Its automation clause is read-side only ('not to crawl, scrape, or spider'), so automated uploading is unprohibited.",
+      "risks": ["As of 2026-05-28 there is an Artist Application: 5 distinct sample designs, tax documents, human review — and 'you may not re-apply if your application is denied'. One shot, human-juried, PERMANENT denial. A non-recoverable risk for an AI-design pipeline"],
+      "corrections": ["The prior 403 was a bot-block, not a dead page — curl with a browser user-agent returned HTTP 200", "Weekly listing limit is 50/artist/week, not the 25 that search snippets claimed"],
+      "sources": ["Spoonflower Seller Agreement, effective 2025-12-19"]
+    },
+    {
+      "name": "Displate", "category": "POD marketplace", "verdict": "flagged",
+      "ai": "allowed-written", "automation": "none-found",
+      "economics": "flat royalties $4.50 / $9.00 / $14.50 by size",
+      "timeToCash": "$50 minimum, pull-based, up to 45 days",
+      "checked": "2026-07-15",
+      "summary": "The live FAQ states Verified Creator status covers work 'whether created entirely by hand or with assistance from the latest technologies like AI'.",
+      "risks": ["No upload API, and SMS identity verification is required before first publication — blocks headless automation in practice", "The clause that actually bites is anti-duplication: re-uploading with 'only minor changes to the color palette, composition' is prohibited, and zero-sale designs are removed after 3 months"],
+      "corrections": ["The widely-repeated Displate AI ban is REFUTED — every source asserting it is an SEO content farm; no primary document supports it"],
+      "sources": ["Displate Terms, effective 2026-07-15"]
+    },
+    {
+      "name": "TikTok Shop", "category": "POD marketplace", "verdict": "flagged",
+      "ai": "allowed-disclosed", "automation": "none-found",
+      "economics": "all-in cost of sale 35-55% once fees, affiliate commission, shipping and returns are counted",
+      "timeToCash": "mandatory 31-day introductory settlement period, then ~15 days",
+      "checked": "2026-07-26",
+      "summary": "Clearest AI policy of any lane — AI product imagery allowed with a visible 'AI-generated' label. Native Printify integration, US sellers only.",
+      "risks": ["No meaningful organic product search — sales come from video, which we do not produce", "35-55% all-in cost of sale is near-zero on POD margins", "TikTok banned AI voices in live commerce streams (July 2026), so the direction of travel is AI assets fine, AI presence not"],
+      "sources": ["https://printify.com/tiktok-shop/"]
+    },
+    {
+      "name": "Udemy", "category": "Courses", "verdict": "flagged",
+      "ai": "allowed-disclosed", "automation": "none-found",
+      "economics": "15% subscription / 37% organic / 97% self-referred",
+      "timeToCash": "monthly after a 30-day refund window",
+      "checked": "2026-07-26",
+      "summary": "Permissive on tooling — AI voice and AI video explicitly accepted — and restrictive on exactly what makes this model work.",
+      "risks": ["'Udemy does not accept courses that are entirely AI-generated'", "'Using AI to rapidly generate multiple low-quality courses... may even lead to removal from the platform' — the volume strategy is named almost verbatim as removal-worthy", "The only good rate (97%) requires you to bring the traffic, in which case Udemy is just a cheap checkout"],
+      "sources": ["https://support.udemy.com/hc/en-us/articles/30999984483607-Course-Quality-Checklist-Use-of-AI"]
+    },
+    {
+      "name": "Amazon Associates", "category": "Affiliate", "verdict": "flagged",
+      "ai": "none-found", "automation": "prohibited",
+      "economics": "1-10% by category, 24-hour cookie",
+      "timeToCash": "not recorded",
+      "checked": "2025-10-15",
+      "summary": "No AI-content clause exists — verified by grepping the 77KB Operating Agreement and 133KB Policies for 'artificial', 'auto-generated' and 'machine learning'. Zero hits. That is a gap, not permission.",
+      "risks": ["180 DAYS to refer a qualifying sale or the application is withdrawn, and Amazon 'is unable to reinstate' it", "Automation clause is sharp: no 'artificially generate clicks or impressions... whether by way of a robot or software program'", "24-hour cookie is punishing"],
+      "sources": ["Amazon Associates Operating Agreement, updated 2025-10-15"]
+    },
+    {
+      "name": "Redbubble", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "none-found", "automation": "prohibited",
+      "economics": "50% platform fee on Standard tier, capped $150/period",
+      "timeToCash": "monthly, $10 minimum from 2026-07-01",
+      "checked": "2026-07-10",
+      "summary": "THE ANCHOR CASE for the automation lens. Redbubble publishes no AI-content policy at all — zero AI articles across 90 help-centre results — but its Community Guidelines make it an account-deletion trigger to upload 'using any bot, scraper, or other automated means for any purpose without our written permission'. That restricts automated UPLOADING, which is the operating model itself, not AI generation. Every guru post calling Redbubble AI-friendly misses it.",
+      "risks": ["Standard tier is explicitly defined by 'high volumes of low-effort designs, use of unmodified clip art, poor file quality, and tag spamming' and costs 50%", "Hard ceiling of 30 uploads/day"],
+      "reconsiderIf": "Written permission for automated uploading is obtained — the terms explicitly contemplate it.",
+      "sources": ["Redbubble User Agreement", "Redbubble help article 50959863016724, updated 2026-07-10"]
+    },
+    {
+      "name": "Envato", "category": "Digital assets", "verdict": "disqualified",
+      "ai": "banned", "automation": "none-found",
+      "economics": "flat 50% from 2026-07-01",
+      "timeToCash": "monthly, paid ~15th",
+      "checked": "2026-05-18",
+      "summary": "Four independent blockers, any one fatal. New author accounts cannot be created. AI content is banned in the download file across ALL content types, not just audio. Revenue flattened to 50%. Envato states Elements 'continues to be our core focus'.",
+      "risks": ["'Authors are not allowed to sell AI-generated content... This extends to all content types, across Market and Elements' — edited 2026-05-18, so it survived the Shutterstock acquisition", "When intake reopens it explicitly EXCLUDES Theme, Code, Photo, Audio and Graphics"],
+      "sources": ["https://help.author.envato.com/hc/en-us/articles/13313674070681-AI-generated-content-policy-for-Market-and-Elements"]
+    },
+    {
+      "name": "Skillshare", "category": "Courses", "verdict": "disqualified",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "royalty pool; 50-follower minimum since 2026-01-01",
+      "timeToCash": "paid via Tipalti on the 16th, 16-45 day lag",
+      "checked": "2026-07-16",
+      "summary": "New teacher onboarding is PAUSED in Development, Home & Lifestyle, Writing & Publishing, Personal Development, Marketing & Business, Music & Audio, and Productivity — essentially every category an agent operation would target. The platform has publicly positioned against us: 'more of the internet is being optimized for scale, automation, and infinite content... Skillshare is making a deliberate choice to invest in being more human.'",
+      "risks": ["Skillshare's own published figure: 90% of the teachers cut by its new threshold earned under $5/month"],
+      "sources": ["https://help.skillshare.com/hc/en-us/articles/46487542333837-Update-to-Skillshare-Teacher-Earnings"]
+    },
+    {
+      "name": "Figma Community", "category": "Digital assets", "verdict": "disqualified",
+      "ai": "allowed-disclosed", "automation": "none-found",
+      "economics": "15% Figma fee, creator keeps 85%",
+      "timeToCash": "30 US BUSINESS days after each sale — about 6 weeks",
+      "checked": "2026-07-25",
+      "summary": "'We are not approving new creators to sell paid files on Community at this time.' Paid files — templates and UI kits, exactly the AI-automatable asset class — are closed to new sellers. Only paid plugins and widgets remain, which is engineering behind an approval with no published SLA.",
+      "reconsiderIf": "Figma reopens paid-file approvals.",
+      "sources": ["https://help.figma.com/hc/en-us/articles/12067637274519-About-selling-Community-resources"]
+    },
+    {
+      "name": "Society6", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "none-found", "automation": "prohibited",
+      "economics": "5% markup on most products, 10% on prints — of BASE price, not retail",
+      "timeToCash": "not recorded",
+      "checked": "2026-06-01",
+      "summary": "Signup is closed — 'We're not accepting new applications right now' — following mass artist-account closures in two 2025 waves with 'no appeals process'. Worst economics reviewed. ToS bans 'any robot, spider, scraper, or other automated means... for any purpose', with frozen payments as the remedy.",
+      "corrections": ["The company is NOT shutting down — it appears as a going concern in Graham Holdings' Q1 2026 10-Q. Only the artist programme was gutted"],
+      "risks": ["Society6 DELETED both artist-transition announcements from its live help centre; they survive only in the Internet Archive"],
+      "sources": ["Society6 ToS, effective 2025-03-18"]
+    },
+    {
+      "name": "Zazzle", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "allowed-disclosed", "automation": "prohibited",
+      "economics": "5-50% self-set royalty, minus fees",
+      "timeToCash": "$50 PayPal, up to 45 days after month end",
+      "checked": "2026-07-26",
+      "summary": "AI is allowed with a #generativecontent tag. Automation is the blocker: s3.1.16 bans automated retrieval 'including... AI, machine learning, and data science purposes', and the Creator FAQ is blunt — 'Automated scraping tools or bots are prohibited... may lead to Account termination or withheld Earnings.' Its API is a referral/preview toy, not an upload API.",
+      "sources": ["Zazzle Terms s3.1.16"]
+    },
+    {
+      "name": "Threadless", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "allowed-disclosed", "automation": "prohibited",
+      "economics": "~10% on the Marketplace, which is juried",
+      "timeToCash": "not recorded",
+      "checked": "2026-07-26",
+      "summary": "Worst fit examined. Terms ban any automated system hitting the site 'more... than a human can reasonably produce'. Mandatory AI disclosure in every product description, plus an explicit right to 'remove designs that appear to be generated in bulk using artificial intelligence tools'.",
+      "sources": ["Threadless Terms"]
+    },
+    {
+      "name": "Fine Art America", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "none-found", "automation": "prohibited",
+      "economics": "100% of your markup; free tier 25 images, $30/yr unlimited",
+      "timeToCash": "30-59 days",
+      "checked": "2020-06-01",
+      "summary": "Easiest signup and best headline economics, undone by the broadest anti-bot clause reviewed: it covers 'any other automatic device, program, algorithm, or methodology' to ACCESS the site, plus an anti-deniability agency clause — 'Tools that use the Website shall be considered agents of the individuals who control or author them.'",
+      "risks": ["Terms are dated June 2020, PRE-generative-AI. The AI silence is an artifact of age and could close overnight"],
+      "sources": ["Fine Art America Terms, June 2020"]
+    },
+    {
+      "name": "Temu", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "none-found", "automation": "sanctioned-api",
+      "economics": "commission UNPUBLISHED",
+      "timeToCash": "not recorded",
+      "checked": "2026-07-26",
+      "summary": "Genuinely surprising: automated uploading is expressly sanctioned via a public API, and signup is open to individuals with no LLC. POD fulfilment is what kills it.",
+      "risks": ["~1 operating day handling time, $5/order late penalties, and you pay return shipping — incompatible with print-on-demand lead times", "Temu WITHDREW its seller agreement from public access during 2025"],
+      "sources": ["Temu open API documentation"]
+    },
+    {
+      "name": "Wayfair", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "unpublished monthly Platform Access Fee; Net 60 with setoff rights",
+      "timeToCash": "Net 60",
+      "checked": "2026-07-26",
+      "summary": "Disqualifiers are model-level, not policy-level.",
+      "risks": ["Requires a warehouse or 3PL address and physical inventory", "$1M per occurrence / $2M aggregate liability insurance", "One-listing-per-product rule targets AI-variant economics directly", "$75,000-per-file liquidated damages for competitive use of site materials — relevant if an agent scrapes it"],
+      "sources": ["Wayfair MSA"]
+    },
+    {
+      "name": "Walmart Marketplace", "category": "POD marketplace", "verdict": "disqualified",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "not recorded",
+      "timeToCash": "not recorded",
+      "checked": "2026-07-26",
+      "summary": "Requires US EIN, US business address, W-9, a product catalog and a US fulfilment address. Walmart explicitly prioritises sellers with established ecommerce track records. A solo POD seller with no marketplace history is a likely reject.",
+      "reconsiderIf": "Etsy volume becomes provable.",
+      "sources": ["Walmart Marketplace application requirements"]
+    },
+    {
+      "name": "Alamy", "category": "Stock imagery", "verdict": "disqualified",
+      "ai": "banned", "automation": "none-found",
+      "economics": "not recorded",
+      "timeToCash": "not recorded",
+      "checked": "2026-07-13",
+      "summary": "AI banned by an amendment dated 2026-07-13. The timing rule matters: existing contributors have until 1 September, but 'for Contributors who registered from 13 July 2026 onwards, the new contract was in force from the point of registration'. A new account today is bound immediately.",
+      "risks": ["Alamy's own public blog announcing the July changes lists commission and threshold changes and never mentions the AI ban"],
+      "sources": ["Alamy Contributor Contract amendment, 2026-07-13"]
+    },
+    {
+      "name": "Shutterstock", "category": "Stock imagery", "verdict": "disqualified",
+      "ai": "banned", "automation": "none-found",
+      "economics": "n/a",
+      "timeToCash": "n/a",
+      "checked": "2025-07-16",
+      "summary": "'Shutterstock does not accept AI-generated content from our contributors.' Note the ban lives in a help-centre article, not the contributor contract, which is dated 2023-09-05 and contains no AI or automation clause at all. Its AI contributor fund pays only for training-data licensing of already-uploaded back catalogues — with no back catalogue there is nothing to enter.",
+      "risks": ["The Shutterstock-Getty merger was TERMINATED 2026-07-07; Shutterstock's CEO stepped down five days later. Neither company has said anything to contributors"],
+      "sources": ["Shutterstock help centre, effective 2025-07-16", "SEC 8-K, 2026-07-07"]
+    },
+    {
+      "name": "Getty / iStock", "category": "Stock imagery", "verdict": "disqualified",
+      "ai": "banned", "automation": "none-found",
+      "economics": "n/a",
+      "timeToCash": "n/a",
+      "checked": "2026-07-26",
+      "summary": "'Will visuals I have generated or modified be offered as part of iStock's creative library? No.' Getty's contributor compensation for AI is training-data licensing on existing catalogues, with formula, eligibility and cadence published nowhere.",
+      "sources": ["iStock contributor FAQ", "Getty FY2025 10-K"]
+    },
+    {
+      "name": "Lemon Squeezy", "category": "Payment rail", "verdict": "disqualified",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "5% + $0.50",
+      "timeToCash": "n/a",
+      "checked": "2026-01-28",
+      "summary": "Being sunset into Stripe. The CEO's post (2026-01-28) confirms the team has moved to Stripe Managed Payments; signup now routes into a triage that pitches Stripe's MoR products; no product updates since Aug 2025. Do not build here.",
+      "sources": ["Lemon Squeezy CEO post, 2026-01-28"]
+    },
+    {
+      "name": "Shopify", "category": "Storefront", "verdict": "disqualified",
+      "ai": "none-found", "automation": "sanctioned-api",
+      "economics": "$29-39/mo + 2.9% + $0.30",
+      "timeToCash": "standard payout schedule",
+      "checked": "2026-05-11",
+      "summary": "Worst of both worlds at this stage. Its own Terms state twice that 'the Services are not a marketplace' and 'You are the seller or merchant of record for all sales.' There is NO Shopify MoR path for a digital-only seller — Managed Markets prohibits digital goods and states a digital-only order makes you MoR automatically.",
+      "risks": ["Real cost is not $29/mo — it is $29/mo PLUS carrying EU/UK VAT registration personally from the first international sale", "Zero attached buyer demand; a new domain starts at zero organic traffic"],
+      "reconsiderIf": "There is an audience or a proven paid-acquisition channel.",
+      "sources": ["Shopify Terms of Service, updated 2026-05-11"]
+    },
+    {
+      "name": "Display ad networks", "category": "Content / traffic", "verdict": "disqualified",
+      "ai": "banned", "automation": "prohibited",
+      "economics": "Ezoic 250,000 monthly active users; Raptive 25k pageviews + 6-month-old domain; Mediavine Official $5,000+ annual ad revenue",
+      "timeToCash": "n/a",
+      "checked": "2026-07-10",
+      "summary": "Every floor moved up within twelve months, and Ezoic — the beginner on-ramp — now demands 250k monthly active users. Mediavine terminates for 'excessive use of Artificial Intelligence'; Raptive requires 'meaningful human involvement'. Combined with 68% of US Google searches ending without a click, the write-pages-and-monetise lane is structurally closed to a new domain.",
+      "sources": ["Mediavine Journey docs, updated 2026-03-11", "Raptive help, updated 2026-06-05"]
+    },
+    {
+      "name": "B2B data / lead lists", "category": "Services", "verdict": "disqualified",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "$6,000/yr California data-broker registration before dollar one",
+      "timeToCash": "n/a",
+      "checked": "2025-12-17",
+      "summary": "Not a judgment call, a number. California's Delete Act sets 2026 annual data-broker registration at $6,000, due 31 January, with $200/day penalties for failing to register. That fixed compliance cost precedes the first dollar and kills the economics for a solo operator in California.",
+      "sources": ["https://cppa.ca.gov/data_brokers/"]
+    },
+    {
+      "name": "Etsy digital downloads", "category": "Digital assets", "verdict": "candidate",
+      "ai": "allowed-disclosed", "automation": "sanctioned-api",
+      "economics": "$0.20/listing; no incremental shop cost inside Lane 1",
+      "timeToCash": "1-4 weeks to first sale per community reports",
+      "checked": "2026-07-25",
+      "summary": "Round 1's top queued lane. ~95% automatable, sells into the shop we are already opening, and reuses the fall/holiday design language at zero marginal design cost. The Halloween/fall SVG window opens around August — the one piece of timing here that actually expires.",
+      "risks": ["Template flips are banned; only original design qualifies", "New-seller payment reserve can hold ~30% of funds for 45 days"],
+      "sources": ["ops/LANES.md round 1"]
+    },
+    {
+      "name": "Amazon KDP", "category": "Publishing", "verdict": "candidate",
+      "ai": "allowed-disclosed", "automation": "none-found",
+      "economics": "$0 to publish; 50% royalty on print books under $9.99 since June 2025, so price at $9.99+",
+      "timeToCash": "royalties pay ~60 days after month end — day 75-90",
+      "checked": "2026-07-25",
+      "summary": "Round 1 lane #3. KDP accepts AI-generated content if disclosed via a mandatory private checkbox. Real consumer demand: 'coloring pages for adults' at 18,100/mo US.",
+      "risks": ["Enforcement targets undisclosed AI and low-quality mass uploads", "Publishing capped at 3 titles/day", "Cash lags badly — plan around 75-90 days"],
+      "sources": ["ops/LANES.md round 1"]
+    },
+    {
+      "name": "Notion templates", "category": "Digital assets", "verdict": "candidate",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "Marketplace 10% + $0.40; Gumroad 10% + $0.50 + processing",
+      "timeToCash": "Marketplace biweekly, $20 min, 14-day hold; Gumroad ~7 days",
+      "checked": "2026-07-25",
+      "summary": "Round 1 lane #4 and the most agent-native product on any list — templates are structured text, databases and formulas. Semrush shows 'notion templates' at 22,200/mo US.",
+      "risks": ["No policy against AI-built templates was found — permitted by silence, which is a gap", "Marketplace requires waitlist plus approval; run Gumroad and the free gallery meanwhile"],
+      "sources": ["ops/LANES.md round 1"]
+    },
+    {
+      "name": "Fiverr productized gigs", "category": "Services", "verdict": "candidate",
+      "ai": "allowed-written", "automation": "none-found",
+      "economics": "20% commission, 14-day clearance",
+      "timeToCash": "1-3 weeks",
+      "checked": "2026-07-25",
+      "summary": "Round 1 lane. Fiverr's Community Standards state AI is permitted across every category, and it has had dedicated AI categories since Jan 2023. Sells exactly what our agents already do for Lane 1 — Semrush-backed Etsy SEO audits, titles and tags, description packs. Doubles as paid market intelligence.",
+      "risks": ["Lowest automation of the round-1 set at ~85% — deliverables are fully agent-made but buyer messaging needs operator presence"],
+      "sources": ["ops/LANES.md round 1"]
+    },
+    {
+      "name": "Creative Fabrica", "category": "Digital assets", "verdict": "flagged",
+      "ai": "allowed-written", "automation": "none-found",
+      "economics": "50% rev share on CF-referred, 75% self-referred; subscription downloads pay cents",
+      "timeToCash": "monthly, $10 minimum",
+      "checked": "2026-07-25",
+      "summary": "Round 1 lane #5. The most AI-forward marketplace found — it sells AI files natively. Pure syndication of the existing asset pipeline at roughly zero marginal cost.",
+      "risks": ["A trickle lane — seller reports around $1K in a first year", "Subscription downloads pay cents"],
+      "killCriteria": "If under $50/mo after 90 days at 200+ assets, stop adding and let it idle.",
+      "sources": ["ops/LANES.md round 1"]
+    },
+    {
+      "name": "FHT shop skills as a service", "category": "Services", "verdict": "candidate",
+      "ai": "n/a", "automation": "n/a",
+      "economics": "$200-400/mo per shop (anchored on Podium ~$399/mo, Birdeye $299-449 — both third-party figures)",
+      "timeToCash": "immediate — direct invoice, no platform escrow",
+      "checked": "2026-07-26",
+      "summary": "The strongest lane found in round 2, and the product already exists. ~/FHT AUTO INC/ holds 20 production shop skills running live since June 2026, including a 27KB fht-mitchell-writeup encoding Mitchell 1 line-type discipline and California BAR Write-It-Right constraints. Domain credibility in a trade is the one input that has not been commoditised — anyone can generate a website; almost nobody selling AI to repair shops has written a repair order that printed on BAR paperwork. Market is ~273,000 US independent shops.",
+      "risks": ["For the first 3-5 customers this is a JOB, not a system — you personally on the phone, you personally doing each shop-facts interview", "It only becomes a system if the same shop-facts template works across shops without you. Test that assumption early and cheaply", "Shops are famously cheap on software; distribution is genuinely hard"],
+      "killCriteria": "Free two-week pilot with five non-competing shops. The whole test is one question: do they paste the output unedited, or rewrite it? If they rewrite it, the domain encoding did not transfer.",
+      "sources": ["~/FHT AUTO INC/", "Auto Care Association, April 2024"]
+    },
+    {
+      "name": "White-label agency subcontracting", "category": "Services", "verdict": "candidate",
+      "ai": "n/a", "automation": "n/a",
+      "economics": "wholesale $350-8,000/mo, resale 2-2.5x (LOW confidence — all sources are white-label vendors selling the model)",
+      "timeToCash": "net-15/30 typical (UNVERIFIED as a norm)",
+      "checked": "2026-07-26",
+      "summary": "Highest automation ratio of any services lane at ~90-95%, for one structural reason: the agency owns the client relationship. Client communication is the automation ceiling everywhere else; here it is someone else's problem. You get a spec, you return a deliverable.",
+      "risks": ["Concentration — one agency is one client who can drop you, and will squeeze margin once they see the output is AI", "You are the commodity"],
+      "sources": ["ops/LANES.md round 2"]
+    },
+    {
+      "name": "PromptBase", "category": "AI-native", "verdict": "unresearched",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "not researched",
+      "timeToCash": "not researched",
+      "checked": null,
+      "summary": "The agent assigned to AI-native marketplaces terminated on a weekly usage limit and delivered only a corrections addendum. It referenced PromptBase as its top pick WITHOUT the supporting reasoning, which was never received. Recorded as unresearched, not recommended.",
+      "sources": []
+    },
+    {
+      "name": "Hugging Face / GPT Store / MCP registries", "category": "AI-native", "verdict": "unresearched",
+      "ai": "none-found", "automation": "none-found",
+      "economics": "not researched",
+      "timeToCash": "not researched",
+      "checked": null,
+      "summary": "Never delivered — the assigned agent hit a usage limit. Whether any of these has a real creator payment rail in 2026 is an open question. Absence of findings here is absence of data, not a negative signal.",
+      "sources": []
+    }
+  ]
+}

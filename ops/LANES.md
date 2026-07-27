@@ -1,3 +1,12 @@
+> [!important] Looking up a specific platform? Use the vault, not this file.
+> `PERPETUA ORBITAL/Dashboard.md` has all 41 lanes as linked notes, sorted by
+> verdict, each with its AI policy, automation policy and **last-verified date**.
+> It is generated from `ops/lanes.data.json` — edit that and run
+> `node ops.mjs vault`.
+>
+> **This file keeps the narrative reasoning; the vault keeps the facts.** When
+> they disagree, the vault wins, because it carries dates and this does not.
+
 # Lane Research Report: Queueing Lanes #2–#4 Behind Etsy POD
 
 *Produced by a background scout agent run, 2026-07-25. Platform policies
