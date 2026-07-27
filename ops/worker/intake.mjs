@@ -21,11 +21,22 @@ const artDir = join(here, '..', 'art');
 const outDir = join(artDir, 'print');
 const listingsPath = join(here, '..', 'BATCH-01.listings.json');
 
-// Print target by product family (long edge, px), sized to the print area that
-// is actually used at 300dpi rather than to the largest the blueprint allows:
-// a standard adult front print is 11-12in wide, so 3600px covers it. Targeting
-// 4500 forced a 4.4x upscale from a 1024px source for no printed benefit.
-const TARGET = { tee: 3600, sweatshirt: 3600, candle: 3000, mug: 2700, tote: 3300 };
+// Print target by product family (long edge, px) — now the MEASURED print area
+// from the live Printify catalog, not an estimate. See BLUEPRINT_SEARCH in
+// stage.mjs for where each came from.
+//
+// This matters more than it looks. The candle target was 3000 against a real
+// print area of 900x600, so a perfectly good 1024px label was being judged as
+// needing a 2.9x upscale it never needed. Measuring turned that into a
+// downscale. Targets that are guesses make the quality gates lie in both
+// directions.
+const TARGET = {
+  tee: 3362,        // front 2767x3362
+  sweatshirt: 3398, // front 2976x3398
+  candle: 900,      // label 900x600 — small, and that is correct
+  mug: 2700,        // wrap 2700x1120
+  tote: 3600,       // front 3000x3600
+};
 const MIN_SOURCE = 900;   // below this, upscaling produces mush
 const MAX_UPSCALE = 4.0;  // beyond this, so does upscaling from anything
 const WARN_UPSCALE = 3.0;
