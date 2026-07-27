@@ -188,7 +188,14 @@ async function modeAdd() {
   const wantsAlpha = [...spec.families].some(fam => NEEDS_ALPHA.has(fam));
   const problems = [];
   let fixable = false;
-  if (meta.format !== 'png') problems.push(`not a png (${meta.format})`);
+  // JPEG is the normal case, not an error: the Gemini web UI only exports JPEG,
+  // so rejecting it would block every single design. Convert on filing instead.
+  // Nothing is lost — the compression already happened upstream, and the
+  // pipeline needs PNG only so it can carry an alpha channel.
+  const CONVERTIBLE = new Set(['jpeg', 'jpg', 'webp', 'png']);
+  if (!CONVERTIBLE.has(meta.format)) {
+    problems.push(`unsupported format (${meta.format}) — need png, jpeg or webp`);
+  }
   if (long < MIN_SOURCE) problems.push(`too small (${meta.width}x${meta.height}, need ≥${MIN_SOURCE}px)`);
   if (wantsAlpha) {
     const border = meta.hasAlpha ? await borderIsTransparent(src) : { fraction: 0, ok: false };
@@ -208,7 +215,7 @@ async function modeAdd() {
       // a white background is the one defect we can repair rather than reject
       console.log(`\nfiling it anyway so it can be keyed:`);
       mkdirSync(artDir, { recursive: true });
-      copyFileSync(src, join(artDir, target));
+      await sharp(src).png({ compressionLevel: 9 }).toFile(join(artDir, target));
       console.log(`  node ops.mjs art key ${code}     removes the white background`);
       console.log(`  then check it looks right, and carry on with: node ops.mjs art next`);
       return;
@@ -220,8 +227,10 @@ async function modeAdd() {
   mkdirSync(artDir, { recursive: true });
   const dest = join(artDir, target);
   const replacing = existsSync(dest);
-  copyFileSync(src, dest);
-  console.log(`${replacing ? 'REPLACED' : 'FILED'}  ${src}  ->  ops/art/${target}   (used by ${spec.uses.join(',')})`);
+  // always write PNG, converting if the source was JPEG or WebP
+  await sharp(src).png({ compressionLevel: 9 }).toFile(dest);
+  const converted = meta.format !== 'png' ? ` (converted from ${meta.format})` : '';
+  console.log(`${replacing ? 'REPLACED' : 'FILED'}  ${src}  ->  ops/art/${target}${converted}   (used by ${spec.uses.join(',')})`);
   console.log(`  ok  ${meta.width}x${meta.height}, alpha=${meta.hasAlpha}, ${upscale.toFixed(1)}x to print size`);
   if (upscale > WARN_UPSCALE) {
     console.log(`  ! ${upscale.toFixed(1)}x is fine for bold one-ink text, soft for fine detail`);
@@ -239,39 +248,61 @@ async function modeAdd() {
 // alpha gate above would make 22 of the 40 listings impossible to stage — a
 // rule that blocks the only tool the operator has is not a safety rail.
 //
-// This removes white ONLY where it is connected to the image border, by flood
-// fill. A global "delete every white pixel" would punch holes through the cream
-// outlines and light lettering several of these designs are built on; a border
-// fill cannot reach an enclosed interior region.
-async function keyOut(file, threshold = 244) {
+// Two modes, because letterforms and illustrations want opposite things.
+//
+// BORDER (default): remove near-white only where it connects to the image edge.
+// Safe for a design with intentional interior white.
+//
+// ALL (--all): remove every near-white pixel regardless of connectivity. This
+// is what letterforms need — the counter of an "A" is enclosed, so a border
+// fill leaves it filled, and on a black shirt that prints as a solid blob.
+//
+// The reason --all is safe here rather than destructive: intentional light
+// elements in this batch are CREAM (min channel ~228) while trapped background
+// is pure WHITE (255). They separate by value, not just by connectivity, so a
+// 244 threshold takes the counters and keeps the outlines and stars.
+async function keyOut(file, { threshold = 244, all = false } = {}) {
   const img = sharp(file).ensureAlpha();
   const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
   const { width, height, channels } = info;
   const near = (i) => data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold;
 
-  const seen = new Uint8Array(width * height);
-  const stack = [];
-  const push = (x, y) => {
-    if (x < 0 || y < 0 || x >= width || y >= height) return;
-    const p = y * width + x;
-    if (seen[p]) return;
-    seen[p] = 1;
-    if (near(p * channels)) stack.push(p);
-  };
-  for (let x = 0; x < width; x++) { push(x, 0); push(x, height - 1); }
-  for (let y = 0; y < height; y++) { push(0, y); push(width - 1, y); }
-
   let cleared = 0;
-  while (stack.length) {
-    const p = stack.pop();
-    data[p * channels + 3] = 0;
-    cleared++;
-    const x = p % width, y = (p / width) | 0;
-    push(x - 1, y); push(x + 1, y); push(x, y - 1); push(x, y + 1);
+  let enclosed = 0;
+
+  if (all) {
+    for (let p = 0; p < width * height; p++) {
+      if (near(p * channels)) { data[p * channels + 3] = 0; cleared++; }
+    }
+  } else {
+    const seen = new Uint8Array(width * height);
+    const stack = [];
+    const push = (x, y) => {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      const p = y * width + x;
+      if (seen[p]) return;
+      seen[p] = 1;
+      if (near(p * channels)) stack.push(p);
+    };
+    for (let x = 0; x < width; x++) { push(x, 0); push(x, height - 1); }
+    for (let y = 0; y < height; y++) { push(0, y); push(width - 1, y); }
+
+    while (stack.length) {
+      const p = stack.pop();
+      data[p * channels + 3] = 0;
+      cleared++;
+      const x = p % width, y = (p / width) | 0;
+      push(x - 1, y); push(x + 1, y); push(x, y - 1); push(x, y + 1);
+    }
+    // near-white the fill could not reach — trapped counters, mostly
+    for (let p = 0; p < width * height; p++) {
+      if (data[p * channels + 3] !== 0 && near(p * channels)) enclosed++;
+    }
   }
 
   const pct = (cleared / (width * height)) * 100;
-  return { data, width, height, channels, pct };
+  const enclosedPct = (enclosed / (width * height)) * 100;
+  return { data, width, height, channels, pct, enclosedPct };
 }
 
 async function modeKey() {
@@ -285,7 +316,8 @@ async function modeKey() {
     console.error(`no such design: ops/art/${code}.png`);
     process.exitCode = 1; return;
   }
-  const { data, width, height, channels, pct } = await keyOut(file);
+  const all = process.argv.includes('--all');
+  const { data, width, height, channels, pct, enclosedPct } = await keyOut(file, { all });
 
   if (pct < 2) {
     console.log(`  ! only ${pct.toFixed(1)}% of ${code} was removed — its background may not be white, or the design may already reach the edges. Left unchanged.`);
@@ -299,9 +331,19 @@ async function modeKey() {
   await sharp(data, { raw: { width, height, channels } }).png().toFile(file + '.tmp');
   copyFileSync(file + '.tmp', file);
   rmSync(file + '.tmp');
-  console.log(`KEYED ${code}  ${pct.toFixed(1)}% of the image is now transparent background`);
-  console.log('  Open it and check the design itself is intact — interior white is');
-  console.log('  preserved by design, but a background that leaks into the artwork will show.');
+  console.log(`KEYED ${code}  ${pct.toFixed(1)}% transparent${all ? '  (--all: every near-white pixel, not just the border)' : ''}`);
+
+  // Trapped white is the counter of an "A" or the hole in an "R". On a dark
+  // shirt it prints as a solid blob, so it is worth naming rather than leaving
+  // for the operator to spot on a mockup.
+  if (!all && enclosedPct > 0.15) {
+    console.log(`  ! ${enclosedPct.toFixed(1)}% of the image is near-white ENCLOSED by artwork — typically letter counters.`);
+    console.log(`    On a dark shirt those print as solid patches. If this is lettering, re-run:`);
+    console.log(`      node ops.mjs art key ${code} --all`);
+    console.log(`    Keep the border-only result if the design has intentional white inside it.`);
+  } else {
+    console.log('  Open it and check the design is intact before moving on.');
+  }
 }
 
 async function modeRun() {
