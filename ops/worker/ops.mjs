@@ -199,6 +199,7 @@ const COMMANDS = {
   console: () => run('serve.mjs', rest),
   catalog: () => run('catalog.mjs'),
   vault: () => run('gen-vault.mjs'),
+  sheet: () => run('gen-promptsheet.mjs'),
   probe: () => run('probe.mjs', rest),
   doctor: () => run('doctor.mjs'),
   test: () => run('test-margin.mjs'),
