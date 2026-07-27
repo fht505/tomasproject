@@ -261,6 +261,58 @@ async function modeAdd() {
 // elements in this batch are CREAM (min channel ~228) while trapped background
 // is pure WHITE (255). They separate by value, not just by connectivity, so a
 // 244 threshold takes the counters and keeps the outlines and stars.
+// A model asked for a "transparent background" but emitting JPEG will DRAW the
+// transparency checkerboard instead. That is not a white background and the
+// white keyer cannot touch it — its cells are grey.
+//
+// It is, however, the easiest background there is to remove, because every
+// checkerboard shares one property: it is ACHROMATIC. Cells measure
+// rgb(240,240,240), rgb(92,92,92), rgb(56,56,56) — r, g and b equal. The
+// artwork is not: the cream outline is rgb(246,243,228), an 18-point channel
+// spread. So the discriminator is SATURATION, not brightness — which matters
+// because on brightness alone, cream at 228 sits perilously close to a grey
+// cell at 220.
+async function stripCheckerboard(file) {
+  const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+  const idx = (x, y) => (y * width + x) * channels;
+
+  // find the two cell tones in a border strip, considering only achromatic px
+  const counts = new Map();
+  const strip = Math.max(20, Math.floor(Math.min(width, height) * 0.05));
+  for (let y = 0; y < strip; y++) for (let x = 0; x < width; x++) {
+    const i = idx(x, y);
+    const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+    if (Math.max(r, g, b) - Math.min(r, g, b) > 12) continue;
+    const k = Math.round(r / 6) * 6;
+    counts.set(k, (counts.get(k) || 0) + 1);
+  }
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
+  if (top.length < 2) return { detected: false, reason: 'no two achromatic tones in the border' };
+  const [c1, c2] = top;
+  if (Math.abs(c1 - c2) < 12) return { detected: false, reason: `tones too close (${c1}/${c2})` };
+
+  // Take the whole achromatic span between the cells, not two narrow bands.
+  // JPEG rings at every cell edge, and those in-between pixels survive a
+  // per-tone tolerance as a faint ghost grid across the whole print.
+  const TOL = 25;
+  const lo = Math.min(c1, c2) - TOL;
+  const hi = Math.max(c1, c2) + TOL;
+  let cleared = 0;
+  for (let p = 0; p < width * height; p++) {
+    const i = p * channels;
+    const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+    if (Math.max(r, g, b) - Math.min(r, g, b) > 14) continue;  // chromatic → artwork
+    if (r < lo || r > hi) continue;
+    data[i + 3] = 0;
+    cleared++;
+  }
+  // Global rather than flood-filled on purpose: the checkerboard also shows
+  // through letter counters and inside illustrations, which a border fill can
+  // never reach, and a flat achromatic tone is never part of these designs.
+  return { detected: true, c1, c2, data, width, height, channels, pct: (cleared / (width * height)) * 100 };
+}
+
 async function keyOut(file, { threshold = 244, all = false } = {}) {
   const img = sharp(file).ensureAlpha();
   const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
@@ -316,6 +368,20 @@ async function modeKey() {
     console.error(`no such design: ops/art/${code}.png`);
     process.exitCode = 1; return;
   }
+  // A drawn checkerboard is a different background from white and needs a
+  // different rule, so try it first rather than making the operator diagnose it.
+  const chk = await stripCheckerboard(file);
+  if (chk.detected && chk.pct > 5) {
+    await sharp(chk.data, { raw: { width: chk.width, height: chk.height, channels: chk.channels } })
+      .png().toFile(file + '.tmp');
+    copyFileSync(file + '.tmp', file);
+    rmSync(file + '.tmp');
+    console.log(`KEYED ${code}  ${chk.pct.toFixed(1)}% transparent  (drawn checkerboard, cells ${chk.c1}/${chk.c2})`);
+    console.log('  The model drew a transparency grid instead of producing one. Removed by');
+    console.log('  saturation — grey cells go, coloured artwork stays. Check the design is intact.');
+    return;
+  }
+
   const all = process.argv.includes('--all');
   const { data, width, height, channels, pct, enclosedPct } = await keyOut(file, { all });
 
