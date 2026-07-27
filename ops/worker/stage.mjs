@@ -63,22 +63,30 @@ const BLUEPRINT_SEARCH = {
   tee_bella_3001: {
     id: 12, expect: /bella.*canvas.*unisex jersey short sleeve/i,
     providerId: 99, providerNote: 'Printify Choice — measured $6.08-13.21, nets $8.01 at $23.95 (Marco Fine Arts netted $1.60)',
+    // MUST be pinned: this blueprint returns "neck" (750x750 inside label)
+    // as placeholders[0]. front is 2767x3362.
+    placeholder: 'front', printArea: '2767x3362',
     match: /bella.*canvas.*3001|unisex jersey short sleeve/i, label: 'Bella+Canvas 3001 tee',
   },
   sweatshirt_gildan_18000: {
     id: 49, expect: /gildan.*unisex heavy blend.*crewneck/i,
     providerId: 217, providerNote: 'Fulfill Engine — measured $19.97 flat, nets $12.11 at $35.95',
+    // offers 9 positions incl. neck and both wrists — front is 2976x3398
+    placeholder: 'front', printArea: '2976x3398',
     match: /gildan.*18000|unisex heavy blend.*crewneck/i, label: 'Gildan 18000 crewneck',
   },
   candle_9oz: {
     // 9oz soy in a glass jar — what the listing copy actually describes
     id: 755, expect: /candle builders.*scented soy candles.*9oz/i,
     providerId: 91, providerNote: 'Candle Builders — measured $11.27-11.67, nets $14.08 at $28.95',
+    // label wrap, and it is SMALL — 900x600 is the whole print area
+    placeholder: 'front', printArea: '900x600',
     match: /scented soy candles with white lid, 9oz/i, label: '9oz scented soy candle',
   },
   mug_11oz: {
     id: 68, expect: /mug 11oz/i,
     providerId: 1, providerNote: 'SPOKE Custom Products — measured $6.44 flat, nets $9.35 at $17.95',
+    placeholder: 'front', printArea: '2700x1120',
     match: /^mug 11oz$|mug.*11oz/i, label: '11oz ceramic mug',
   },
   tote: {
@@ -86,6 +94,7 @@ const BLUEPRINT_SEARCH = {
     // $2.09 LOSS per unit. This one is half the cost for the same product.
     id: 1313, expect: /liberty bags.*cotton canvas tote/i,
     providerId: 99, providerNote: 'Printify Choice — measured $9.48 flat, nets $8.12 at $19.95',
+    placeholder: 'front', printArea: '3000x3600',
     match: /liberty bags.*cotton canvas tote/i, label: 'cotton canvas tote bag',
   },
 };
@@ -285,10 +294,22 @@ function buildProductPayload(listing, resolved, uploadId, priceCents) {
   const variants = chooseVariants(listing, resolved);
   // The placeholder position must come from the blueprint, not a guess: a mug
   // wrap or candle label is not 'front'. Fail loudly if we cannot read one.
-  const placeholderPos = resolved.variants[0]?.placeholders?.[0]?.position;
-  if (!placeholderPos) {
-    throw new Error('blueprint variant exposes no print placeholder — inspect with node ops.mjs providers');
+  // Pin the print position. NEVER placeholders[0]: on the Bella 3001 at
+  // Printify Choice the first placeholder is "neck" — a 750x750 inside label —
+  // so taking index 0 would have printed all 20 tee designs on the neck tag
+  // instead of the 2767x3362 chest. The sweatshirt only escaped because
+  // "front" happened to sort first, which is luck, not correctness.
+  const spec = BLUEPRINT_SEARCH[listing.product];
+  const wanted = spec?.placeholder || 'front';
+  const offered = [...new Set(
+    (resolved.variants || []).flatMap(v => (v.placeholders || []).map(p => p.position)))];
+  if (!offered.length) {
+    throw new Error(`${listing.product}: blueprint exposes no print placeholder at all — inspect with node ops.mjs providers`);
   }
+  if (!offered.includes(wanted)) {
+    throw new Error(`${listing.product}: print position "${wanted}" is not offered by this blueprint/provider. Available: ${offered.join(', ')}. Fix the \`placeholder\` in BLUEPRINT_SEARCH rather than guessing.`);
+  }
+  const placeholderPos = wanted;
   const place = PLACEMENT[listing.product];
   if (!place) {
     throw new Error(`no print placement defined for ${listing.product} — add one to PLACEMENT in stage.mjs rather than letting it default to a full-width centred print`);
@@ -500,7 +521,7 @@ async function stageRun(listings, cfg) {
   const uploadCache = {};
   const shippingCache = {};
   const dryPayloads = [];
-  let created = 0, skipped = 0, failed = 0, rejected = 0, unverified = 0;
+  let created = 0, skipped = 0, failed = 0, rejected = 0, unverified = 0, tmPending = 0;
 
   for (const l of listings) {
     const existing = staged.items[l.code];
@@ -513,9 +534,16 @@ async function stageRun(listings, cfg) {
       assertNoPlaceholders(l);
       assertShippingClaimMatchesConfig(l, cfg);
 
-      // fail closed: an unscreened phrase is a blocked phrase
+      // Fail closed: an unscreened phrase is a blocked phrase. But a dry run
+      // creates nothing, so the trademark risk does not apply to it — and
+      // blocking it here would gate the payload validation behind 34 manual
+      // searches, which is the opposite of what a dry run is for. Report and
+      // continue instead.
       const tm = tmBlocker(l);
-      if (tm) throw new Error(tm);
+      if (tm) {
+        if (!dryRun) throw new Error(tm);
+        tmPending++;
+      }
 
       // --force replaces an existing draft. Refusing a LIVE one is checked
       // here, up front, so a dry run reports it too — but the actual delete
@@ -639,6 +667,9 @@ async function stageRun(listings, cfg) {
       payloads: dryPayloads,
     });
     console.log(`\n${created} payloads built, ${failed} failed, nothing sent to Printify`);
+    if (tmPending) {
+      console.log(`${tmPending} listings are not trademark-screened yet — fine for a dry run, but the real stage will refuse them. Run: node ops.mjs tm`);
+    }
     console.log('read state/dry-run.json before the real run — especially print_areas.placeholders[].position');
     return failed ? 1 : 0;
   }
