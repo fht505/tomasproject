@@ -646,6 +646,87 @@ templates, video clips, fonts, and presets". Generating our own is fine.
 Separately, Gumroad's ban on "AI services" means selling *access to* AI tools,
 not products *made with* AI — different thing, do not conflate.
 
+## Stock imagery — one written yes, inside a declining lane
+
+**Vecteezy is the only platform in either research round whose binding
+contract authorises BOTH AI content and automated publishing.** Contributor
+Agreement §3(e): "Contributor may Upload Files of different formats on the Site
+using **internal Vecteezy tools or other tools approved by Vecteezy (e.g.,
+FTP)**". It names approved third-party uploaders (Microstock Plus,
+StockSubmitter, Xpiks), documents auto-uploading SFTP, and ships its own
+Auto-Submit and AI keywording. AI policy updated **2026-07-24**: "Vecteezy
+accepts AI-rendered images and videos", and the most permissive release rule
+found anywhere — "We do not require a release if the AI content is created
+based on a text prompt only."
+
+Everywhere else the best case was an unwritten gap. **A written yes and an
+unwritten gap are not the same asset.**
+
+**Its real constraint is not a bot clause — it is the weekly Submission
+Quota**, which tightens on low approval rate, where **rejected files still
+consume quota** and technically-rejected files can never be resubmitted. A
+high-volume low-quality pipeline throttles itself into a corner. A quality gate
+*before* upload is the entire game. Budget 6–12 weeks to first cash (~21-day
+review, then a sale, then a $25 payout floor).
+
+### But the lane itself is shrinking — Shutterstock's own 10-K
+
+| Revenue ($000) | 2022 | 2024 |
+|---|---|---|
+| **Content** (selling images) | 789,306 | **760,011** |
+| **Data/Distribution** (incl. AI training-data licensing) | 38,520 | **175,251** |
+
+Selling stock images is flat-to-declining; 2024 is still below 2022. The
+AI-adjacent line grew **4.5x**. The money moved from selling pictures to being
+training data — **and we cannot sell into the half that is growing.** There is
+also no verified evidence that AI images specifically sell well anywhere; every
+per-image earnings figure in circulation traces back to someone selling a
+course.
+
+**So: treat Vecteezy as a cheap bounded experiment with a hard kill criterion,
+not a business line.**
+
+### The AI "contributor funds" question, answered
+
+**Shutterstock's and Getty's AI funds pay for training data only, and neither
+is enterable.** Shutterstock compensates contributors "if their IP was used in
+the development of AI-generative models… through licensing of data from
+Shutterstock's library" — it pays people whose *already-uploaded back catalogue*
+became training data. With no back catalogue there is nothing there. Getty is
+worse: "Will visuals I have generated or modified be offered as part of
+iStock's creative library? **No.**"
+
+### Dated policy facts worth keeping
+
+- **Alamy banned AI in an amendment dated 2026-07-13** — and while existing
+  contributors have until 1 September, "for Contributors who registered from
+  13 July 2026 onwards, the new contract was in force from the point of
+  registration." A new account today is bound immediately. Alamy's own public
+  blog announcing the July changes never mentions the AI ban.
+- **Shutterstock's contributor contract is dated 2023-09-05 and contains no AI
+  clause and no automation clause.** The AI ban lives only in a help-centre
+  article (effective 2025-07-16), not the contract.
+- **Dreamstime could not be verified at all** — the entire site sits behind
+  PerimeterX bot protection that blocked every attempt. That says something
+  about its posture toward automation even though it establishes nothing
+  legally.
+
+### Counterparty instability
+
+**The Shutterstock–Getty merger is dead** — terminated **2026-07-07** per both
+companies' SEC 8-Ks, after the UK CMA conditioned clearance on divesting
+Shutterstock's editorial business. Five days later Shutterstock's CEO stepped
+down effective immediately, CFO interim. Neither company has said anything to
+contributors. Two rudderless firms as of three weeks ago.
+
+### Not received
+
+The AI-native marketplace findings themselves — PromptBase, Hugging Face, GPT
+Store, MCP/Claude Skills registries, n8n/Make — **were never delivered.** Only
+a corrections addendum arrived, which references PromptBase as its top pick
+without the supporting reasoning. **Treat PromptBase as unresearched**, not as
+recommended.
+
 ## Compliance lines worth knowing
 
 - **California Delete Act** — 2026 data-broker registration is **$6,000/yr**,
