@@ -64,6 +64,8 @@ function status() {
   const shopId = !!env('PRINTIFY_SHOP_ID');
 
   const plan = state('plan');
+  const catalog = state('catalog');
+  const costs = state('costs');
   const uniqueArt = listings ? new Set(listings.listings.map(l => l.art_file)).size : 0;
   const artOk = art?.ok?.length ?? 0;
   const stagedItems = staged ? Object.values(staged.items) : [];
@@ -115,13 +117,19 @@ function status() {
     // and the catalog decides whether they are worth drawing: if this account
     // has no 9oz candle blueprint, twelve of them are wasted work. Find out
     // first.
+    // `catalog` and `plan` answer the same question — do these products exist
+    // and do the prices work — but catalog needs only a token, so it is the one
+    // that actually gets run first. Accepting only plan.json reported "not run"
+    // when the work was done and its results were sitting in catalog.json.
     {
       name: 'Catalog + margins resolved',
-      done: !!plan,
+      done: !!(plan || catalog),
       detail: plan
-        ? `${Object.values(plan.plan || {}).filter(p => !p.error).length}/${Object.keys(plan.plan || {}).length} product types`
-        : 'not run',
-      next: 'node ops.mjs plan   (proves the products exist and prices the real margins — do this BEFORE drawing 34 designs)',
+        ? `${Object.values(plan.plan || {}).filter(p => !p.error).length}/${Object.keys(plan.plan || {}).length} product types (plan)`
+        : catalog
+          ? `${(catalog.products || []).filter(p => p.found).length}/${(catalog.products || []).length} product types${costs ? ' · costs measured' : ''}`
+          : 'not run',
+      next: 'node ops.mjs catalog   (proves the products exist and prices the real margins — do this BEFORE drawing 34 designs)',
     },
     {
       name: 'Printed phrases screened',
