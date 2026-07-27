@@ -26,3 +26,12 @@ ops/state/*
 # Generated from gen-listings.mjs + config.json. It bakes in the real shop
 # name, so it is built locally rather than committed with a placeholder in it.
 ops/BATCH-01.listings.json
+
+# Obsidian: the notes are worth versioning, the editor's local UI state is not.
+# workspace.json records which panes happen to be open and rewrites itself
+# constantly, so tracking it means a dirty working tree every time the vault is
+# opened. Shared config — appearance, plugins, graph settings — stays tracked.
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
+**/.obsidian/cache
+.trash/
