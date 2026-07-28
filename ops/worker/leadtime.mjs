@@ -109,7 +109,13 @@ if (process.argv.includes('--write')) {
     const cfgPath = PATHS.config;
     const raw = JSON.parse(readFileSync(cfgPath, 'utf8'));
     raw.processing = raw.processing || {};
-    raw.processing.days = worst;
+    // A PHRASE, not a bare number. It is printed verbatim into every listing
+    // description ("Ships in ..."), and orders.mjs reads the word "business" out
+    // of it to decide whether the ship-by clock skips weekends. Writing 10 gave
+    // "Ships in 10" and quietly made the clock calendar-based by accident.
+    // Printify's unit is a plain day, so say days and mean calendar days — the
+    // stricter reading, which raises the stalled-order alarm sooner.
+    raw.processing.days = `${worst} days`;
     raw.processing.source = `Printify shipping endpoint handling_time for all ${ok.length} pinned blueprint/provider pairs, each ${worst} days, read ${new Date().toISOString().slice(0, 10)}. This is Printify's stated maximum before shipment, not a production estimate.`;
     writeFileSync(cfgPath, JSON.stringify(raw, null, 2));
     console.log(`  set processing.days = ${worst} in ops/config.json`);

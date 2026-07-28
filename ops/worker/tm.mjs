@@ -82,7 +82,111 @@ function phrasesFor(spec) {
   return [...out];
 }
 
+// Triage only — this is a reading of which phrases are LIKELY to be registered,
+// not a search result and not legal advice. Short, brandable phrases get
+// registered in Class 25; long descriptive ones rarely do and are rarely
+// enforced. It exists solely to order the work so the dangerous ones get looked
+// at while attention is fresh. Every phrase still needs a real verdict.
+const HIGH_RISK = new Set([
+  'Dog Mama', 'Sweater Weather', 'Harvest Moon', 'Teach Love Inspire',
+  'Emotional Support Candle', 'Emotional Support Nurse', 'Emotional Support Coffee',
+  'Teacher Era', 'Nurse Era', 'Grandma Era', 'Cozy Era',
+  'Pumpkin Season', 'Smells Like Fall', 'Professional Chaos Coordinator',
+]);
+
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 const commands = {
+  // Screening 34 phrases from a terminal means 68 copy-pastes and a lot of
+  // scrolling. This is the same data as `list`, laid out so the whole batch can
+  // be worked through in one pass: tick what is clear, copy one command.
+  sheet() {
+    const byPhrase = phraseIndex();
+    const s = load();
+    const rows = [...byPhrase].map(([phrase, codes]) => ({
+      phrase, codes, verdict: s.verdicts[phrase]?.verdict || null,
+      note: s.verdicts[phrase]?.note || '',
+      high: HIGH_RISK.has(phrase),
+    }));
+    // dangerous first, then anything already decided drops to the bottom
+    rows.sort((a, b) =>
+      (a.verdict ? 1 : 0) - (b.verdict ? 1 : 0) ||
+      (b.high ? 1 : 0) - (a.high ? 1 : 0) ||
+      a.phrase.localeCompare(b.phrase));
+
+    const pending = rows.filter(r => !r.verdict).length;
+    const body = rows.map(r => `
+    <tr class="${r.verdict ? 'done' : ''}">
+      <td>${r.verdict ? '' : `<input type="checkbox" data-code="${esc(r.codes[0])}">`}</td>
+      <td class="risk">${r.verdict ? `<span class="v ${r.verdict === 'PASS' ? 'pass' : 'fail'}">${r.verdict}</span>` : (r.high ? '<span class="hi">SCREEN&nbsp;CAREFULLY</span>' : '<span class="lo">lower risk</span>')}</td>
+      <td><strong>${esc(r.phrase)}</strong><div class="codes">${esc(r.codes.join(', '))}</div>${r.note ? `<div class="note">${esc(r.note)}</div>` : ''}</td>
+      <td class="links">
+        <a target="_blank" rel="noreferrer" href="https://tmsearch.uspto.gov/search/search-information?q=${encodeURIComponent(r.phrase)}">USPTO</a>
+        <a target="_blank" rel="noreferrer" href="https://www.etsy.com/search?q=${encodeURIComponent(r.phrase)}">Etsy</a>
+      </td>
+      <td class="cmd"><code>tm fail ${esc(r.codes[0])} "reason"</code></td>
+    </tr>`).join('');
+
+    const html = `<!doctype html><meta charset="utf-8"><title>Trademark screen — ${pending} left</title>
+<style>
+ :root{color-scheme:light dark}
+ body{font:15px/1.5 ui-sans-serif,system-ui,sans-serif;margin:0;padding:24px;max-width:1100px}
+ h1{font-size:20px;margin:0 0 4px} .sub{opacity:.7;margin-bottom:18px}
+ .box{border:1px solid #8883;border-radius:8px;padding:14px 16px;margin-bottom:20px;background:#8881}
+ table{border-collapse:collapse;width:100%} td,th{padding:9px 8px;border-bottom:1px solid #8883;vertical-align:top;text-align:left}
+ tr.done{opacity:.45}
+ .codes{font:12px ui-monospace,monospace;opacity:.6}
+ .note{font-size:12px;opacity:.8;font-style:italic}
+ .hi{background:#d3202033;color:#c62828;padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+ .lo{opacity:.55;font-size:11px}
+ .v{padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600}
+ .pass{background:#2e7d3233;color:#2e7d32} .fail{background:#d3202033;color:#c62828}
+ .links a{display:inline-block;margin-right:10px}
+ .cmd code{font:11px ui-monospace,monospace;opacity:.55}
+ #out{position:sticky;bottom:0;background:Canvas;border-top:2px solid #8886;padding:14px 0;margin-top:10px}
+ #cmd{width:100%;font:13px ui-monospace,monospace;padding:10px;border-radius:6px;border:1px solid #8886;background:#8881;color:inherit}
+ button{font:13px inherit;padding:8px 14px;border-radius:6px;border:1px solid #8886;background:#8881;color:inherit;cursor:pointer}
+</style>
+<h1>Trademark screen — ${pending} phrase${pending === 1 ? '' : 's'} left</h1>
+<div class="sub">FondlyMade · generated ${new Date().toISOString().slice(0, 16).replace('T', ' ')} · <code>node ops.mjs tm sheet</code></div>
+<div class="box">
+ <strong>What you are looking for.</strong> Two different things:
+ <ol style="margin:8px 0 0;padding-left:20px">
+  <li><strong>USPTO</strong> — the phrase registered as a <em>live</em> mark in the goods class you are printing on (Class 25 apparel, Class 4 candles, Class 21 mugs). A dead or abandoned mark does not block you.</li>
+  <li><strong>Etsy</strong> — another seller using it as a <em>brand name</em> rather than as a joke on a shirt. Fifty shops selling the same slogan is a good sign, not a bad one; one shop using it as their shop name is the problem.</li>
+ </ol>
+ <div style="margin-top:10px;opacity:.8">Tick every phrase that is clear, then copy the single command at the bottom. Reject one at a time with the command in its row. <strong>Staging refuses any phrase without a recorded verdict</strong>, so nothing here can be skipped by accident.</div>
+</div>
+<table><tr><th></th><th>risk</th><th>phrase</th><th>search</th><th>reject with</th></tr>${body}</table>
+<div id="out">
+ <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+  <button id="all">tick all remaining</button><button id="none">clear</button>
+  <span id="n" style="opacity:.7"></span>
+ </div>
+ <input id="cmd" readonly value="">
+</div>
+<script>
+ const boxes=[...document.querySelectorAll('input[type=checkbox]')];
+ const out=document.getElementById('cmd'), n=document.getElementById('n');
+ function sync(){
+   const c=boxes.filter(b=>b.checked).map(b=>b.dataset.code);
+   out.value=c.length?'node ops.mjs tm pass '+c.join(','):'';
+   n.textContent=c.length+' of '+boxes.length+' ticked';
+ }
+ boxes.forEach(b=>b.addEventListener('change',sync));
+ document.getElementById('all').onclick=()=>{boxes.forEach(b=>b.checked=true);sync()};
+ document.getElementById('none').onclick=()=>{boxes.forEach(b=>b.checked=false);sync()};
+ out.onclick=()=>{out.select();try{document.execCommand('copy')}catch(e){}};
+ sync();
+</script>`;
+
+    const dest = join(PATHS.ops, 'TM-SHEET.html');
+    writeFileSync(dest, html);
+    console.log(`\n  wrote ${rows.length} phrases (${pending} unscreened) -> ${dest}`);
+    console.log('  open it, tick what is clear, copy the one command at the bottom\n');
+    return 0;
+  },
+
   list() {
     const byPhrase = phraseIndex();
     const s = load();

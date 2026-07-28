@@ -171,9 +171,19 @@ const disclosure = `Original design by ${SHOP}, created with AI-assisted tools u
 // time either way, so an unsourced promise here adds nothing and risks
 // everything — a late ship voids Purchase Protection and Star Seller standing.
 const proc = cfg.processing || {};
-const shipLine = (proc.days || '').trim() && (proc.source || '').trim()
-  ? [`• Ships in ${proc.days.trim()}`]
-  : [];
+// days carries a PHRASE with its unit ("10 days", "3-5 business days") because
+// it is rendered straight into the description and orders.mjs reads the word
+// "business" out of it to decide whether the ship-by clock skips weekends. A
+// bare number renders as "Ships in 10" and silently makes the clock calendar-
+// based, so coerce and then insist on a unit rather than trusting the type.
+const procDays = String(proc.days ?? '').trim();
+const procSource = String(proc.source ?? '').trim();
+if (procDays && !/day|week/i.test(procDays)) {
+  console.error(`ops/config.json processing.days is "${procDays}" — it needs a unit, e.g. "10 days" or "3-5 business days".`);
+  console.error('It is printed verbatim into every description, and orders.mjs looks for the word "business" in it.');
+  process.exit(1);
+}
+const shipLine = procDays && procSource ? [`• Ships in ${procDays}`] : [];
 if (!shipLine.length) {
   console.log('note: ops/config.json processing.days/source are blank, so no shipping');
   console.log('      promise is written into the descriptions. Etsy still shows your');

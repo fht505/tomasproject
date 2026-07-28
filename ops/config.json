@@ -4,8 +4,8 @@
   "shop_name_note": "The exact Etsy shop name. It is printed in every listing description as the 'Designed by' attribution, so it must match the real shop. Set it before running: node ops.mjs listings",
   "processing": {
     "_comment": "Shipping speed is a promise, and a broken one voids Etsy Purchase Protection and costs Star Seller status. So it is blank until you know the real number. `node ops.mjs plan` prints the resolved provider's published production time; add carrier transit on top, put the result here, name where it came from in `source`, and only then does it appear in listing descriptions.",
-    "days": "",
-    "source": ""
+    "days": "10 days",
+    "source": "Printify shipping endpoint handling_time for all 5 pinned blueprint/provider pairs, each 10 days, read 2026-07-28. This is Printify's stated maximum before shipment, not a production estimate."
   },
   "production_partner": "Printify network",
   "ai_disclosure": true,
