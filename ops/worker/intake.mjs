@@ -412,6 +412,174 @@ async function modeKey() {
   }
 }
 
+// ------------------------------------------------------- generator watermark
+// Gemini stamps a four-pointed sparkle near the bottom-right of every image it
+// produces. It is small and pale, so it survives a mockup review and would print
+// on the shirt — someone else's brand mark on merchandise we sell.
+//
+// The mark sits at a fixed PIXEL offset from the corner (~100px in on a 1024px
+// canvas), not a fixed fraction, which is why it lands in a different relative
+// spot on a landscape candle label than on a portrait tee. Both are expressed
+// against the longest edge below so the probe follows it either way.
+//
+// Removal is NOT "blank that box". Several designs (B4, B16, B19) have real
+// artwork in the same zone and blanking would eat a letter. Instead we take the
+// connected components inside the probe and clear only those that do not touch
+// its edge: a watermark is a self-contained blob sitting in empty space, while
+// artwork always continues past the boundary. That distinction needs no
+// per-design tuning and fails safe — if in doubt, the component touches an edge
+// and is left alone.
+const MARK_OFFSET = 0.098;   // centre, as a fraction of the longest edge
+const MARK_HALF = 0.037;     // probe half-extent, same units
+const MARK_MAX_FRAC = 0.45;  // a blob larger than this share of the probe is artwork
+// The mark is drawn with a soft halo that fades into the background over several
+// pixels. A tight tolerance finds only the bright core, and filling just that
+// leaves a visible ring — which is exactly what the first pass produced. Detect
+// generously and grow the patch before filling.
+const FLAT_TOL = 10;         // flat art: sum-of-channel difference that counts as content
+const GROW_FLAT = 5;         // px to dilate before filling flat art
+const GROW_KEYED = 2;        // px to dilate before clearing keyed art
+
+async function stripWatermark(file) {
+  // ensureAlpha gives one code path for both kinds of art, but a candle label
+  // arrives as RGB and must leave as RGB — silently adding an opaque alpha
+  // channel to flat artwork changes the file we hand Printify for no reason.
+  const hadAlpha = (await sharp(file).metadata()).hasAlpha === true;
+  const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+  const M = Math.max(width, height);
+  const cx = Math.round(width - MARK_OFFSET * M);
+  const cy = Math.round(height - MARK_OFFSET * M);
+  const half = Math.round(MARK_HALF * M);
+  const x0 = Math.max(0, cx - half), x1 = Math.min(width - 1, cx + half);
+  const y0 = Math.max(0, cy - half), y1 = Math.min(height - 1, cy + half);
+  const pw = x1 - x0 + 1, ph = y1 - y0 + 1;
+  if (pw < 8 || ph < 8) return { found: false, reason: 'image too small to probe' };
+
+  // Is this design keyed (has real transparency) or flat (candle label, mug
+  // wrap)? That decides both what counts as content and how we erase it.
+  let transparent = 0;
+  for (let p = 0; p < width * height; p++) if (data[p * channels + 3] < 128) transparent++;
+  const keyed = transparent / (width * height) > 0.02;
+
+  // For flat art the background is whatever fills the probe corner; the mark is
+  // anything that differs from it. Sample the extreme corner, which the mark
+  // never reaches.
+  const cI = ((y1) * width + x1) * channels;
+  const bg = [data[cI], data[cI + 1], data[cI + 2]];
+  const idx = (lx, ly) => ((y0 + ly) * width + (x0 + lx)) * channels;
+  const isContent = (lx, ly) => {
+    const i = idx(lx, ly);
+    if (keyed) return data[i + 3] >= 128;
+    return Math.abs(data[i] - bg[0]) + Math.abs(data[i + 1] - bg[1]) + Math.abs(data[i + 2] - bg[2]) > FLAT_TOL;
+  };
+
+  const seen = new Uint8Array(pw * ph);
+  const blobs = [];
+  for (let ly = 0; ly < ph; ly++) {
+    for (let lx = 0; lx < pw; lx++) {
+      const s = ly * pw + lx;
+      if (seen[s] || !isContent(lx, ly)) continue;
+      const px = [];
+      let touchesEdge = false;
+      const stack = [s];
+      seen[s] = 1;
+      while (stack.length) {
+        const q = stack.pop();
+        const qx = q % pw, qy = (q / pw) | 0;
+        px.push(q);
+        if (qx === 0 || qy === 0 || qx === pw - 1 || qy === ph - 1) touchesEdge = true;
+        const nb = [qx > 0 ? q - 1 : -1, qx < pw - 1 ? q + 1 : -1, qy > 0 ? q - pw : -1, qy < ph - 1 ? q + pw : -1];
+        for (const r of nb) {
+          if (r < 0 || seen[r]) continue;
+          if (!isContent(r % pw, (r / pw) | 0)) continue;
+          seen[r] = 1; stack.push(r);
+        }
+      }
+      blobs.push({ px, touchesEdge });
+    }
+  }
+
+  const marks = blobs.filter(b => !b.touchesEdge && b.px.length <= MARK_MAX_FRAC * pw * ph);
+  const kept = blobs.filter(b => b.touchesEdge || b.px.length > MARK_MAX_FRAC * pw * ph);
+  if (!marks.length) {
+    return { found: false, keyed, probe: [x0, y0, x1, y1], blobs: blobs.length, kept: kept.length };
+  }
+
+  // Grow the patch past the halo. Dilation is safe here precisely because these
+  // blobs were already shown not to touch the probe edge — they sit in open
+  // space, so growing them consumes background, not artwork.
+  const grow = keyed ? GROW_KEYED : GROW_FLAT;
+  const target = new Set();
+  for (const b of marks) {
+    for (const q of b.px) {
+      const qx = q % pw, qy = (q / pw) | 0;
+      for (let dy = -grow; dy <= grow; dy++) {
+        for (let dx = -grow; dx <= grow; dx++) {
+          if (dx * dx + dy * dy > grow * grow) continue;
+          const rx = qx + dx, ry = qy + dy;
+          if (rx < 0 || ry < 0 || rx >= pw || ry >= ph) continue;
+          target.add(ry * pw + rx);
+        }
+      }
+    }
+  }
+
+  // Erase. On keyed art the honest answer is transparency. On flat art something
+  // has to go back in its place: the median of every pixel in the probe that is
+  // NOT content at all. Sampling a ring around the blob was the first attempt and
+  // it failed — the ring sat inside the halo, so the fill was the wrong colour and
+  // the mark stayed visible as a pale patch. True background is flat cream here,
+  // so a single median is exact.
+  let cleared = 0;
+  if (keyed) {
+    for (const q of target) { data[idx(q % pw, (q / pw) | 0) + 3] = 0; cleared++; }
+  } else {
+    const bgpx = [[], [], []];
+    for (let ly = 0; ly < ph; ly++) {
+      for (let lx = 0; lx < pw; lx++) {
+        if (isContent(lx, ly) || target.has(ly * pw + lx)) continue;
+        const i = idx(lx, ly);
+        bgpx[0].push(data[i]); bgpx[1].push(data[i + 1]); bgpx[2].push(data[i + 2]);
+      }
+    }
+    if (!bgpx[0].length) return { found: false, reason: 'no clean background to sample in the probe' };
+    const med = bgpx.map(c => c.sort((p, q) => p - q)[c.length >> 1]);
+    for (const q of target) {
+      const i = idx(q % pw, (q / pw) | 0);
+      data[i] = med[0]; data[i + 1] = med[1]; data[i + 2] = med[2];
+      cleared++;
+    }
+  }
+  return { found: true, keyed, hadAlpha, cleared, marks: marks.length, kept: kept.length, probe: [x0, y0, x1, y1], data, width, height, channels };
+}
+
+async function modeUnmark() {
+  const arg = (process.argv[3] || 'all').toUpperCase().replace(/\.PNG$/i, '');
+  const codes = arg === 'ALL'
+    ? readdirSync(artDir).filter(f => /\.png$/i.test(f)).map(f => f.replace(/\.png$/i, '')).sort()
+    : [arg];
+
+  let hit = 0, clean = 0;
+  for (const code of codes) {
+    const file = join(artDir, `${code}.png`);
+    if (!existsSync(file)) { console.error(`no such design: ops/art/${code}.png`); process.exitCode = 1; continue; }
+    const r = await stripWatermark(file);
+    if (!r.found) {
+      clean++;
+      console.log(`  ok   ${code.padEnd(4)} no isolated mark in the probe${r.kept ? ` (${r.kept} artwork blob(s) left alone)` : ''}`);
+      continue;
+    }
+    const img = sharp(r.data, { raw: { width: r.width, height: r.height, channels: r.channels } });
+    await (r.hadAlpha ? img : img.removeAlpha()).png().toFile(file + '.tmp');
+    copyFileSync(file + '.tmp', file);
+    rmSync(file + '.tmp');
+    hit++;
+    console.log(`UNMARKED ${code.padEnd(4)} ${r.marks} blob(s), ${r.cleared}px ${r.keyed ? 'made transparent' : 'filled from surrounding colour'}${r.kept ? ` · ${r.kept} artwork blob(s) preserved` : ''}`);
+  }
+  console.log(`\n${hit} unmarked, ${clean} already clean`);
+}
+
 async function modeRun() {
   if (!existsSync(artDir)) {
     console.error(`no art directory yet (${artDir}) — start with: node ops.mjs art next`);
@@ -510,8 +678,9 @@ async function modeRun() {
 if (mode === 'next') await modeNext();
 else if (mode === 'add') await modeAdd();
 else if (mode === 'key') await modeKey();
+else if (mode === 'unmark') await modeUnmark();
 else if (mode === 'run' || mode === 'check') await modeRun();
 else {
-  console.error(`unknown art command "${mode}" — expected: next | add | key | check | (nothing)`);
+  console.error(`unknown art command "${mode}" — expected: next | add | key | unmark | check | (nothing)`);
   process.exitCode = 2;
 }

@@ -116,10 +116,16 @@ const out = [
   '1. In Gemini, set the model to **3.1 Pro / Nano Banana 2** and output to **4K** if the option is offered.',
   '2. Paste a prompt. The aspect ratio and background directive are already in it.',
   '3. **Check the spelling letter by letter before saving.** This is the one defect nothing downstream catches — a misspelled print is a refund and a bad review.',
-  '4. Save the image anywhere. The filename does not matter.',
-  '5. When a batch is done, drop them all in one folder and tell me where.',
+  '4. **Check for stray characters between words.** One design came back reading `COFFEE ·Â· SCRUBS`; that `Â` is baked into the pixels and cannot be removed afterwards.',
+  '5. Save the image anywhere. The filename does not matter.',
+  '6. When a batch is done, drop them all in one folder and tell me where.',
   '',
   '> Why 4K: the tee print area is 2767x3362 and the tote is 3000x3600. At 4096px every product **downscales**, so nothing is ever upscaled and no detail is invented.',
+  '',
+  '> ⚠️ **The last batch came back at 825x1024**, not 4K — about 1 megapixel. That forces a 3.3x',
+  '> upscale onto a tee and prints soft on fine detail. Bold lettering survives it; thin script and',
+  '> line art do not. If Gemini offers an output-resolution or "download original" option, use the',
+  '> largest one available. I check every file and will tell you the real upscale factor per design.',
   '',
   '---',
   '',
@@ -194,6 +200,11 @@ for (const [i, art] of order.entries()) {
     // asked for them; the model supplied what a real label usually carries.
     `The ONLY text anywhere in the image must be ${exact}${allowed.length > 1 ? ' — and nothing else' : ''}, spelled letter for letter.`,
     'Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch".',
+    // B19 came back reading "COFFEE ·Â· SCRUBS ·Â· REPEAT" — the model drew a
+    // literal Â, the signature of UTF-8 bytes read as Latin-1, as if it had
+    // rendered mojibake it saw in training data. It is unfixable after the fact
+    // because it is baked into the pixels, so forbid the whole character class.
+    'Use only plain unaccented English letters, digits and simple punctuation. No accented characters, no Â, no ornament glyphs, no symbols of any kind between words.',
     'Text must be crisp and legible at full size.',
   ].join(' ');
 
