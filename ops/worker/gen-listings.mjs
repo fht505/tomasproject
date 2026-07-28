@@ -161,7 +161,10 @@ function repeatedWords(title) {
 
 // ------------------------------------------------------------- description
 const partner = `Printed and shipped by our production partner (${cfg.production_partner}).`;
-const disclosure = `Original design by ${SHOP}, created with AI-assisted tools under our creative direction (disclosed per Etsy policy). Designed by ${SHOP}.`;
+// One attribution, not two. This used to end "...(disclosed per Etsy policy).
+// Designed by <shop>.", naming the shop twice in consecutive sentences on all
+// 40 listings — it read like a template that had been filled in badly.
+const disclosure = `Original design by ${SHOP}, created with AI-assisted tools under our creative direction (disclosed per Etsy policy).`;
 
 // A shipping claim only goes into a description when the operator has recorded a
 // real number AND said where it came from. Etsy shows the listing's processing
@@ -230,7 +233,7 @@ const ROWS = [
   ['A12', 'candle', 'First Day of Fall 2026', 'Commemorative Fall Candle | Autumn Tradition Gift | 9oz',
     [T.candleClassic, T.candleCore, T.candleFun], 'Mark the season properly — a collectible for the First Day of Fall, 2026.'],
 
-  ['B1', 'tee', 'Teacher Era', 'Shirt | Retro Teacher Tee | Back to School | Teacher Appreciation Gift',
+  ['B1', 'tee', 'Teacher Era', 'Shirt | Retro Educator Tee | Back to School | Teacher Appreciation Gift',
     [T.teacher, T.apparelCore], 'In your Teacher Era — retro varsity style for the classroom and everywhere else.'],
   ['B2', 'tee', 'Professional Chaos Coordinator', 'Shirt | Funny Teacher Tee | Back to School Gift',
     [T.teacher, T.apparelCore], 'Job title: Professional Chaos Coordinator. Accurate is an understatement.'],
@@ -256,7 +259,7 @@ const ROWS = [
     [T.dogmom, T.apparelCore], 'Cheaper than sessions, better at listening: My Dog Is My Therapist.'],
   ['B13', 'tee', 'Raised on Belly Rubs', 'Shirt | Vintage Dog Lover Tee | Dog Owner Gift',
     [T.dogmom, T.apparelCore], 'A household philosophy: Raised on Belly Rubs.'],
-  ['B14', 'tee', 'Grandma Era', 'Shirt | Retro Grandma Tee | New Grandma Gift | Nana Gift',
+  ['B14', 'tee', 'Grandma Era', 'Shirt | Retro Nana Tee | New Grandma Gift | Mimi Gift',
     [T.grandma, T.apparelCore], 'The best era yet — Grandma Era, in warm retro serif.'],
   ['B15', 'tee', 'Promoted to Nana 2026', 'Shirt | New Grandma Announcement Tee | Nana Gift',
     [T.grandma, T.apparelCore], 'Biggest promotion of a lifetime: Promoted to Nana, class of 2026.'],
@@ -264,11 +267,11 @@ const ROWS = [
     [T.grandma, T.apparelCore], "Charter member, Grandma's Garden Club — vintage seed-packet style."],
   ['B17', 'tee', 'Spoiling Is My Love Language', 'Shirt | Funny Grandma Tee | Nana Gift | Gigi Gift',
     [T.grandma, T.apparelCore], 'Grandma truth, elegantly scripted: Spoiling Is My Love Language.'],
-  ['B18', 'tee', 'Nurse Era', 'Shirt | Retro Nurse Tee | Nurse Appreciation Gift | RN Gift',
+  ['B18', 'tee', 'Nurse Era', 'Shirt | Retro RN Tee | Nurse Appreciation Gift | Nursing Student',
     [T.nurse, T.apparelCore], 'In your Nurse Era — retro serif with a heartbeat underline.'],
   ['B19', 'tee', 'Coffee Scrubs Repeat', 'Shirt | Funny Nurse Tee | Nursing Student Gift',
     [T.nurse, T.apparelCore], 'The schedule, printed: Coffee · Scrubs · Repeat.'],
-  ['B20', 'tee', 'Emotional Support Nurse', 'Shirt | Funny Nurse Tee | Nurse Week Gift | RN Gift',
+  ['B20', 'tee', 'Emotional Support Nurse', 'Shirt | Funny RN Tee | Nurse Week Gift | Nursing Student Gift',
     [T.nurse, T.apparelCore], 'Badge-certified: Emotional Support Nurse, on duty always.'],
 
   // C1/C2 get their own art. They used to reuse the A9/A11 candle designs,
@@ -280,13 +283,13 @@ const ROWS = [
     [T.mug, T.candleFun], 'Pairs with productivity. Refills encouraged.'],
   ['C3', 'mug', 'Professional Chaos Coordinator', 'Mug | Funny Teacher Mug | Teacher Gift | 11oz',
     [T.mug, T.teacher], 'For the desk of the Professional Chaos Coordinator.', 'B2'],
-  ['C4', 'mug', 'Nurse Era', 'Mug | Nurse Coffee Mug | Nurse Appreciation Gift | 11oz',
+  ['C4', 'mug', 'Nurse Era', 'Mug | RN Coffee Mug | Nurse Appreciation Gift | 11oz Ceramic',
     [T.mug, T.nurse], 'Shift fuel for the Nurse Era.', 'B18'],
   ['C5', 'tote', "Grandma's Garden Club", 'Tote Bag | Botanical Canvas Tote | Garden Lover Gift',
     [T.tote, T.grandma], "The official carry-all of Grandma's Garden Club.", 'B16'],
-  ['C6', 'tote', 'Dog Mama', 'Tote Bag | Dog Mom Canvas Tote | Dog Lover Gift',
+  ['C6', 'tote', 'Dog Mama', 'Tote Bag | Dog Mom Canvas Tote | Pet Lover Gift | Market Bag | Puppy Mom Gift',
     [T.tote, T.dogmom], 'Treats, leash, poop bags, dignity — the Dog Mama tote holds it all.', 'B10'],
-  ['C7', 'sweatshirt', 'Teacher Era', 'Sweatshirt | Cozy Teacher Crewneck | Teacher Appreciation Gift',
+  ['C7', 'sweatshirt', 'Teacher Era', 'Sweatshirt | Cozy Educator Crewneck | Teacher Appreciation Gift',
     [T.teacher, T.sweatshirtCore], 'The Teacher Era crewneck — for grading weather.', 'B1'],
   ['C8', 'sweatshirt', 'Grandma Era', 'Sweatshirt | Cozy Grandma Crewneck | Nana Gift',
     [T.grandma, T.sweatshirtCore], 'Grandma Era, fleece-lined.', 'B14'],

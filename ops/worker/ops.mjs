@@ -209,6 +209,7 @@ const COMMANDS = {
   vault: () => run('gen-vault.mjs'),
   sheet: () => run('gen-promptsheet.mjs', rest),
   probe: () => run('probe.mjs', rest),
+  leadtime: () => run('leadtime.mjs', rest),
   doctor: () => run('doctor.mjs'),
   test: () => run('test-margin.mjs'),
   tm: () => run('tm.mjs', [arg0 ?? 'list', ...rest.slice(1)]),
