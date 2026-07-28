@@ -204,12 +204,55 @@ for (const [i, art] of order.entries()) {
     // literal Â, the signature of UTF-8 bytes read as Latin-1, as if it had
     // rendered mojibake it saw in training data. It is unfixable after the fact
     // because it is baked into the pixels, so forbid the whole character class.
-    'Use only plain unaccented English letters, digits and simple punctuation. No accented characters, no Â, no ornament glyphs, no symbols of any kind between words.',
+    // Naming the offending glyph literally put it INTO the prompt — a directive
+    // that says "do not draw Â" is still a prompt containing Â, which is how the
+    // problem spreads. Describe it instead of quoting it.
+    'Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words.',
     'Text must be crisp and legible at full size.',
   ].join(' ');
 
+  const prompt = `${base} ${directives}`;
+
+  // B19 came back printing a literal A-circumflex, and we blamed the model.
+  // The cause was ours: PROMPTS.md was double-encoded UTF-8, so the prompt
+  // genuinely asked for "COFFEE Â· SCRUBS Â· REPEAT". Anything outside ASCII in
+  // a prompt handed to a text-rendering model is a liability — it either draws
+  // the mojibake or silently substitutes something else. Fail loudly here
+  // rather than discover it on a printed shirt.
+  const weird = [...new Set(prompt.match(/[^\x00-\x7F]/g) || [])]
+    .filter(c => !'—–…’‘“”'.includes(c));
+  if (weird.length) {
+    conflicts.push(`${art.file.replace(/\.png$/i, '')}: prompt contains non-ASCII character(s) ${weird.map(c => `"${c}" (U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')})`).join(', ')} — fix the wording in ops/PROMPTS.md; a text-rendering model will try to draw them`);
+  }
+
+  // The allow-list is built from every quoted string in the description, which
+  // is right for C1 (its prescription parody carries a real "REFILL AS NEEDED"
+  // second line) and wrong when the description simply words the SAME phrase
+  // differently. A11 asked for "THIS CANDLE SMELLS LIKE I FINISHED MY TO-DO
+  // LIST" while its listing says "Smells Like a Finished To-Do List" — so the
+  // prompt instructed the model that the only text must be two different
+  // things, and whichever it picked, the product would not match its title.
+  const words = (s) => new Set(String(s).toUpperCase().match(/[A-Z0-9']+/g) || []);
+  const phraseWords = words(art.phrase);
+  for (const q of quoted) {
+    const qw = words(q);
+    if (!phraseWords.size || !qw.size) continue;
+    const shared = [...qw].filter(w => phraseWords.has(w)).length;
+    const overlap = shared / Math.min(qw.size, phraseWords.size);
+    const same = q.trim().toUpperCase() === String(art.phrase).trim().toUpperCase();
+    // A quote that is a SUBSET of the phrase is fine — B15's description names
+    // "PROMOTED TO NANA" and "2026" separately, and both are just parts of
+    // "Promoted to Nana 2026". The failure mode is a quote that restates the
+    // phrase with words the phrase does not contain, which is a second, rival
+    // version of the same line.
+    const extra = [...qw].filter(w => !phraseWords.has(w));
+    if (!same && extra.length && overlap >= 0.5) {
+      conflicts.push(`${art.file.replace(/\.png$/i, '')}: the description quotes "${q}" but the listing phrase is "${art.phrase}" — these overlap, so the prompt tells the model the only text must be two different things. Make the description quote the phrase exactly.`);
+    }
+  }
+
   out.push('```');
-  out.push(`${base} ${directives}`);
+  out.push(prompt);
   out.push('```');
   out.push('');
 }
