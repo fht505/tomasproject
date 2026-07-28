@@ -1,33 +1,36 @@
 ---
 lane: "PromptBase"
 category: "AI-native"
-verdict: unresearched
-ai-policy: none-found
-automation-policy: none-found
-checked: never
+verdict: flagged
+ai-policy: n/a
+automation-policy: prohibited
+checked: 2026-07-28
 tags:
-  - lane/unresearched
+  - lane/flagged
   - category/ai-native
+  - automation/blocked
 ---
 
-# ❓ PromptBase
+# ⚠️ PromptBase
 
 | | |
 |---|---|
-| **Verdict** | `unresearched` |
-| **AI policy** | NO POLICY FOUND — a gap |
-| **Automation policy** | NO RULE FOUND — a gap |
-| **Economics** | not researched |
-| **Time to cash** | not researched |
-| **Last verified** | **never** |
-
-> [!warning] A gap is not permission
-> No rule was located. That is unallocated risk, not approval. Absence of
-> an AI or automation policy means nobody has told us the answer yet.
+| **Verdict** | `flagged` |
+| **AI policy** | not applicable |
+| **Automation policy** | PROHIBITED |
+| **Economics** | 20% marketplace fee; 0% via own referral link (30-day window); 10% custom jobs; Stripe or Zoneless payouts, configurable daily/weekly/monthly |
+| **Time to cash** | payout floor exists but its amount is unpublished; formal ToS page 404s |
+| **Last verified** | 2026-07-28 |
 
 ## What we found
 
-The agent assigned to AI-native marketplaces terminated on a weekly usage limit and delivered only a corrections addendum. It referenced PromptBase as its top pick WITHOUT the supporting reasoning, which was never received. Recorded as unresearched, not recommended.
+Fee structure triple-verified on live primary pages. The blocker is contractual: the T&Cs strictly prohibit "any automated tools, including but not limited to web crawlers, scrapers, or bots, to access ... any portion of our marketplace" — which forecloses the autonomous lane. Manual selling remains possible but earnings evidence is thin: one documented seller made $6 in month one, $28 in month two.
+
+## Risks
+
+- Automation ban is blanket bot language — an agent-run listing pipeline would breach it on day one
+- Only third-party earnings datapoint found: $6 then $28/month (Medium, Jun 2024)
+- Older payout blog is stale — its $30 floor and fixed schedules were refuted against the live support page
 
 ---
 Generated from `ops/lanes.data.json` — edit there, not here. See [[Dashboard]].

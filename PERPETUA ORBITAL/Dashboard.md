@@ -5,7 +5,7 @@ tags:
 
 # Revenue lanes — decision board
 
-41 lanes researched. Generated from `ops/lanes.data.json`.
+44 lanes researched. Generated from `ops/lanes.data.json`.
 **Do not edit these notes by hand** — edit the data file and run `node ops.mjs vault`.
 
 ## The two rules that decide everything
@@ -27,7 +27,7 @@ tags:
 |---|---|---|---|---|
 | [[Etsy]] | POD marketplace | allowed with disclosure | sanctioned via official API | 2026-07-25 |
 
-## ✅ candidate (10)
+## ✅ candidate (11)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -41,8 +41,9 @@ tags:
 | [[Fiverr productized gigs]] | Services | allowed (in writing) | NO RULE FOUND — a gap | 2026-07-25 |
 | [[FHT shop skills as a service]] | Services | not applicable | not applicable | 2026-07-26 |
 | [[White-label agency subcontracting]] | Services | not applicable | not applicable | 2026-07-26 |
+| [[Apify Store]] | AI-native | not applicable | sanctioned via official API | 2026-07-28 |
 
-## ⚠️ flagged (10)
+## ⚠️ flagged (12)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -56,8 +57,10 @@ tags:
 | [[Udemy]] | Courses | allowed with disclosure | NO RULE FOUND — a gap | 2026-07-26 |
 | [[Amazon Associates]] | Affiliate | NO POLICY FOUND — a gap | PROHIBITED | 2025-10-15 |
 | [[Creative Fabrica]] | Digital assets | allowed (in writing) | NO RULE FOUND — a gap | 2026-07-25 |
+| [[PromptBase]] | AI-native | not applicable | PROHIBITED | 2026-07-28 |
+| [[Hugging Face - GPT Store - MCP registries]] | AI-native | not applicable | NO RULE FOUND — a gap | 2026-07-28 |
 
-## ❌ disqualified (18)
+## ❌ disqualified (20)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -79,13 +82,12 @@ tags:
 | [[Shopify]] | Storefront | NO POLICY FOUND — a gap | sanctioned via official API | 2026-05-11 |
 | [[Display ad networks]] | Content / traffic | BANNED | PROHIBITED | 2026-07-10 |
 | [[B2B data - lead lists]] | Services | NO POLICY FOUND — a gap | NO RULE FOUND — a gap | 2025-12-17 |
+| [[itch.io]] | Digital assets | allowed with disclosure | PROHIBITED | 2026-07-28 |
+| [[Draft2Digital - Kobo]] | Publishing | BANNED | NO RULE FOUND — a gap | 2026-07-28 |
 
-## ❓ unresearched (2)
+## ❓ unresearched (0)
 
-| Lane | Category | AI | Automation | Checked |
-|---|---|---|---|---|
-| [[PromptBase]] | AI-native | NO POLICY FOUND — a gap | NO RULE FOUND — a gap | **never** |
-| [[Hugging Face - GPT Store - MCP registries]] | AI-native | NO POLICY FOUND — a gap | NO RULE FOUND — a gap | **never** |
+_none_
 
 ## ⚠️ Lanes resting on a gap
 
@@ -121,12 +123,12 @@ tags:
 - [[Notion templates]]
 - [[Fiverr productized gigs]]
 - [[Creative Fabrica]]
-- [[PromptBase]]
 - [[Hugging Face - GPT Store - MCP registries]]
+- [[Draft2Digital - Kobo]]
 
 ## 🚫 Automation contractually prohibited
 
-7 lanes ban automated access outright. Unworkable however friendly the AI stance.
+9 lanes ban automated access outright. Unworkable however friendly the AI stance.
 
 - [[Amazon Associates]]
 - [[Redbubble]]
@@ -135,6 +137,8 @@ tags:
 - [[Threadless]]
 - [[Fine Art America]]
 - [[Display ad networks]]
+- [[PromptBase]]
+- [[itch.io]]
 
 ## Staleness
 
@@ -181,5 +185,8 @@ Policies moved four times during our own research window. Alamy banned AI thirte
 | [[Getty - iStock]] | 2026-07-26 |
 | [[FHT shop skills as a service]] | 2026-07-26 |
 | [[White-label agency subcontracting]] | 2026-07-26 |
-| [[PromptBase]] | **never** |
-| [[Hugging Face - GPT Store - MCP registries]] | **never** |
+| [[PromptBase]] | 2026-07-28 |
+| [[Hugging Face - GPT Store - MCP registries]] | 2026-07-28 |
+| [[Apify Store]] | 2026-07-28 |
+| [[itch.io]] | 2026-07-28 |
+| [[Draft2Digital - Kobo]] | 2026-07-28 |
