@@ -299,6 +299,15 @@ const PLACEMENT = {
 // backgrounds were keyed out; 0.45 is the operator-approved size for
 // transparent ink, where a slight curve past the face edge is invisible.
 const MUG_FRONT_MAX_FRAC = 0.45;
+
+// Per-design placement overrides, operator-requested at mockup review. Scale
+// is a fraction of print-area WIDTH, and both of these arts are portrait, so
+// widening them also makes them taller — y moves down just enough to keep the
+// top edge inside the print area (tee 2767x3362, sweatshirt 2976x3398).
+const PLACEMENT_OVERRIDES = {
+  B16: { scale: 0.95, y: 0.48 },  // botanical frame fills the chest panel
+  C8: { scale: 0.90, y: 0.49 },   // Grandma Era as a statement print
+};
 function mugScale(profile, printArea) {
   const [pw, phh] = printArea.split('x').map(Number);
   if (!profile?.w || !profile?.h || !pw || !phh) return MUG_FRONT_MAX_FRAC;
@@ -393,9 +402,10 @@ function buildProductPayload(listing, resolved, uploadId, priceCents, profile = 
   if (!basePlace) {
     throw new Error(`no print placement defined for ${listing.product} — add one to PLACEMENT in stage.mjs rather than letting it default to a full-width centred print`);
   }
-  const place = basePlace.scale === null
+  let place = basePlace.scale === null
     ? { ...basePlace, scale: mugScale(profile, spec?.printArea || '') }
     : basePlace;
+  if (PLACEMENT_OVERRIDES[listing.code]) place = { ...place, ...PLACEMENT_OVERRIDES[listing.code] };
 
   return {
     title: listing.title,
