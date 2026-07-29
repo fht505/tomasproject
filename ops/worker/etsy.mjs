@@ -24,7 +24,8 @@
 
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { PATHS, env } from './config.mjs';
 
 const BASE = 'https://openapi.etsy.com/v3/application';
@@ -58,8 +59,23 @@ function creds() {
   if (!key) {
     throw new Error('ETSY_KEYSTRING is not set in ops/worker/.env — paste the app keystring there first');
   }
-  return { key, secret: env('ETSY_SHARED_SECRET') };
+  const secret = env('ETSY_SHARED_SECRET');
+  if (!secret) {
+    throw new Error('ETSY_SHARED_SECRET is not set in ops/worker/.env');
+  }
+  return { key, secret };
 }
+
+// x-api-key is "keystring:shared_secret", NOT the keystring alone. Etsy's docs
+// and every example show the keystring by itself; this app rejects that with
+// "Shared secret is required in x-api-key header", and rejects the bare secret
+// with "incorrect shared secret for API key". Only the colon-joined pair
+// returns 200. Determined empirically against the live API — if a future app
+// behaves differently, test all three forms again rather than trusting docs.
+const apiKeyHeader = () => {
+  const { key, secret } = creds();
+  return `${key}:${secret}`;
+};
 
 // ---------------------------------------------------------------- transport
 async function refreshAccessToken() {
@@ -81,13 +97,12 @@ async function refreshAccessToken() {
 // Every call goes through here so a 401 refreshes once and retries, rather
 // than surfacing an expiry as a mysterious failure an hour into a session.
 export async function call(method, path, body, { retried = false } = {}) {
-  const { key } = creds();
   let token = env('ETSY_ACCESS_TOKEN');
   if (!token) token = await refreshAccessToken();
   const res = await fetch(BASE + path, {
     method,
     headers: {
-      'x-api-key': key,
+      'x-api-key': apiKeyHeader(),
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
       'User-Agent': 'perpetua-orbital-ops',
@@ -132,25 +147,68 @@ async function connect() {
   url.searchParams.set('code_challenge', challenge);
   url.searchParams.set('code_challenge_method', 'S256');
 
+  // Also write the URL to a file. When this runs as a background task, stdout
+  // can sit in a pipe buffer until the process exits — and this process
+  // deliberately does not exit until the redirect arrives, so the URL would
+  // never appear. The file always lands immediately.
+  const urlFile = join(PATHS.state, 'etsy-authorize-url.txt');
+  mkdirSync(PATHS.state, { recursive: true });
+  writeFileSync(urlFile, url.toString() + '\n');
   console.log('\n  Open this in the browser where you are logged into Etsy:\n');
   console.log('  ' + url.toString() + '\n');
+  console.log(`  (also written to ${urlFile})`);
   console.log('  Approve the scopes. This window is waiting for the redirect…\n');
 
-  const code = await new Promise((resolve, reject) => {
+  // Open it directly unless told not to. Handing a human three near-identical
+  // 300-character URLs and asking them to pick the newest is a trap; launching
+  // the right one removes the choice.
+  if (!process.argv.includes('--no-open')) {
+    const { spawn } = await import('node:child_process');
+    try {
+      spawn('cmd', ['/c', 'start', '', url.toString()], { detached: true, stdio: 'ignore' }).unref();
+      console.log('  (opened in your default browser)\n');
+    } catch { /* printing the URL is the fallback */ }
+  }
+
+  // Accept any authorization THIS TOOL issued and has not expired — not only
+  // the newest. Two attempts failed with "state mismatch" because the operator
+  // clicked a link from an earlier attempt, which is the obvious thing to do
+  // with three links on screen. The check still does its real job (rejecting a
+  // state we never issued); it just stops punishing the wrong mistake.
+  const pendingPath = join(PATHS.state, 'etsy-oauth-pending.json');
+  const now = Date.now();
+  let pending = {};
+  try { pending = JSON.parse(readFileSync(pendingPath, 'utf8')); } catch { /* first run */ }
+  for (const [k, v] of Object.entries(pending)) {
+    if (now - (v.at || 0) > 1800000) delete pending[k];   // 30-minute expiry
+  }
+  pending[state] = { verifier, at: now };
+  writeFileSync(pendingPath, JSON.stringify(pending, null, 1));
+
+  const { code, usedVerifier } = await new Promise((resolve, reject) => {
     const server = createServer((req, res) => {
       const u = new URL(req.url, REDIRECT);
       if (!u.pathname.startsWith('/oauth/callback')) { res.writeHead(404).end(); return; }
       const got = u.searchParams.get('code');
       const gotState = u.searchParams.get('state');
+      const known = gotState && pending[gotState];
+      if (!known || !got) {
+        // Keep listening: a stale click must not kill the window the operator
+        // is about to use correctly.
+        res.writeHead(400, { 'Content-Type': 'text/html' });
+        res.end('<h2>That link was stale.</h2><p>Still waiting — use the newest link.</p>');
+        console.log('  · ignored a callback with an unrecognised state — still waiting');
+        return;
+      }
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end('<h2>FondlyMade Ops connected.</h2><p>You can close this tab.</p>');
       server.close();
-      if (gotState !== state) return reject(new Error('OAuth state mismatch — aborted'));
-      if (!got) return reject(new Error('no authorization code in the redirect'));
-      resolve(got);
+      resolve({ code: got, usedVerifier: known.verifier });
     });
     server.listen(3003);
-    setTimeout(() => { server.close(); reject(new Error('timed out waiting for the Etsy redirect')); }, 300000);
+    // 15 minutes, not 5: the operator has to switch browsers, read a consent
+    // screen and approve. A 5-minute window expired underneath them once.
+    setTimeout(() => { server.close(); reject(new Error('timed out waiting for the Etsy redirect — re-run: node ops.mjs etsy connect')); }, 900000);
   });
 
   const res = await fetch('https://api.etsy.com/v3/public/oauth/token', {
@@ -161,7 +219,7 @@ async function connect() {
       client_id: key,
       redirect_uri: REDIRECT,
       code,
-      code_verifier: verifier,
+      code_verifier: usedVerifier,
     }),
   });
   const text = await res.text();
