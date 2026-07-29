@@ -22,6 +22,7 @@ import { tmBlocker } from './tm.mjs';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 const stagedPath = join(PATHS.state, 'staged.json');
 
@@ -227,14 +228,48 @@ async function usShippingUsd(client, blueprintId, providerId) {
 }
 
 // ---------------------------------------------------------------- payload
-// Colors we want on a dark-ink graphic, best first. Matched loosely against
-// whatever the provider actually stocks — never assumed present.
-const COLOR_PREFERENCE = [
+// Garment colors are chosen by the INK, not by one global list. The first
+// mockup review showed why: five black-ink designs mocked (and orderable) on
+// black shirts — invisible, and a guaranteed refund if anyone ordered one.
+// Dark artwork goes on light garments, light/bright artwork on dark garments,
+// and the best-contrast color is put FIRST so it becomes the default variant
+// and the mockup buyers see. Matched loosely against what the provider
+// actually stocks — never assumed present.
+const DARK_GARMENTS = [
+  'black', 'navy', 'heather', 'dark grey', 'charcoal', 'forest', 'maroon',
+];
+const LIGHT_GARMENTS = [
+  'white', 'natural', 'sand', 'ash', 'light blue', 'yellow', 'soft pink',
+];
+// No profile (dry runs, tests, missing master) = no opinion about the ink, so
+// offer the historical mixed palette rather than silently narrowing to one side.
+const MIXED_GARMENTS = [
   'black', 'navy', 'heather', 'dark grey', 'charcoal',
   'natural', 'sand', 'white', 'forest', 'maroon',
 ];
 const MAX_COLORS = 6;
 const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+// Mean luminance of the artwork's OPAQUE pixels plus its native dimensions.
+// Luminance decides which garment palette suits the ink; the dimensions let a
+// portrait design be scaled to FIT a landscape print area instead of being
+// pasted at full width and cropped — which is precisely what put two-thirds of
+// a tee design outside the C4 mug wrap.
+async function artProfile(artPath) {
+  const meta = await sharp(artPath).metadata();
+  const { data, info } = await sharp(artPath)
+    .ensureAlpha().resize(96, 96, { fit: 'inside' })
+    .raw().toBuffer({ resolveWithObject: true });
+  let n = 0, lum = 0;
+  for (let p = 0; p < info.width * info.height; p++) {
+    const i = p * info.channels;
+    if (data[i + 3] < 128) continue;
+    lum += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+    n++;
+  }
+  const mean = n ? lum / n : 255;
+  return { darkInk: mean < 128, inkLuminance: Math.round(mean), w: meta.width, h: meta.height };
+}
 
 // Where the design sits inside the blueprint's print area. x/y are the centre
 // point and scale is a fraction of the print area's width, so the previous
@@ -249,20 +284,39 @@ const PLACEMENT = {
   tee_bella_3001: { x: 0.5, y: 0.42, scale: 0.85 },
   sweatshirt_gildan_18000: { x: 0.5, y: 0.42, scale: 0.85 },
   tote: { x: 0.5, y: 0.45, scale: 0.9 },
-  mug_11oz: { x: 0.5, y: 0.5, scale: 1 },      // wrap: full bleed is correct
+  // Mug scale is computed per design in buildProductPayload. Full-bleed was
+  // wrong twice over: a wrap-width design shows up CROPPED mid-word on the
+  // front camera (the buyer's first image read "ONAL SUPPORT"), and portrait
+  // art reused from a tee overflowed the 1120px-tall area entirely (C4).
+  mug_11oz: { x: 0.5, y: 0.5, scale: null },
   candle_9oz: { x: 0.5, y: 0.5, scale: 1 },    // label: fills its own area
 };
 
-function chooseVariants(listing, resolved) {
+// The largest width fraction at which the design (a) fits the wrap's height
+// with a small margin and (b) stays narrow enough to sit fully visible on the
+// front face of an 11oz mug rather than wrapping around it.
+const MUG_FRONT_MAX_FRAC = 0.48;
+function mugScale(profile, printArea) {
+  const [pw, phh] = printArea.split('x').map(Number);
+  if (!profile?.w || !profile?.h || !pw || !phh) return MUG_FRONT_MAX_FRAC;
+  const fitHeight = (phh / pw) * (profile.w / profile.h) * 0.92;
+  return Math.min(MUG_FRONT_MAX_FRAC, Number(fitHeight.toFixed(3)));
+}
+
+function chooseVariants(listing, resolved, profile = null) {
   const isApparel = listing.product.startsWith('tee') || listing.product.startsWith('sweatshirt');
   let variants = resolved.variants;
 
   if (isApparel) {
     // The descriptions say "in a range of colors". This used to ship whatever
     // single color happened to sit at variants[0], which made that line false.
+    // Palette follows the ink: dark artwork cannot be sold on a black shirt.
+    // Without a profile (dry runs, tests) fall back to the dark-garment list,
+    // which is the pre-profile behavior.
+    const preference = profile ? (profile.darkInk ? LIGHT_GARMENTS : DARK_GARMENTS) : MIXED_GARMENTS;
     const available = [...new Set(resolved.variants.map(v => v.options?.color).filter(Boolean))];
     const picked = [];
-    for (const want of COLOR_PREFERENCE) {
+    for (const want of preference) {
       if (picked.length >= MAX_COLORS) break;
       const hit = available.find(c => c.toLowerCase().includes(want) && !picked.includes(c));
       if (hit) picked.push(hit);
@@ -276,6 +330,13 @@ function chooseVariants(listing, resolved) {
       variants = resolved.variants.filter(v => SIZES.includes(v.options?.size));
     }
     if (!variants.length) variants = resolved.variants.slice(0, 6);
+    // Highest-contrast color first: Printify renders the default mockup from
+    // the first variant, and that mockup is the buyer's first image.
+    const rank = (v) => {
+      const idx = colors.findIndex(x => x === v.options?.color);
+      return (idx === -1 ? 99 : idx) * 10 + (SIZES.indexOf(v.options?.size) === -1 ? 9 : SIZES.indexOf(v.options?.size));
+    };
+    variants = [...variants].sort((a, b) => rank(a) - rank(b));
   }
 
   if (variants.length > 60) {
@@ -295,8 +356,8 @@ function chooseVariants(listing, resolved) {
 const SIZE_SURCHARGE_USD = { '2XL': 2.00, '3XL': 4.00, '4XL': 5.00, '5XL': 6.00 };
 const surchargeCents = (size) => Math.round((SIZE_SURCHARGE_USD[size] || 0) * 100);
 
-function buildProductPayload(listing, resolved, uploadId, priceCents) {
-  const variants = chooseVariants(listing, resolved);
+function buildProductPayload(listing, resolved, uploadId, priceCents, profile = null) {
+  const variants = chooseVariants(listing, resolved, profile);
   // The placeholder position must come from the blueprint, not a guess: a mug
   // wrap or candle label is not 'front'. Fail loudly if we cannot read one.
   // Pin the print position. NEVER placeholders[0]: on the Bella 3001 at
@@ -315,10 +376,13 @@ function buildProductPayload(listing, resolved, uploadId, priceCents) {
     throw new Error(`${listing.product}: print position "${wanted}" is not offered by this blueprint/provider. Available: ${offered.join(', ')}. Fix the \`placeholder\` in BLUEPRINT_SEARCH rather than guessing.`);
   }
   const placeholderPos = wanted;
-  const place = PLACEMENT[listing.product];
-  if (!place) {
+  const basePlace = PLACEMENT[listing.product];
+  if (!basePlace) {
     throw new Error(`no print placement defined for ${listing.product} — add one to PLACEMENT in stage.mjs rather than letting it default to a full-width centred print`);
   }
+  const place = basePlace.scale === null
+    ? { ...basePlace, scale: mugScale(profile, spec?.printArea || '') }
+    : basePlace;
 
   return {
     title: listing.title,
@@ -534,6 +598,7 @@ async function stageRun(listings, cfg) {
   const resolvedCache = {};
   const uploadCache = {};
   const shippingCache = {};
+  const profileCache = {};
   const dryPayloads = [];
   let created = 0, skipped = 0, failed = 0, rejected = 0, unverified = 0, tmPending = 0;
 
@@ -588,8 +653,14 @@ async function stageRun(listings, cfg) {
         console.log(`  uploaded ${l.art_file} -> ${up.id}`);
       }
 
+      // Ink luminance + native dimensions steer garment color and mug scale.
+      // Cached per art file; profileCache may hold null on dry runs where the
+      // master does not exist yet, and every consumer tolerates that.
+      if (!(l.art_file in profileCache)) {
+        profileCache[l.art_file] = existsSync(artPath) ? await artProfile(artPath) : null;
+      }
       const payload = buildProductPayload(l, resolved, uploadCache[l.art_file] ?? '<upload-id>',
-        Math.round(l.price_usd * 100));
+        Math.round(l.price_usd * 100), profileCache[l.art_file]);
 
       if (dryRun) {
         dryPayloads.push({ code: l.code, payload });
