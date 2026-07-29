@@ -17,9 +17,9 @@
   "max_products_total": 45,
   "max_products_total_note": "Runaway guard across ALL invocations. Before creating anything, stage counts the products that actually exist in the Printify shop and refuses if this run would push the total past this. A loop calling stage repeatedly dies on the second call, not the two-hundredth product.",
   "fees": {
-    "_source": "Etsy's published seller fee schedule. NOT fetched from an API — you must confirm these against your own Etsy account (Shop Manager → Finances → Payment settings) because rates vary by country, currency, and whether Offsite Ads is mandatory for your shop.",
-    "_confirm": "Set fees_confirmed to true once you have checked these against your own account. Until then margin numbers are printed but marked UNCONFIRMED, and publish refuses to run.",
-    "fees_confirmed": false,
+    "_source": "Confirmed by the operator against Shop Manager -> Finances -> Payment settings on 2026-07-29 (~01:55 PDT): $0.20 listing, 6.5% transaction, 3% + $0.25 processing. Offsite Ads: opted out. Shop Manager also shows a 4% Share & Save REFUND on orders from the seller's own share links — a credit, not a fee, deliberately excluded from the margin model so margins stay conservative.",
+    "_confirm": "Confirmed 2026-07-29 by operator readback in session. Re-confirm if Etsy revises its fee schedule or the shop crosses the $10k/yr Offsite Ads mandatory threshold.",
+    "fees_confirmed": true,
     "transaction_pct": 6.5,
     "payment_processing_pct": 3,
     "payment_processing_flat_usd": 0.25,
