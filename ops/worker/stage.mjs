@@ -316,7 +316,17 @@ function chooseVariants(listing, resolved, profile = null) {
     // Palette follows the ink: dark artwork cannot be sold on a black shirt.
     // Without a profile (dry runs, tests) fall back to the dark-garment list,
     // which is the pre-profile behavior.
-    const preference = profile ? (profile.darkInk ? LIGHT_GARMENTS : DARK_GARMENTS) : MIXED_GARMENTS;
+    // Three tiers, not two. Dark ink sells on light garments. Near-white ink
+    // (cream lettering, luminance >= 200) vanishes on white and stays
+    // dark-garment-only. The colored midtones between — teal, burgundy, pink —
+    // read on BOTH, so they keep the dark palette as default and carry white
+    // as a buyable option, slotted before the palette tail so MAX_COLORS
+    // cannot squeeze it out.
+    const preference = profile
+      ? (profile.darkInk ? LIGHT_GARMENTS
+        : profile.inkLuminance >= 200 ? DARK_GARMENTS
+          : [...DARK_GARMENTS.slice(0, 5), 'white', ...DARK_GARMENTS.slice(5)])
+      : MIXED_GARMENTS;
     const available = [...new Set(resolved.variants.map(v => v.options?.color).filter(Boolean))];
     const picked = [];
     for (const want of preference) {
