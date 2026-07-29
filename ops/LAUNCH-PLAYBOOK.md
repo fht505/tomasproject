@@ -135,6 +135,68 @@ against our own shop data, not facts.
   in practice, real suspension stories. **Our own shop stats become the best
   data available the day we publish.**
 
+## Operator-supplied Reddit evidence (2026-07-29, 11 screenshots)
+
+The operator hand-delivered what automation could not: two threads
+(r/EtsySellers ~Nov 2025, r/Etsy ~2024), ~15 distinct sellers. This is the
+first genuinely independent seller-voice data in the whole research set, and
+several patterns now MEET the 3+ unrelated-sellers bar. Venue bias noted:
+r/EtsySellers skews negative on POD and complainers self-select — treat the
+magnitudes with care, the mechanics as real.
+
+**Patterns that clear the bar:**
+
+1. **Reserve float is the #1 repeated warning (4 sellers).** "Plan on
+   financing out of pocket for the first six months"; "if you're selling ten
+   shirts a day that's hundreds or thousands fronted until the reserve
+   lifts"; "you might have to front a lot of money until you get paid."
+   Confirms the official-docs finding from the seller side. At our realistic
+   early volume (0-3 orders/day) the float is modest — low hundreds — but it
+   must be AVAILABLE. Failure mode named by a top-1% commenter: unable to pay
+   Printify -> unfulfilled orders -> "a direct pipeline to getting booted."
+
+2. **The $1-3/shirt trap (5 voices).** Sellers who priced to compete at the
+   bottom report $1-3 profit per shirt, negative with ads, and burnout into
+   quitting POD. This is the counterfactual that justifies our $5 floor and
+   $23.95 premium pricing: the model that fails on Reddit is the one our
+   margin guard already refuses to run. The open risk is the flip side —
+   whether a zero-review shop converts at premium prices. Unknown until live.
+
+3. **First sale takes weeks, not days (3 timelines).** ~1 month (POD,
+   ~30-40 sales in year one); just over a month (non-POD 3D shop); 3 weeks
+   WITH daily ads and daily listing optimization. Calibration: silence in
+   weeks 1-3 is the NORM, not a signal to thrash the shop's SEO.
+
+4. **Who eats fulfillment failures (3 sources).** Seller refunds the buyer
+   in full including shipping; IF Printify accepts photo proof it refunds
+   the ITEM only, never the shipping — the gap is the seller's. One seller
+   reports wrong items shipped to 3 different customers; late-shipping dings
+   on Etsy metrics also reported (matches the mid-2026 Shopify reviews).
+   Plan: assume a low single-digit % defect/mistake rate in mental math, log
+   every incident in the ledger, and remember on-time-ship feeds ranking.
+
+5. **Niche focus — the strongest strategic signal across ALL rounds, with a
+   recorded split.** Two sellers: multiple niches tank conversion / "pick one
+   niche, dominate it, then expand" (one reports first-page domination of an
+   unsaturated niche after a few sales). One seller: multi-niche launch is
+   fine, refine later. Adding the round-5 blogger's "Mamas, Nurses, Teachers
+   are too broad for beginners", three independent sources now point the
+   same direction. Our 34 listings span 5 niches. The batch is built and
+   staged - unstaging is waste - but the POST-LAUNCH plan should follow the
+   signal: watch 2-4 weeks of stats, identify the niche that moves, and
+   point batch 3 plus shop sections at THAT niche instead of widening.
+
+**Split evidence, recorded as such:** free shipping — one seller saw a small
+maybe-real lift, one (UK, cheap shipping) swears by it for visibility and
+conversion, one says it only worked after repricing ("perceived value"), the
+2024 thread warns it just moves cost. Consistent with the official sub-$6
+rule: fold shipping into price when the price still reads right, not as
+dogma. Etsy Ads — one seller went NEGATIVE per shirt with ads on; one
+credits daily ads for a 3-week first sale. Both can be true: ads buy speed,
+not margin. Our sequencing (launch organic, decide ads from data) stands.
+
+**Lead-tier only:** "99% of new shops fail" — one commenter, no source.
+
 ## Launch actions distilled
 
 Before publish (operator decisions at mockup review):
