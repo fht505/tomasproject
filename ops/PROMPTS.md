@@ -163,3 +163,51 @@ joke on "smells like" — wording that only works on a candle.
 Upload them in chat, or drop them anywhere I can reach (repo folder
 `station/ops/art/`, or Drive). Name = code. I'll validate, upscale to print
 resolution, and stage the Printify drafts the moment the token exists.
+
+---
+
+## Collection D — Batch 3 candle labels (competition-scored 2026-07-29)
+
+*(wide landscape label, 3:2 — the real Printify print area is 900x600 — cream
+background, reads at 3in. Codes assigned in ascending order of measured Etsy
+competition, so D1 is the least contested phrase we found.)*
+
+Every one of these still needs a trademark verdict before art is generated —
+see ops/BATCH-03-CANDIDATES.md. Prompts exist now only so that art can start
+the moment screening clears.
+
+**D1**
+> Design a candle label, flat vector style, wide landscape label, cream background. Deadpan condensed capitals "THIS CANDLE OWES ME NOTHING" in charcoal, centered, with a single thin rule above and below the text. Dry, minimal, no ornament. Crisp edges, no photo elements.
+
+**D2**
+> Design a candle label, flat vector style, wide landscape label, cream background. Warm serif text "PROFESSIONAL BLANKET WARMER" in soft rust, small minimalist line-art folded blanket beneath the text. Cozy, wry, premium. Crisp edges.
+
+**D3**
+> Design a candle label, flat vector style, wide landscape label, cream background. Bold stencil-style capitals "BURN AFTER PARENTING" in deep charcoal with a small line-art matchstick mark. Wry, confident, minimal. Crisp printable edges.
+
+**D4**
+> Design a candle label, flat vector style, wide landscape label, cream background. Elegant script "THE KIDS ARE FINALLY ASLEEP" in midnight blue, tiny scattered star accents, thin border frame. Quiet humor, premium. Crisp edges.
+
+**D5**
+> Design a candle label, flat vector style, wide landscape label, cream background. Playful rounded capitals "CANCELLED PLANS CELEBRATION" in dusty pink, small confetti-dot accents in charcoal. Cheerful, dry, minimal. Crisp edges.
+
+**D6**
+> Design a candle label, flat vector style, wide landscape label, cream background. Calm small-caps "INTROVERT RECHARGE STATION" in sage green, small minimalist battery-charging line mark beneath. Clean, quiet, premium. Crisp edges.
+
+**D7**
+> Design a candle label, flat vector style, wide landscape label, cream background. Rustic slab-serif "FLANNEL AND FIREWOOD" in warm brown, subtle plaid-pattern band along the top and bottom edges. Cabin warmth, editorial. Crisp edges.
+
+**D8**
+> Design a candle label, flat vector style, wide landscape label, cream background. Refined serif "WOODSMOKE AND WOOL" in deep charcoal, thin curling smoke line rising from the text. Moody, elegant, minimal. Crisp printable edges.
+
+**D9**
+> Design a candle label, flat vector style, wide landscape label, cream background. Retro diner-style capitals "REHEATED COFFEE CLUB" in cinnamon brown inside a simple oval badge outline. Charming, nostalgic, clean. Crisp edges.
+
+**D10**
+> Design a candle label, flat vector style, wide landscape label, cream background. Typewriter-style text "EMOTIONALLY UNAVAILABLE UNTIL COFFEE" stacked in a neat block, small line-art coffee cup accent. Dry, minimal. Crisp edges.
+
+**D11**
+> Design a candle label, flat vector style, wide landscape label, cream background. Classic serif "APPLE ORCHARD AFTERNOON" in deep amber, delicate line-art apple branch arcing above the text. Warm, quiet, premium. Crisp edges.
+
+**D12**
+> Design a candle label, flat vector style, wide landscape label, cream background. Soft rounded capitals "SWEATPANTS WEATHER" in muted terracotta, small minimalist folded-clothes line mark. Comfortable, wry, clean. Crisp edges.

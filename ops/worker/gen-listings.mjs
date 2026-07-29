@@ -29,6 +29,9 @@ const T = {
   candleCore: ['fall candles', 'autumn candle', 'fall decor', 'cozy fall gift',
     'seasonal candle', 'candle gift', 'autumn home decor', 'hostess gift'],
   candleFun: ['funny candle', 'gift for her', 'best friend gift', 'housewarming gift', 'candle lover gift'],
+  candleWry: ['funny candle', 'sarcastic candle', 'gag gift candle', 'dry humor gift', 'coworker candle'],
+  candleCozy: ['cozy candle', 'hygge decor', 'slow living gift', 'self care candle', 'comfort gift'],
+  candleAutumn: ['autumn candle', 'fall candles', 'seasonal candle', 'cabin decor', 'woodsy candle'],
   candleClassic: ['pumpkin candle', 'sweater weather', 'harvest decor', 'fall aesthetic', 'thanksgiving decor'],
   teacher: ['teacher shirt', 'teacher gift', 'back to school', 'teacher era', 'teacher tee',
     'appreciation gift', 'new teacher gift', 'teacher outfit', 'school shirt', 'educator gift'],
@@ -296,6 +299,39 @@ const ROWS = [
     [T.teacher, T.sweatshirtCore], 'The Teacher Era crewneck — for grading weather.', 'B1'],
   ['C8', 'sweatshirt', 'Grandma Era', 'Sweatshirt | Cozy Grandma Crewneck | Nana Gift',
     [T.grandma, T.sweatshirtCore], 'Grandma Era, fleece-lined.', 'B14'],
+
+  // ---- Batch 3: candles, chosen by MEASURED competition (2026-07-29) --------
+  // "fall candle" competes against 44,418 active listings; "teacher shirt"
+  // against 870,402. Candles are 6x less contested and carry the best verified
+  // margin ($14.08). Codes ascend by competition, so D1 is the least contested
+  // phrase found. Every one is pending a Class 4 trademark verdict — see
+  // ops/BATCH-03-CANDIDATES.md. Rows exist now so art can start the moment
+  // screening clears; failures get deleted, not reworked.
+  ['D1', 'candle', 'This Candle Owes Me Nothing', 'Funny Soy Candle | Deadpan Gift | 9oz',
+    [T.candleWry, T.candleCozy, T.candleAutumn], 'It has done its part. You are on your own now.'],
+  ['D2', 'candle', 'Professional Blanket Warmer', 'Cozy Soy Candle | Homebody Gift | 9oz',
+    [T.candleCozy, T.candleWry, T.candleAutumn], 'A job title you have earned several times over this week.'],
+  ['D3', 'candle', 'Burn After Parenting', 'Funny Soy Candle | Gift for Parents | 9oz',
+    [T.candleWry, T.candleCozy, T.candleAutumn], 'For the ten minutes after bedtime that belong entirely to you.'],
+  ['D4', 'candle', 'The Kids Are Finally Asleep', 'Funny Soy Candle | Mom Gift | 9oz',
+    [T.candleWry, T.candleCozy, T.candleAutumn], 'The most peaceful sentence in the English language.'],
+  ['D5', 'candle', 'Cancelled Plans Celebration', 'Funny Soy Candle | Introvert Gift | 9oz',
+    [T.candleWry, T.candleCozy, T.candleAutumn], 'Light it the moment the text says "rain check?"'],
+  ['D6', 'candle', 'Introvert Recharge Station', 'Cozy Soy Candle | Self Care Gift | 9oz',
+    [T.candleCozy, T.candleWry, T.candleAutumn], 'Battery at 12 percent. This is the charger.'],
+  ['D7', 'candle', 'Flannel and Firewood', 'Autumn Soy Candle | Cabin Decor | 9oz',
+    [T.candleAutumn, T.candleCozy, T.candleWry], 'The two-ingredient recipe for an October evening.'],
+  ['D8', 'candle', 'Woodsmoke and Wool', 'Autumn Soy Candle | Cozy Cabin Gift | 9oz',
+    [T.candleAutumn, T.candleCozy, T.candleWry], 'What the first cold night actually smells like.'],
+  ['D9', 'candle', 'Reheated Coffee Club', 'Funny Soy Candle | Coworker Gift | 9oz',
+    [T.candleWry, T.candleCozy, T.candleAutumn], 'Third time in the microwave and still worth it.'],
+  ['D10', 'candle', 'Emotionally Unavailable Until Coffee', 'Funny Soy Candle | Office Gift | 9oz',
+    [T.candleWry, T.candleCozy, T.candleAutumn], 'A boundary, clearly stated, in wax.'],
+  ['D11', 'candle', 'Apple Orchard Afternoon', 'Autumn Soy Candle | Fall Decor | 9oz',
+    [T.candleAutumn, T.candleCozy, T.candleWry], 'Cider, sawdust and cold air, without the drive.'],
+  ['D12', 'candle', 'Sweatpants Weather', 'Cozy Soy Candle | Homebody Gift | 9oz',
+    [T.candleCozy, T.candleAutumn, T.candleWry], 'The season the waistband has been waiting for.'],
+
 ];
 
 // ------------------------------------------------------------ phrase tags
@@ -315,6 +351,21 @@ const PHRASE_TAGS = {
   A8: ['smells like fall', 'minimalist candle'],
   A9: ['emotional support', 'support candle'],
   A10: ['mom candle gift', 'quiet time candle'],
+  // Batch 3 — the printed phrase is the keyword nobody else owns, and the
+  // competition scan proved it: these phrases sit at 0-28 competing listings
+  // while "fall decor" sits at 983,766. Every tag <= 20 chars (Etsy limit).
+  D1: ['candle owes nothing', 'deadpan candle', 'sarcastic candle'],
+  D2: ['blanket warmer', 'homebody candle', 'cozy homebody gift'],
+  D3: ['burn after parenting', 'parenting candle', 'tired parent gift'],
+  D4: ['kids asleep candle', 'bedtime candle', 'mom peace gift'],
+  D5: ['cancelled plans', 'staying in candle', 'introvert win'],
+  D6: ['introvert candle', 'recharge station', 'quiet time candle'],
+  D7: ['flannel firewood', 'firewood candle', 'flannel season'],
+  D8: ['woodsmoke candle', 'woodsmoke wool', 'wool and smoke'],
+  D9: ['reheated coffee', 'coffee club candle', 'microwave coffee'],
+  D10: ['until coffee', 'coffee first candle', 'coffee then talk'],
+  D11: ['apple orchard', 'orchard candle', 'cider orchard'],
+  D12: ['sweatpants weather', 'sweatpants candle', 'comfy season'],
   A11: ['to do list candle', 'productivity gift'],
   A12: ['first day of fall', 'fall 2026'],
 
