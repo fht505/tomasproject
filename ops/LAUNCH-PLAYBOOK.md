@@ -96,6 +96,45 @@ Operational consequences:
   seller requirements. Re-research closer to the ramp or learn from our own
   shop stats.
 
+## Community-tier addendum (round 5, 2026-07-29) — read the epistemics first
+
+A second run targeted what real sellers report (Reddit seller subs, Etsy
+Community, YouTube postmortems, 2024-2026) with a stated bar of 3+ unrelated
+dated seller reports per pattern. **Zero findings met that bar.** Reddit is
+effectively closed to automated research (1 fetch survived), and the entire
+surviving evidence base is one heavily monetized coaching blog plus Printify's
+own Shopify app review page. Everything below is LEAD-TIER — leads to test
+against our own shop data, not facts.
+
+- **Niche warning (one seller, incentive-biased, directly on point):** an
+  established POD seller warns "Mamas, Nurses, Teachers are too broad for
+  beginners" — our exact lineup. She sells a keyword-research product, so
+  "do more research" is her funnel. Recorded because it is the only strategic
+  signal found and it may well be right; the designs are made and staged, so
+  the launch itself is the cheap demand test.
+- **Q4 shape (same single seller):** Nov 2024, 10-15 orders/day before
+  Nov 15, rarely under 20/day after, Black Friday best day (38). One shop's
+  seasonality, least marketing-sensitive number on the page.
+- **Scale + trend (same seller):** $21K gross / $9.3K net in Nov 2024;
+  full-year revenue DOWN ~$26K to $109K in 2025 — the decline is an admission
+  against interest, so it is the most credible number she publishes.
+- **Printify aggregate:** 4.7 stars across 4,272 Shopify-app reviews (~4% at
+  1-3 stars) — Shopify merchants, not Etsy sellers, cumulative since launch.
+  Two mid-2026 1-star leads: ruined prints with a 3-attempt partial-refund
+  fight, and providers creating tracking labels without shipping, with
+  Printify siding with its partners. Nothing provider-specific survived on
+  Printify Choice / Candle Builders / SPOKE / Fulfill Engine — unanswered,
+  not cleared.
+- **14 claims REFUTED**, including every specific suspension-mechanic and
+  reserve-percentage figure circulating in seller-services marketing (25%/45
+  days, 75%/90 days, "AI non-disclosure = suspension trigger", "one IP
+  complaint = review within hours"). Those all trace to vendors selling
+  suspension/protection services. The official-docs findings above remain the
+  only verified reserve facts.
+- Still unanswered after both runs: time-to-first-sale base rates, reserves
+  in practice, real suspension stories. **Our own shop stats become the best
+  data available the day we publish.**
+
 ## Launch actions distilled
 
 Before publish (operator decisions at mockup review):
