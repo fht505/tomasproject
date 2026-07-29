@@ -1,5 +1,17 @@
 # FondlyMade — shop copy to paste into Etsy
 
+## Brand assets (ops/brand/)
+
+- `icon-500.png` — shop icon. Shop Manager → Settings → Info & Appearance → Shop icon.
+- `banner-3360x840.png` — big banner. Same page → Banner → Big banner.
+
+Same visual language as the candle labels on purpose: cream stock,
+terracotta double ring, candle-flame F. Shop and product read as one hand.
+
+## Shop title (Info & Appearance → Shop title, 55-char limit)
+
+Cozy fall candles & funny gifts for the ones you love
+
 Every block below maps to a Shop Manager field. The About section is a
 verified ranking-relevant input (round-4 research); the policies exist because
 three independent sellers reported the same refund mechanics: the seller
