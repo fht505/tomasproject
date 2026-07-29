@@ -197,18 +197,44 @@ not margin. Our sequencing (launch organic, decide ads from data) stands.
 
 **Lead-tier only:** "99% of new shops fail" — one commenter, no source.
 
-## Launch actions distilled
+## Applied 2026-07-29 (~03:15) — research converted into changes
 
-Before publish (operator decisions at mockup review):
-1. Title rewrite question above — yes/no.
-2. Shipping: consider folding shipping into price for sub-$6 or free shipping
-   (search priority + removes top purchase barrier). Interacts with the thin
-   3XL tee margin — reprice tees at the same time if done.
+1. **Titles rewritten to the Aug-2025 guidance** across all 40 listings:
+   ≤15 words, item noun attached to the phrase, recipient/occasion phrases
+   stripped from titles (they already live in the tags). Done in
+   gen-listings.mjs (trimTitle), and the old "under 90 chars = wasted
+   surface" warning inverted — long is the smell now.
+2. **Apparel price ladder**: 2XL +$2, 3XL +$4 (4XL/5XL mapped if ever
+   enabled). Fixes the $5.10 worst-case tee net revealed by the first cost
+   readback without touching the $23.95 base price buyers compare on. The
+   margin guard now evaluates every variant at ITS OWN price and lets the
+   thinnest decide.
+3. **Drafts restaged** with both changes — they were unpublished, so the
+   rewrite cost zero ranking history.
+4. **ops/SHOP-COPY.md** — paste-ready About section (verified ranking
+   input), announcement, and a photos-first replacement policy that routes
+   defects to Printify reprints instead of open-ended returns (three sellers
+   independently reported the seller eats the refund gap otherwise).
 
-At/after publish (no decision needed):
-3. Complete the shop About section (ranking-relevant, verified).
-4. Use fondlymade.etsy.com links exclusively for any external posting.
-5. Answer every buyer message fast — response rate is a ranking input.
-6. Expect a possible reserve on sale #1; tracking releases it.
-7. Do not buy Etsy Plus or ads for ranking — verified to have zero organic
-   effect.
+Deliberate NON-changes, with reasons:
+- **Niche spread stays for launch.** Three sources say focus; the batch is
+  built and unstaging is pure waste. The signal becomes the BATCH 3 rule:
+  2-4 weeks of live stats pick the winning niche, new designs and the five
+  trademark-replacement slots go there, shop sections reorganize around it.
+- **Shipping model unchanged for launch** (buyer pays). Folding shipping
+  into prices requires the real per-product US rates and a deliberate
+  repricing pass — queued as the first post-launch experiment, not a 3am
+  edit. Sub-$6/free shipping evidence is real but split on mechanism.
+- **No Etsy Ads at launch.** Split evidence — ads buy speed, not margin
+  (one seller went negative per shirt). Decision point: after 2 weeks of
+  organic data, or sooner if traffic is literally zero.
+- **The 5 rejected phrases stay unreplaced** until niche data exists —
+  those slots are ammunition for the winner.
+
+Standing operational rules (from verified findings):
+- Use fondlymade.etsy.com links exclusively for any external posting.
+- Answer every buyer message same-day — response rate is a ranking input.
+- Expect a possible reserve on sale #1; tracking releases it; keep a small
+  float for early Printify costs.
+- Weeks 1-3 silence is the community norm — do not thrash titles over it.
+- No Etsy Plus, no ads-for-ranking — verified zero organic effect.

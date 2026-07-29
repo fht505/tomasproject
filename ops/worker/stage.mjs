@@ -278,10 +278,6 @@ function chooseVariants(listing, resolved) {
     if (!variants.length) variants = resolved.variants.slice(0, 6);
   }
 
-  // Every enabled variant carries the SAME price, and larger sizes cost more to
-  // produce. That is safe here only because the margin guard prices the product
-  // on its most expensive enabled variant — if the 3XL cannot clear the floor,
-  // the whole draft is rejected rather than quietly sold at a loss.
   if (variants.length > 60) {
     console.log(`  ! ${listing.code}: ${variants.length} variants at one price — capping to 60`);
     variants = variants.slice(0, 60);
@@ -289,6 +285,15 @@ function chooseVariants(listing, resolved) {
   if (!variants.length) throw new Error('no variants resolved for this blueprint/provider');
   return variants;
 }
+
+// Larger sizes cost more to produce. The first real staging run priced every
+// variant flat, and the cost readback showed what that does: the 3XL Bella
+// 3001 costs $16.12 against $13.21 for the S-XL range, dragging the tee's
+// worst-case net from ~$8 to $5.10 — ten cents above the floor. An upsize
+// surcharge is standard practice on Etsy apparel and repairs the tail without
+// touching the base price buyers compare on.
+const SIZE_SURCHARGE_USD = { '2XL': 2.00, '3XL': 4.00, '4XL': 5.00, '5XL': 6.00 };
+const surchargeCents = (size) => Math.round((SIZE_SURCHARGE_USD[size] || 0) * 100);
 
 function buildProductPayload(listing, resolved, uploadId, priceCents) {
   const variants = chooseVariants(listing, resolved);
@@ -323,7 +328,7 @@ function buildProductPayload(listing, resolved, uploadId, priceCents) {
     print_provider_id: resolved.provider.id,
     variants: variants.map(v => ({
       id: v.id,
-      price: priceCents,
+      price: priceCents + surchargeCents(v.options?.size),
       is_enabled: true,
     })),
     print_areas: [{
@@ -368,18 +373,27 @@ function marginDecision(listing, product, shippingUsd, cfg) {
     return { accept: true, verified: false, cost: null, margin: null,
       reason: 'Printify returned no variant cost — margin UNVERIFIED, publish will refuse this one' };
   }
-  const margin = netMargin({
-    priceUsd: listing.price_usd,
-    baseCostUsd: cost.maxUsd,
-    shippingUsd,
-    fees: cfg.fees,
-  });
+  // Pricing is laddered by size, so "the worst variant" is no longer simply
+  // the most expensive one — a $16.12-cost 3XL priced at +$4 can be healthier
+  // than a $13.21 M at base price. Evaluate every enabled variant at ITS OWN
+  // price and let the thinnest one decide. Variants created by this run carry
+  // the price we set (cents); anything without one falls back to the flat
+  // listing price, which keeps the pre-ladder tests and older drafts honest.
+  const enabled = (product?.variants || []).filter(v => v.is_enabled !== false)
+    .filter(v => typeof v.cost === 'number' && v.cost > 0);
+  let worst = null;
+  for (const v of enabled) {
+    const priceUsd = typeof v.price === 'number' && v.price > 0 ? usd(v.price) : listing.price_usd;
+    const m = netMargin({ priceUsd, baseCostUsd: usd(v.cost), shippingUsd, fees: cfg.fees });
+    if (!worst || m.net < worst.margin.net) worst = { margin: m, costUsd: usd(v.cost), priceUsd };
+  }
+  const margin = worst.margin;
   if (margin.net < cfg.min_margin_usd) {
     const need = minPriceFor({
-      baseCostUsd: cost.maxUsd, shippingUsd, target: cfg.min_margin_usd, fees: cfg.fees,
+      baseCostUsd: worst.costUsd, shippingUsd, target: cfg.min_margin_usd, fees: cfg.fees,
     });
     return { accept: false, verified: true, cost, margin, minPrice: need,
-      reason: `net ${money(margin.net)} under the ${money(cfg.min_margin_usd)} floor (cost ${money(cost.maxUsd)}, fees ${money(margin.platform_fees)}) — needs ${money(need)} or higher` };
+      reason: `net ${money(margin.net)} under the ${money(cfg.min_margin_usd)} floor at ${money(worst.priceUsd)} (cost ${money(worst.costUsd)}, fees ${money(margin.platform_fees)}) — that variant needs ${money(need)} or higher` };
   }
   return { accept: true, verified: true, cost, margin, reason: null };
 }

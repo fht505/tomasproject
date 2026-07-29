@@ -109,41 +109,34 @@ function pickTags(productKey, phraseTags, banks) {
   return out;
 }
 
-// Titles ran 56-87 characters against Etsy's 140 limit — real search surface
-// left silent. Extend each one with its own tags, most specific first.
-//
-// Two limits, both learned the hard way. A tag must bring a word the title does
-// not already have, or padding produces "Funny Coffee Mug | Funny Gift Mug |
-// Funny Mug | Mug Gift" — length without reach. And it stops at 95, not 115:
-// Etsy's 2025 guidance reads title, tags, attributes and description together,
-// so the title no longer has to carry every keyword, and occasion and
-// recipient terms belong in the tags where they already are. Padding to 115
-// was just re-stating the tag list in title case.
-const TITLE_EXCLUDE = new Set([
-  'gift for her', 'gift for him', 'birthday gift', 'christmas gift',
-  'holiday gift', 'stocking stuffer', 'secret santa gift', 'gift idea',
-  'unique gift', 'housewarming gift', 'best friend gift', 'appreciation gift',
-  'hostess gift',
-]);
+// Titles now follow Etsy's August 2025 guidance, verified in the round-4
+// research (Seller Handbook 1399426136697): search reads the listing
+// holistically, so the title states what the item IS — item noun, phrase, top
+// objective traits — in under ~15 words, and recipient/occasion terms ("gift
+// for her", "teacher appreciation gift") move to tags and attributes, where
+// ours already live. The old padTitle stretched every title to 95+ characters
+// by restating the tag list; that is the exact pattern the guidance
+// deprecates, and with the drafts still unpublished the rewrite costs nothing.
+const TITLE_WORD_BUDGET = 15;
+const GIFTY = /\b(gift|present|for (her|him|mom|dad|men|women))\b/i;
 
-function padTitle(title, tags) {
-  const titleCase = (s) => s.replace(/\b[a-z]/g, (c) => c.toUpperCase());
-  const words = (s) => s.toLowerCase().match(/[a-z0-9]+/g) || [];
-  const count = new Map();
-  for (const w of words(title)) count.set(w, (count.get(w) ?? 0) + 1);
-
-  for (const t of tags) {
-    if (title.length >= 95) break;
-    if (TITLE_EXCLUDE.has(t)) continue;
-    const tagWords = words(t);
-    if (tagWords.every((w) => count.has(w))) continue;          // adds no new word
-    if (tagWords.some((w) => (count.get(w) ?? 0) >= 2)) continue; // would stutter
-    const segment = ' | ' + titleCase(t);
-    if (title.length + segment.length > 138) continue;
-    title += segment;
-    tagWords.forEach((w) => count.set(w, (count.get(w) ?? 0) + 1));
+function trimTitle(phrase, tail) {
+  const segments = tail.split(' | ').map((s) => s.trim()).filter(Boolean);
+  const wordsIn = (s) => (s.match(/[A-Za-z0-9''-]+/g) || []).length;
+  // The first tail segment is normally the item noun ("Shirt", "Mug") and
+  // fuses onto the phrase. When it is itself a recipient phrase ("Gift for
+  // Her"), it must not — A9 came out "Emotional Support Candle Gift for Her".
+  const first = segments[0] && !GIFTY.test(segments[0]) ? segments.shift() : null;
+  const out = [first ? `${phrase} ${first}` : phrase];
+  let used = wordsIn(out[0]);
+  for (const seg of segments) {
+    if (GIFTY.test(seg)) continue;   // recipient/occasion terms live in tags
+    const n = wordsIn(seg);
+    if (used + n > TITLE_WORD_BUDGET) break;
+    out.push(seg);
+    used += n;
   }
-  return title;
+  return out.join(' | ');
 }
 
 // Repetition is worth knowing about, but fixing it by deleting words wrecks
@@ -361,7 +354,7 @@ const listings = ROWS.map((row) => {
   const [code, productKey, phrase, tail, banks, hook, artFrom] = row;
   const p = PRODUCTS[productKey];
   const tags = pickTags(productKey, PHRASE_TAGS[code] || [], banks);
-  let title = padTitle(`${phrase} ${tail}`, tags);
+  let title = trimTitle(phrase, tail);
   if (title.length > 140) title = title.slice(0, 140).replace(/ [^ ]*$/, '');
   return {
     code,
@@ -425,7 +418,10 @@ const seasonal = listings
   .map(l => [l.code, [...new Set([...(l.title.match(HOLIDAYS) || []), ...l.tags.flatMap(t => t.match(HOLIDAYS) || [])])]])
   .filter(([, hits]) => hits.length);
 
-const short = listings.filter(l => l.title.length < 70);
+// The old check flagged titles UNDER 90 chars as wasted surface. Etsy's Aug
+// 2025 guidance inverted that: short is correct, long is the smell now.
+const wordCount = (s) => (s.match(/[A-Za-z0-9''-]+/g) || []).length;
+const overBudget = listings.filter(l => wordCount(l.title) > 15);
 const stutter = listings.map(l => [l.code, repeatedWords(l.title)]).filter(([, w]) => w.length);
 const distinctTags = new Set(listings.flatMap(l => l.tags)).size;
 
@@ -433,8 +429,8 @@ const out = join(here, '..', 'BATCH-01.listings.json');
 writeFileSync(out, JSON.stringify({ generatedAt: new Date().toISOString(), count: listings.length, listings }, null, 2));
 console.log(`wrote ${listings.length} listings -> ${out}`);
 console.log(`${bySet.size} distinct tag sets · ${distinctTags} distinct tags across ${listings.length * 13} slots`);
-if (short.length) {
-  console.log(`${short.length} titles under 90 chars — unused search surface: ${short.map(l => `${l.code}(${l.title.length})`).join(' ')}`);
+if (overBudget.length) {
+  console.log(`${overBudget.length} titles over the 15-word budget (Etsy Aug 2025 guidance): ${overBudget.map(l => `${l.code}(${wordCount(l.title)}w)`).join(' ')}`);
 }
 if (seasonal.length) {
   console.log(`${seasonal.length} listings name a dated holiday — check each is still ahead of you: ${seasonal.map(([c, h]) => `${c}(${h.join('/')})`).join(' ')}`);
