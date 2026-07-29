@@ -184,6 +184,12 @@ if (invokedDirectly) {
     orders: rows,
   }, null, 2));
 
-  process.exit((counts.ALARM || 0) > 0 ? 1 : 0);
+  // process.exit() here raced libuv's teardown on Windows and aborted with
+  // "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)" AFTER printing a
+  // correct report — the same crash already fixed in doctor.mjs and intake.mjs.
+  // Setting the code lets Node close its handles and exit cleanly, and this is
+  // the command intended to run daily, so a spurious crash would look like a
+  // real alarm every morning.
+  process.exitCode = (counts.ALARM || 0) > 0 ? 1 : 0;
 
 }
