@@ -1,4 +1,4 @@
-# FondlyMade — shop copy to paste into Etsy
+# KindlyPut — shop copy to paste into Etsy
 
 ## Brand assets (ops/brand/)
 
@@ -6,7 +6,7 @@
 - `banner-3360x840.png` — big banner. Same page → Banner → Big banner.
 
 Same visual language as the candle labels on purpose: cream stock,
-terracotta double ring, candle-flame F. Shop and product read as one hand.
+terracotta ground, cream italic monogram. Shop and product read as one hand.
 
 ## Shop title (Info & Appearance → Shop title, 55-char limit)
 
@@ -24,7 +24,7 @@ must route problems to photos-first replacement, not open-ended returns.
 Warm, funny designs for the people you love most
 
 **Story:**
-FondlyMade makes small-batch designs for the people who hold everything
+KindlyPut makes small-batch designs for the people who hold everything
 together — teachers, nurses, dog moms, grandmas, and dads of daughters. Every
 design starts in our studio, where we sketch, refine, and letter each piece
 with the help of modern AI design tools under our creative direction, then
@@ -53,6 +53,6 @@ message the same day — message response rate is a search ranking input.
 
 ## Share & Save link (use EVERYWHERE off-Etsy)
 
-https://fondlymade.etsy.com
+https://kindlyput.etsy.com
 Links inside Etsy Messages or listing descriptions earn nothing — only
 external clicks qualify for the 4% refund.

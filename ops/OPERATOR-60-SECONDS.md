@@ -11,7 +11,7 @@ flagged this network's IP once today.
 
 Paste this:
 
-FondlyMade makes small-batch designs for the people who hold everything
+KindlyPut makes small-batch designs for the people who hold everything
 together - teachers, nurses, dog moms, grandmas, and dads of daughters.
 Every design starts in our studio, where we sketch, refine, and letter each
 piece with the help of modern AI design tools under our creative direction,

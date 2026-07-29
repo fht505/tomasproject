@@ -78,9 +78,17 @@ const apiKeyHeader = () => {
 };
 
 // ---------------------------------------------------------------- transport
+// config.mjs parses .env ONCE at module load, so a token written to disk mid-run
+// is invisible to env() for the rest of the process. The 401-refresh-retry path
+// therefore refreshed correctly, wrote the new token, and then retried with the
+// dead one — surfacing as "access token is expired" an hour into any session.
+// Hold the live token here and prefer it over the file.
+let liveAccessToken = null;
+let liveRefreshToken = null;
+
 async function refreshAccessToken() {
   const { key } = creds();
-  const refresh = env('ETSY_REFRESH_TOKEN');
+  const refresh = liveRefreshToken || env('ETSY_REFRESH_TOKEN');
   if (!refresh) throw new Error('no ETSY_REFRESH_TOKEN — run: node ops.mjs etsy connect');
   const res = await fetch('https://api.etsy.com/v3/public/oauth/token', {
     method: 'POST',
@@ -90,6 +98,8 @@ async function refreshAccessToken() {
   const text = await res.text();
   if (!res.ok) throw new Error(`etsy token refresh -> ${res.status}: ${text.slice(0, 300)}`);
   const j = JSON.parse(text);
+  liveAccessToken = j.access_token;
+  liveRefreshToken = j.refresh_token;
   writeEnv({ ETSY_ACCESS_TOKEN: j.access_token, ETSY_REFRESH_TOKEN: j.refresh_token });
   return j.access_token;
 }
@@ -97,7 +107,7 @@ async function refreshAccessToken() {
 // Every call goes through here so a 401 refreshes once and retries, rather
 // than surfacing an expiry as a mysterious failure an hour into a session.
 export async function call(method, path, body, { retried = false } = {}) {
-  let token = env('ETSY_ACCESS_TOKEN');
+  let token = liveAccessToken || env('ETSY_ACCESS_TOKEN');
   if (!token) token = await refreshAccessToken();
   const res = await fetch(BASE + path, {
     method,

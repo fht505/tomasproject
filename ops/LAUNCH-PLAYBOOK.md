@@ -1,4 +1,4 @@
-# Etsy launch playbook — FondlyMade
+# Etsy launch playbook — KindlyPut (FondlyMade was taken)
 
 Distilled from the 2026-07-29 deep-research run (106 agents, 24+ sources, every
 claim 3-vote adversarially verified; 9 findings survived, 0 refuted). Sources
@@ -64,7 +64,7 @@ order total incl. shipping/gift wrap, pre-tax. Last-click attribution; links
 never expire; an Offsite-Ads last click disqualifies (we are opted out).
 **Links inside Etsy Messages or listing descriptions earn nothing** — only
 externally-driven traffic counts. Implication: every link we ever post
-anywhere off-Etsy should be the fondlymade.etsy.com form.
+anywhere off-Etsy should be the kindlyput.etsy.com form.
 
 ## The documented worst case: payment reserve on the FIRST sale
 
@@ -232,7 +232,7 @@ Deliberate NON-changes, with reasons:
   those slots are ammunition for the winner.
 
 Standing operational rules (from verified findings):
-- Use fondlymade.etsy.com links exclusively for any external posting.
+- Use kindlyput.etsy.com links exclusively for any external posting.
 - Answer every buyer message same-day — response rate is a ranking input.
 - Expect a possible reserve on sale #1; tracking releases it; keep a small
   float for early Printify costs.
