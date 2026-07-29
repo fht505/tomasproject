@@ -305,8 +305,12 @@ const MUG_FRONT_MAX_FRAC = 0.45;
 // widening them also makes them taller — y moves down just enough to keep the
 // top edge inside the print area (tee 2767x3362, sweatshirt 2976x3398).
 const PLACEMENT_OVERRIDES = {
-  B16: { scale: 0.95, y: 0.48 },  // botanical frame fills the chest panel
-  C8: { scale: 0.90, y: 0.49 },   // Grandma Era as a statement print
+  // "bigger" twice over — these sit at the geometric maximum now. Any larger
+  // and the portrait art's height leaves the print area: the tee caps at
+  // 0.97 width (art height 3345 of 3362) and the sweatshirt at 0.92 (3396 of
+  // 3398), both dead-centred.
+  B16: { scale: 0.97, y: 0.5 },
+  C8: { scale: 0.92, y: 0.5 },
 };
 function mugScale(profile, printArea) {
   const [pw, phh] = printArea.split('x').map(Number);
