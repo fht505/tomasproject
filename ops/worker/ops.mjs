@@ -212,6 +212,7 @@ const COMMANDS = {
   'etsy-demand': () => run('etsy-demand.mjs', rest),
   'etsy-tags': () => run('etsy-tags.mjs', rest),
   'etsy-retag': () => run('etsy-retag.mjs', rest),
+  scout: () => run('scout.mjs', rest),
   leadtime: () => run('leadtime.mjs', rest),
   margins: () => run('margins.mjs', rest),
   etsy: () => run('etsy.mjs', rest),
