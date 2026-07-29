@@ -293,12 +293,12 @@ const PLACEMENT = {
 };
 
 // The largest width fraction at which the design (a) fits the wrap's height
-// with a small margin and (b) stays narrow enough to sit fully visible on the
-// front face of an 11oz mug rather than wrapping around it. 0.48 was tried
-// first and rejected at mockup review: wide 21:9 designs still ran to the
-// visible edges of the front camera. The front face of an 11oz mug is ~40% of
-// the wrap, so 0.38 keeps a margin inside it.
-const MUG_FRONT_MAX_FRAC = 0.38;
+// with a small margin and (b) stays mostly on the front face of an 11oz mug.
+// Tuned across three mockup reviews: 0.48 with the original OPAQUE label art
+// ran a visible panel to the edges; 0.38 fixed that but read small once the
+// backgrounds were keyed out; 0.45 is the operator-approved size for
+// transparent ink, where a slight curve past the face edge is invisible.
+const MUG_FRONT_MAX_FRAC = 0.45;
 function mugScale(profile, printArea) {
   const [pw, phh] = printArea.split('x').map(Number);
   if (!profile?.w || !profile?.h || !pw || !phh) return MUG_FRONT_MAX_FRAC;
