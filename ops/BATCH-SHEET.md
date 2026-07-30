@@ -65,11 +65,11 @@ Design a candle label, flat vector style, wide landscape label, cream background
 
 ## 5/14 · D3
 
-**Printed text:** `Burn After Parenting`  
+**Printed text:** `Leaf Peeping Season`  
 **Print area:** 900x600 label · **ratio:** 3:2
 
 ```
-Design a candle label, flat vector style, wide landscape label, cream background. Bold stencil-style capitals "BURN AFTER PARENTING" in deep charcoal with a small line-art matchstick mark. Wry, confident, minimal. Crisp printable edges. Aspect ratio 3:2. Render at the highest resolution available. Flat artwork only — no product mockup, no scene, no hands, no shadow. The ONLY text anywhere in the image must be "BURN AFTER PARENTING", spelled letter for letter. Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch". Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words. Text must be crisp and legible at full size.
+Design a candle label, flat vector style, wide landscape label, cream background. Classic serif "LEAF PEEPING SEASON" in burnt orange, a row of small delicate line-art maple and birch leaves beneath the text. Warm, editorial, premium. Crisp edges. Aspect ratio 3:2. Render at the highest resolution available. Flat artwork only — no product mockup, no scene, no hands, no shadow. The ONLY text anywhere in the image must be "LEAF PEEPING SEASON", spelled letter for letter. Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch". Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words. Text must be crisp and legible at full size.
 ```
 
 ## 6/14 · D4
@@ -83,11 +83,11 @@ Design a candle label, flat vector style, wide landscape label, cream background
 
 ## 7/14 · D5
 
-**Printed text:** `Cancelled Plans Celebration`  
+**Printed text:** `October Is A Personality`  
 **Print area:** 900x600 label · **ratio:** 3:2
 
 ```
-Design a candle label, flat vector style, wide landscape label, cream background. Playful rounded capitals "CANCELLED PLANS CELEBRATION" in dusty pink, small confetti-dot accents in charcoal. Cheerful, dry, minimal. Crisp edges. Aspect ratio 3:2. Render at the highest resolution available. Flat artwork only — no product mockup, no scene, no hands, no shadow. The ONLY text anywhere in the image must be "CANCELLED PLANS CELEBRATION", spelled letter for letter. Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch". Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words. Text must be crisp and legible at full size.
+Design a candle label, flat vector style, wide landscape label, cream background. Bold condensed capitals "OCTOBER IS A PERSONALITY" in deep rust, small line-art crescent moon and single leaf accent. Confident, dry, modern. Crisp edges. Aspect ratio 3:2. Render at the highest resolution available. Flat artwork only — no product mockup, no scene, no hands, no shadow. The ONLY text anywhere in the image must be "OCTOBER IS A PERSONALITY", spelled letter for letter. Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch". Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words. Text must be crisp and legible at full size.
 ```
 
 ## 8/14 · D6
@@ -146,11 +146,11 @@ Design a candle label, flat vector style, wide landscape label, cream background
 
 ## 14/14 · D12
 
-**Printed text:** `Sweatpants Weather`  
+**Printed text:** `Last Warm Day`  
 **Print area:** 900x600 label · **ratio:** 3:2
 
 ```
-Design a candle label, flat vector style, wide landscape label, cream background. Soft rounded capitals "SWEATPANTS WEATHER" in muted terracotta, small minimalist folded-clothes line mark. Comfortable, wry, clean. Crisp edges. Aspect ratio 3:2. Render at the highest resolution available. Flat artwork only — no product mockup, no scene, no hands, no shadow. The ONLY text anywhere in the image must be "SWEATPANTS WEATHER", spelled letter for letter. Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch". Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words. Text must be crisp and legible at full size.
+Design a candle label, flat vector style, wide landscape label, cream background. Elegant serif "LAST WARM DAY" in soft gold, a thin low sun-arc line beneath the text. Quiet, wistful, premium. Crisp printable edges. Aspect ratio 3:2. Render at the highest resolution available. Flat artwork only — no product mockup, no scene, no hands, no shadow. The ONLY text anywhere in the image must be "LAST WARM DAY", spelled letter for letter. Do NOT add any other words, numbers, net weight, volume, ounces, grams, burn time, scent numbers, dates, website, brand name, taglines, or product claims such as "hand-poured" or "small batch". Use only plain unaccented English letters, digits and simple punctuation. No accented or non-English characters, no ornament glyphs, no decorative dots, dashes or symbols of any kind between words. Text must be crisp and legible at full size.
 ```
 
 ---

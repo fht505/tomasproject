@@ -311,12 +311,17 @@ const ROWS = [
     [T.candleWry, T.candleCozy, T.candleAutumn], 'It has done its part. You are on your own now.'],
   ['D2', 'candle', 'Professional Blanket Warmer', 'Cozy Soy Candle | Homebody Gift | 9oz',
     [T.candleCozy, T.candleWry, T.candleAutumn], 'A job title you have earned several times over this week.'],
-  ['D3', 'candle', 'Burn After Parenting', 'Funny Soy Candle | Gift for Parents | 9oz',
-    [T.candleWry, T.candleCozy, T.candleAutumn], 'For the ten minutes after bedtime that belong entirely to you.'],
+  // D3 was "Burn After Parenting" — FAILED the Class 4 screen: BURN AFTER
+  // READING is live and registered (Reg 8004133) for "Candles; Wax melts".
+  ['D3', 'candle', 'Leaf Peeping Season', 'Autumn Soy Candle | Fall Foliage Decor | 9oz',
+    [T.candleAutumn, T.candleCozy, T.candleWry], 'Peak colour, minus the four-hour drive and the parking.'],
   ['D4', 'candle', 'The Kids Are Finally Asleep', 'Funny Soy Candle | Mom Gift | 9oz',
     [T.candleWry, T.candleCozy, T.candleAutumn], 'The most peaceful sentence in the English language.'],
-  ['D5', 'candle', 'Cancelled Plans Celebration', 'Funny Soy Candle | Introvert Gift | 9oz',
-    [T.candleWry, T.candleCozy, T.candleAutumn], 'Light it the moment the text says "rain check?"'],
+  // D5 was "Cancelled Plans Celebration" — FAILED: CANCELLED PLANS is live and
+  // registered in Class 4 (Reg 6777542) for hand-poured scented candles. Exact
+  // TEACH LOVE failure mode: a containing mark, invisible to phrase search.
+  ['D5', 'candle', 'October Is A Personality', 'Autumn Soy Candle | Fall Decor | 9oz',
+    [T.candleAutumn, T.candleWry, T.candleCozy], 'Some people have hobbies. You have a month.'],
   ['D6', 'candle', 'Introvert Recharge Station', 'Cozy Soy Candle | Self Care Gift | 9oz',
     [T.candleCozy, T.candleWry, T.candleAutumn], 'Battery at 12 percent. This is the charger.'],
   ['D7', 'candle', 'Flannel and Firewood', 'Autumn Soy Candle | Cabin Decor | 9oz',
@@ -329,8 +334,11 @@ const ROWS = [
     [T.candleWry, T.candleCozy, T.candleAutumn], 'A boundary, clearly stated, in wax.'],
   ['D11', 'candle', 'Apple Orchard Afternoon', 'Autumn Soy Candle | Fall Decor | 9oz',
     [T.candleAutumn, T.candleCozy, T.candleWry], 'Cider, sawdust and cold air, without the drive.'],
-  ['D12', 'candle', 'Sweatpants Weather', 'Cozy Soy Candle | Homebody Gift | 9oz',
-    [T.candleCozy, T.candleAutumn, T.candleWry], 'The season the waistband has been waiting for.'],
+  // D12 was "Sweatpants Weather" — FAILED: too near SWEATER WEATHER, which is
+  // live and renewed in Class 4 for candles (Reg 4334978, Bath & Body Works) —
+  // the same mark that killed A2 in batch 1.
+  ['D12', 'candle', 'Last Warm Day', 'Autumn Soy Candle | Seasonal Decor | 9oz',
+    [T.candleAutumn, T.candleCozy, T.candleWry], 'You never know which one it is until it is over.'],
 
 ];
 
@@ -356,16 +364,16 @@ const PHRASE_TAGS = {
   // while "fall decor" sits at 983,766. Every tag <= 20 chars (Etsy limit).
   D1: ['candle owes nothing', 'deadpan candle', 'sarcastic candle'],
   D2: ['blanket warmer', 'homebody candle', 'cozy homebody gift'],
-  D3: ['burn after parenting', 'parenting candle', 'tired parent gift'],
+  D3: ['leaf peeping', 'fall foliage candle', 'leaf peeper gift'],
   D4: ['kids asleep candle', 'bedtime candle', 'mom peace gift'],
-  D5: ['cancelled plans', 'staying in candle', 'introvert win'],
+  D5: ['october candle', 'october personality', 'autumn lover gift'],
   D6: ['introvert candle', 'recharge station', 'quiet time candle'],
   D7: ['flannel firewood', 'firewood candle', 'flannel season'],
   D8: ['woodsmoke candle', 'woodsmoke wool', 'wool and smoke'],
   D9: ['reheated coffee', 'coffee club candle', 'microwave coffee'],
   D10: ['until coffee', 'coffee first candle', 'coffee then talk'],
   D11: ['apple orchard', 'orchard candle', 'cider orchard'],
-  D12: ['sweatpants weather', 'sweatpants candle', 'comfy season'],
+  D12: ['last warm day', 'end of summer', 'seasonal shift'],
   A11: ['to do list candle', 'productivity gift'],
   A12: ['first day of fall', 'fall 2026'],
 

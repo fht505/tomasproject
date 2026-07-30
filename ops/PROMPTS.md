@@ -183,13 +183,13 @@ the moment screening clears.
 > Design a candle label, flat vector style, wide landscape label, cream background. Warm serif text "PROFESSIONAL BLANKET WARMER" in soft rust, small minimalist line-art folded blanket beneath the text. Cozy, wry, premium. Crisp edges.
 
 **D3**
-> Design a candle label, flat vector style, wide landscape label, cream background. Bold stencil-style capitals "BURN AFTER PARENTING" in deep charcoal with a small line-art matchstick mark. Wry, confident, minimal. Crisp printable edges.
+> Design a candle label, flat vector style, wide landscape label, cream background. Classic serif "LEAF PEEPING SEASON" in burnt orange, a row of small delicate line-art maple and birch leaves beneath the text. Warm, editorial, premium. Crisp edges.
 
 **D4**
 > Design a candle label, flat vector style, wide landscape label, cream background. Elegant script "THE KIDS ARE FINALLY ASLEEP" in midnight blue, tiny scattered star accents, thin border frame. Quiet humor, premium. Crisp edges.
 
 **D5**
-> Design a candle label, flat vector style, wide landscape label, cream background. Playful rounded capitals "CANCELLED PLANS CELEBRATION" in dusty pink, small confetti-dot accents in charcoal. Cheerful, dry, minimal. Crisp edges.
+> Design a candle label, flat vector style, wide landscape label, cream background. Bold condensed capitals "OCTOBER IS A PERSONALITY" in deep rust, small line-art crescent moon and single leaf accent. Confident, dry, modern. Crisp edges.
 
 **D6**
 > Design a candle label, flat vector style, wide landscape label, cream background. Calm small-caps "INTROVERT RECHARGE STATION" in sage green, small minimalist battery-charging line mark beneath. Clean, quiet, premium. Crisp edges.
@@ -210,4 +210,4 @@ the moment screening clears.
 > Design a candle label, flat vector style, wide landscape label, cream background. Classic serif "APPLE ORCHARD AFTERNOON" in deep amber, delicate line-art apple branch arcing above the text. Warm, quiet, premium. Crisp edges.
 
 **D12**
-> Design a candle label, flat vector style, wide landscape label, cream background. Soft rounded capitals "SWEATPANTS WEATHER" in muted terracotta, small minimalist folded-clothes line mark. Comfortable, wry, clean. Crisp edges.
+> Design a candle label, flat vector style, wide landscape label, cream background. Elegant serif "LAST WARM DAY" in soft gold, a thin low sun-arc line beneath the text. Quiet, wistful, premium. Crisp printable edges.
