@@ -3,9 +3,9 @@
   "shop_name": "KindlyPut",
   "shop_name_note": "The exact Etsy shop name. FondlyMade was taken at registration, so the live shop is KindlyPut - every description carries this verbatim, so it must match the storefront exactly.",
   "processing": {
-    "_comment": "Shipping speed is a promise, and a broken one voids Etsy Purchase Protection and costs Star Seller status. So it is blank until you know the real number. `node ops.mjs plan` prints the resolved provider's published production time; add carrier transit on top, put the result here, name where it came from in `source`, and only then does it appear in listing descriptions.",
-    "days": "10 days",
-    "source": "Printify shipping endpoint handling_time for all 5 pinned blueprint/provider pairs, each 10 days, read 2026-07-28. This is Printify's stated maximum before shipment, not a production estimate."
+    "_comment": "Deliberately BLANK. Etsy displays the real per-listing processing time (Printify pushes 2-5 or 3-5 days), and a description line saying otherwise contradicts the page it sits on. Our earlier \"10 days\" came from Printify shipping-endpoint handling_time, which is their MAXIMUM, not the commitment shown to buyers. Leaving this empty means no shipping claim is written into descriptions at all - Etsy still shows the real number. Only fill this in if it matches what Etsy displays.",
+    "days": "",
+    "source": ""
   },
   "production_partner": "Printify network",
   "ai_disclosure": true,
