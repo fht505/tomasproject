@@ -32,7 +32,7 @@ const BASE = 'https://openapi.etsy.com/v3/application';
 const REDIRECT = 'http://localhost:3003/oauth/callback';
 const SCOPES = [
   'shops_r', 'shops_w',            // shop record: title, announcement, About
-  'listings_r', 'listings_w',      // listing text, tags, images
+  'listings_r', 'listings_w', 'listings_d',   // listing text, tags, images, delete
   'transactions_r',                // orders, for the ledger
   'profile_r',                     // whoami, to confirm the right account
 ];

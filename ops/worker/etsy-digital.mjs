@@ -111,6 +111,47 @@ This is a digital file — no physical item ships. Personal use only.
 
 Original design by KindlyPut, created with AI-assisted tools under our creative direction (disclosed per Etsy policy).`,
   },
+  {
+    code: 'P2',
+    dir: 'P2-place-cards',
+    title: 'Thanksgiving Place Cards Printable | Tent Fold 3.5x2 | Three Styles | Instant Download',
+    price: 4.99,
+    taxonomy_id: 1874,
+    tags: ['place cards', 'thanksgiving table', 'name cards', 'tent place card',
+      'friendsgiving decor', 'harvest table decor', 'printable name card', 'fall place card',
+      'thankful place card', 'table setting', 'instant download', 'holiday place card', 'dinner party'],
+    description: `Tent-fold place cards in three styles - "thankful", "grateful", and a botanical no-text design - with a clean line for hand-writing each guest name.
+
+WHAT YOU RECEIVE (instant download)
+- Three styles, two cards per page, tent-fold with dashed fold line and crop marks
+- US Letter and A4 PDF editions, 300dpi
+- Printing instructions page
+
+This is a digital file - no physical item ships. Personal use only.
+
+Original design by KindlyPut, created with AI-assisted tools under our creative direction (disclosed per Etsy policy).`,
+  },
+  {
+    code: 'P6',
+    dir: 'P6-gratitude-jar',
+    title: 'Gratitude Jar Kit Printable | Jar Label + 30 Prompt Slips | Instant Download',
+    price: 5.99,
+    taxonomy_id: 1874,
+    tags: ['gratitude jar', 'thankful jar', 'gratitude prompts', 'family tradition',
+      'thankful tradition', 'gratitude practice', 'fall family activity', 'jar label printable',
+      'gratitude slips', 'mason jar label', 'instant download', 'holiday tradition', 'kids activity'],
+    description: `A season-long family tradition in one kit: a jar label sized for a quart mason jar, thirty prompt slips to fill out as fall goes by, and one rule - read them all aloud on Thanksgiving.
+
+WHAT YOU RECEIVE (instant download)
+- Jar label (4x3in, rounded, fits a quart mason jar)
+- 30 gratitude prompt slips, ten per page with crop marks
+- Instructions page
+- US Letter and A4 PDF editions, 300dpi
+
+This is a digital file - no physical item ships. Personal use only.
+
+Original design by KindlyPut, created with AI-assisted tools under our creative direction (disclosed per Etsy policy).`,
+  },
 ];
 
 async function uploadMultipart(path, form) {
@@ -130,7 +171,14 @@ async function uploadMultipart(path, form) {
   return JSON.parse(text);
 }
 
+// Idempotency: a second --write must never re-create drafts. The first
+// version did exactly that and minted four duplicates (drafts, so free, but
+// deletion needs the listings_d scope the token does not yet carry).
+let drafted = {};
+try { drafted = JSON.parse(readFileSync(join(PATHS.state, 'digital.json'), 'utf8')).items || {}; } catch {}
+
 for (const m of MANIFEST) {
+  if (drafted[m.code]) { console.log(`SKIP ${m.code}: already drafted as ${drafted[m.code]}`); continue; }
   const dir = join(DIGITAL, m.dir);
   if (!existsSync(dir)) { console.log(`SKIP ${m.code}: ${dir} missing`); continue; }
   const pdfs = readdirSync(dir).filter(f => f.endsWith('.pdf'));
@@ -155,6 +203,9 @@ for (const m of MANIFEST) {
     state: 'draft',
   });
   console.log(`     draft listing ${draft.listing_id}`);
+  drafted[m.code] = draft.listing_id;
+  const { writeFileSync } = await import('node:fs');
+  writeFileSync(join(PATHS.state, 'digital.json'), JSON.stringify({ note: 'code -> Etsy draft listing id', items: drafted }, null, 2));
 
   for (const f of pdfs) {
     const form = new FormData();
