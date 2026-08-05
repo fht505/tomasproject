@@ -1,0 +1,445 @@
+{
+ "screened_on": "2026-08-05",
+ "source_doc": "ops/BATCH-04-DIGITAL.md",
+ "method": "discovery: Justia full-text (curl, browser headers); decision: USPTO TSDR statusview per serial",
+ "classes_screened": [
+  "016",
+  "009"
+ ],
+ "integrity": {
+  "serials_fetched": 228,
+  "rate_limited": 0,
+  "unparseable": 0,
+  "parser_controls": {
+   "sn99073088": "LIVE Cl004 (expected)",
+   "sn90185577": "DEAD (expected; reads live in snippets)",
+   "sn87649764": "DEAD (expected)"
+  }
+ },
+ "phrases": {
+  "P1": {
+   "phrase": "What are you thankful for",
+   "counts": {
+    "exact": 0,
+    "contained": 10,
+    "scanned": 78
+   },
+   "blocking_live_16_9": [],
+   "etsy": {
+    "exact": [],
+    "containing_active": 0,
+    "containing_dormant": 0,
+    "top_active": []
+   }
+  },
+  "P2a": {
+   "phrase": "GATHER",
+   "counts": {
+    "exact": 92,
+    "contained": 0,
+    "scanned": 100
+   },
+   "blocking_live_16_9": [
+    {
+     "serial": "99584547",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Published for Opposition",
+     "statusDate": "Jul. 28, 2026",
+     "classes": [
+      "016"
+     ],
+     "owner": "IF Gathering",
+     "goods": "Printed publications, namely, books, booklets, and teaching materials in the field of faith, religion and spirituality; Printed books in the field of faith, religion and spirituality; Printed newsletters about faith, religion and spirituality"
+    },
+    {
+     "serial": "97918262",
+     "mark": "GATHER",
+     "reg": "7425831",
+     "status": "LIVE/REGISTRATION/Issued and Active",
+     "statusDate": "Jun. 25, 2024",
+     "classes": [
+      "009",
+      "035"
+     ],
+     "owner": "Umbrella Insight Ltd",
+     "goods": "Downloadable computer software for creating, managing, and presenting customer feedback, marketing, and public opinion surveys, online forms and interactive polls and storing data received from users interacting with the same; downloadable web application being computer software for creating, managing, and presenting customer feedback, marketing, and public opinion surveys, online forms and interactive polls and storing data received from users interacting with the same; downloadable computer software for creating, managing, and presenting customer feedback, marketing, and public opinion surveys, online forms and interactive polls and storing data received from users interacting with the same. | Design being preparation of customer feedback, marketing, and public opinion surveys; design of online forms and polls for marketing and data collection purposes in the nature of collection and analysis of quality metric datafor healthcare providersfor business purposes; preparation of customer feedback, marketing, and public opinion surveys; preparation of online forms and polls for marketing and data collections purposes; conducting customer feedback, marketing, and public opinion all being business research surveys; collection being conducting of market research associated with customer feedback, marketing, and public opinion all being business research surveys; consumer response analysis; computerised market research associated with customer feedback, marketing, and public opinion surveys; computerised market research associated with online forms; market research being collection of market research information associated with customer feedback, marketing, and public opinion surveys; market research being collection of market research information collected form online forms; market research being analysis of business statistics associated with customer feedback, marketing, and public opinion surveys; market research being analysis of business statistics collected from online forms; market research being creation and tracking of business reputation scores; market research being benchmarking services associated with business reputation scores; business advice on the analysis of consumer habits and needs based on survey, feedback, and polling data"
+    },
+    {
+     "serial": "99584504",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Under Examination",
+     "statusDate": "May 07, 2026",
+     "classes": [
+      "009"
+     ],
+     "owner": "IF Gathering",
+     "goods": "Audio and video recordings featuring content in the fields of faith, religion and spirituality; Downloadable electronic publications in the nature of conversation cards, event guides, articles, newsletters, and books in the field of faith, religion and spirituality; Downloadable software in the nature of a mobile application for use in the delivery of content related to faith, religion and spirituality"
+    },
+    {
+     "serial": "88546986",
+     "mark": "GATHER",
+     "reg": "6732177",
+     "status": "LIVE/REGISTRATION/Issued and Active",
+     "statusDate": "May 24, 2022",
+     "classes": [
+      "009"
+     ],
+     "owner": "GATHER AI, INC.",
+     "goods": "Downloadable computer software, namely, software used to provide data analytics for physical asset and inventory monitoring; downloadable computer software used for operation of drones and unmanned aerial vehicles; downloadable computer software for management and tracking of drones and unmanned aerial vehicles; all of foregoing related to drones and aerial vehicles"
+    },
+    {
+     "serial": "99701758",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Under Examination",
+     "statusDate": "Aug. 03, 2026",
+     "classes": [
+      "009",
+      "042"
+     ],
+     "owner": "Gather Systems LLC",
+     "goods": "Downloadable mobile applications for meal planning, recipe management, grocery list generation, and coordinating grocery purchases for consumers | Providing temporary use of online non-downloadable computer software applications for meal planning, recipe management, grocery list generation, and coordinating grocery purchases for consumers"
+    },
+    {
+     "serial": "88555528",
+     "mark": "GATHER",
+     "reg": "6732184",
+     "status": "LIVE/REGISTRATION/Issued and Active",
+     "statusDate": "May 24, 2022",
+     "classes": [
+      "009"
+     ],
+     "owner": "GATHER AI, INC.",
+     "goods": "Downloadable computer software, namely, software used to provide data analytics for physical asset and inventory monitoring; downloadable computer software used for operation of drones and unmanned aerial vehicles; downloadable computer software for management and tracking of drones and unmanned aerial vehicles; all of foregoing related to drones and aerial vehicles"
+    },
+    {
+     "serial": "98316742",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Under Examination",
+     "statusDate": "Jun. 07, 2026",
+     "classes": [
+      "009"
+     ],
+     "owner": "X Development LLC",
+     "goods": "Data processing apparatus; RFID readers; RFID readers to record, measure, survey, process, track, and reproduce data, video, images, sounds, measurements, location, acceleration, proximity, motion, position, pressure, temperature, and humidity, and wirelessly transmit the data, video, images, sounds, and measurements to a computer; GPS tracking devices; Electronic devices for viewing, processing, monitoring, tracking, managing, and providing information and predictive recommendations to customers on temperature, sensor location, inventory, freight and transportation logistics, location of cargo, packages and assets in transit, and warehouse and supply chain management using wireless communication and global position systems; data collection devices, namely, optical readers; Wireless communication devices for voice, data, or image transmission; Computer hardware, namely, wireless access point (WAP) devices that emit, broadcast, or aggregate data from beacons; Computer networking hardware; Mobile computing and operating platforms consisting of data transceivers, wireless networks and gateways for collection and management of data; Scanners; Digital input and output scanners; Electric sensors; Sensors for determining location, acceleration, proximity, motion, position, pressure, light, temperature, and humidity; Tracking sensors, namely, namely, sensors for tracking packages, shipments and cargo in transit and personal objects; Optical sensors; Sensors to record, measure, survey, process, track, and reproduce data, video, images, sounds, and measurements and wirelessly transmit the data, video, images, sounds, and measurements to a computer, not for medical use, namely, electric sensors for providing information on the location, operational status, measurements, location, acceleration, proximity, motion, position, pressure, temperature, and humidity of packages and shipments and personal objects; GPS tracking devices; electronic communication devices using radio frequency and wireless communications for tracking assets, packages, and cargo in transit; Temperature indicator labels, not for medical purposes; none of the foregoing related to drones and aerial vehicles; none of the foregoing related to funeral homes."
+    },
+    {
+     "serial": "88140718",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Published for Opposition",
+     "statusDate": "Apr. 07, 2026",
+     "classes": [
+      "009",
+      "038"
+     ],
+     "owner": "COURTIERY CONSULTING LLC",
+     "goods": "Downloadable computer software in the field of digital assets, namely, virtual currency exchange information and statistics, social networking records, blog posts and statistics relating to virtual currency, namely, software for use in database management; downloadable computer software featuring technology that enables users to view, submit, rate, share, bookmark, index, store, collect, and showcase content in the nature of current events, politics, news, gaming, comedy, relationships, technology, photos, videos, religion, science, movies, music, general interests; downloadable computer application software for mobile phones and portable devices, namely, software enabling users to view, submit, rate, share, bookmark, index, store, collect, and showcase content in the nature of current events, politics, news, gaming, comedy, relationships, technology, photos, videos, religion, science, movies, music, and general interest news; downloadable software in the nature of a mobile application enabling users to view, submit, rate, share, bookmark, index, store, collect, and showcase content in the nature of current events, politics, news, gaming, comedy, relationships, technology, photos, videos, religion, science, movies, music, general interest news, and current events | Telecommunications services, namely, electronic transmission of data, graphics, sound and video by means of the Internet; communication services, namely, electronic transmission of data, graphics, sound and video by means of the Internet; broadcasting, namely, internet, audio, and video broadcasting; providing online and telecommunication facilities for real-time interaction between and among users of computers, mobile and handheld computers, and wired and wireless communication devices concerning topics of interest relating to current events, politics, news, general interest, news, gaming, comedy, relationships, technology, photos, videos, religion, science, sports, movies, music and lifestyle; message sending and receiving services, namely, enabling individuals to send and receive messages including via email, instant messaging, sms, texts, the internet and via internet websites, and including messages in the fields of general interest, news and current events; providing on-line chat rooms and electronic bulletin boards for transmission of messages among users, in the field of general interest, news and current events; electronic mail services, namely, transmission of electronic mail, electronic messages, and private electronic messages; electronic messaging and instant messaging services, web messaging services and text messaging services; webcasting services; transmission of messages, data and content via global computer network and other computer and communications networks; transmission of updated messages, comments, information, and multimedia content by electronic mail, messaging, instant messaging and text messaging; electronic transmission of messages and data, namely, providing facilities for users to transmit messages, news, comments, multimedia content, videos, movies, films, photos, audio content, animation, pictures, images, text, information, and user-generated content via a global computer network and other computer and communications networks; providing online community forums for users to post, search, watch, share, critique, rate, and comment on messages, news, comments, multimedia content, videos, movies, films, photos, audio content, animation, pictures, images, text, information, and user-generated and non-user generated content; broadcasting services via a global computer network and other computer and communications networks, namely, uploading, downloading, posting, showing, displaying, tagging, sharing and electronically transmitting messages, comments, news items, multimedia content, videos, movies, films, photos, audio content, animation, pictures, images, text, information, and user-generated content; providing a video, photograph and comment sharing portal, namely, streaming of video material, audio material and audiovisual comment material on the Internet; providing user access to a global computer network, namely, providing user access to non-downloadable software in data networks; news and press agency services, namely, transmission of news; providing online forums for the transmission of messages, comments, information, and multimedia content among users concerning current events, politics, news, general interest news, gaming, comedy, relationships, technology, photos, videos, religion, science, sports, movies, music and lifestyle; providing on-line list servers for transmission of messages among computer users concerning current events, politics, news, general interest news, gaming, comedy, relationships, technology, photos, videos, religion, science, sports, movies, music and lifestyle"
+    },
+    {
+     "serial": "88435338",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Under Examination",
+     "statusDate": "Jun. 22, 2026",
+     "classes": [
+      "009"
+     ],
+     "owner": "Bouwmeester, Hannah",
+     "goods": "Downloadable electronic publications, namely, magazines in the fields of personal and professional development, news, events, politics, social issues, health and wellness, arts, fashion, culture, lifestyle, travel, and entertainment; Publications, namely, magazines in the fields of personal and professional development, news, events, politics, social issues, health and wellness, arts, fashion, culture, lifestyle, travel, and entertainment; Non-downloadable electronic publications, namely, magazines in the fields of personal and professional development, news, events, politics, social issues, health and wellness, arts, fashion, culture, lifestyle, travel, and entertainment; Providing a website featuring non-downloadable articles and images in the fields of personal and professional development, news, events, politics, social issues, health and wellness, arts, fashion, culture, lifestyle, travel, and entertainment; Instruction in the fields of personal and professional development, news, events, politics, social issues, health and wellness, arts, fashion, culture, lifestyle, travel, and entertainment; Teaching in the fields of personal and professional development, news, events, politics, social issues, health and wellness, arts, fashion, culture, lifestyle, travel, and entertainment; Personal and professional coaching services in the fields of personal development, achievement, relationships, empowerment, career planning, career management, career development, leadership development, career transitioning, and career placement"
+    },
+    {
+     "serial": "97104133",
+     "mark": "GATHER",
+     "reg": null,
+     "status": "LIVE/APPLICATION/Under Examination",
+     "statusDate": "May 27, 2026",
+     "classes": [
+      "009"
+     ],
+     "owner": "Logitech Europe S.A.",
+     "goods": "Video-conferencing equipment, namely, video-conferencing cameras, speakerphones, computer monitors, televisions, and other audio-visual components, namely, connection hubs, power cables, computer cables, microphones, remote controls and remote controllers; audio speakers, video, Internet and telephone conferencing equipment, namely, telephone headsets, video cameras, audio speakers, TV monitors, microphones, and computers; networked conferencing equipment, namely, conference phones, video cameras, audio speakers, TV monitors, microphones, and computers"
+    },
+    {
+     "serial": "98977570",
+     "mark": "GATHER",
+     "reg": "8154107",
+     "status": "LIVE/REGISTRATION/Issued and Active",
+     "statusDate": "Feb. 24, 2026",
+     "classes": [
+      "009"
+     ],
+     "owner": "Autonation Holding Corp.",
+     "goods": "Downloadable computer application software for mobile phones for location sharing for the purpose of tracking the current location of other users that have shared their location in a land vehicle; downloadable computer application software programs for mobile phones for navigation, trip histories, displaying routes on a moving map, automated routing, and location sharing for the purpose of knowing the shared location of other users in a land vehicle; downloadable computer application software for mobile phones for tracking and assessing driver behavior and risk for land vehicles"
+    }
+   ],
+   "etsy": {
+    "exact": [
+     {
+      "shop_id": 5205066,
+      "shop_name": "gather",
+      "active": 0,
+      "url": "https://www.etsy.com/shop/gather",
+      "exact": true,
+      "containing": false
+     }
+    ],
+    "containing_active": 83,
+    "containing_dormant": 7,
+    "top_active": [
+     {
+      "name": "GatherHausQuilting",
+      "active": 4218
+     },
+     {
+      "name": "GatheringSplendor",
+      "active": 2409
+     },
+     {
+      "name": "GatherHomeGoodsCo",
+      "active": 945
+     },
+     {
+      "name": "GatheredLovePaperie",
+      "active": 855
+     },
+     {
+      "name": "GatheringCharms",
+      "active": 649
+     },
+     {
+      "name": "GatheredEventsCA",
+      "active": 535
+     },
+     {
+      "name": "GatherAntiques",
+      "active": 488
+     },
+     {
+      "name": "gatheredprintshop",
+      "active": 421
+     },
+     {
+      "name": "GatherWearUS",
+      "active": 372
+     },
+     {
+      "name": "GatheredAndFoundCo",
+      "active": 356
+     }
+    ]
+   }
+  },
+  "P2b": {
+   "phrase": "THANKFUL",
+   "counts": {
+    "exact": 9,
+    "contained": 0,
+    "scanned": 60
+   },
+   "blocking_live_16_9": [],
+   "etsy": {
+    "exact": [],
+    "containing_active": 35,
+    "containing_dormant": 46,
+    "top_active": [
+     {
+      "name": "ThankfulGreetingsUS",
+      "active": 332
+     },
+     {
+      "name": "ThankfulHeartsShop",
+      "active": 244
+     },
+     {
+      "name": "ThankfullyHealthy",
+      "active": 237
+     },
+     {
+      "name": "ThankfulForYou",
+      "active": 202
+     },
+     {
+      "name": "ThankfulDesignsMerch",
+      "active": 92
+     },
+     {
+      "name": "ThankfullDesigns",
+      "active": 63
+     },
+     {
+      "name": "ThankfulHomemaking",
+      "active": 50
+     },
+     {
+      "name": "ThankfulHC",
+      "active": 49
+     },
+     {
+      "name": "ThankfulRose",
+      "active": 46
+     },
+     {
+      "name": "ThankfulArtsStudio",
+      "active": 41
+     }
+    ]
+   }
+  },
+  "P2c": {
+   "phrase": "GRATEFUL",
+   "counts": {
+    "exact": 21,
+    "contained": 0,
+    "scanned": 60
+   },
+   "blocking_live_16_9": [],
+   "etsy": {
+    "exact": [],
+    "containing_active": 78,
+    "containing_dormant": 4,
+    "top_active": [
+     {
+      "name": "GratefulGoonies",
+      "active": 1082
+     },
+     {
+      "name": "Grateful4u707",
+      "active": 763
+     },
+     {
+      "name": "GratefulThreadsFab",
+      "active": 713
+     },
+     {
+      "name": "GratefulGestures",
+      "active": 595
+     },
+     {
+      "name": "GratefulKindVibesCo",
+      "active": 521
+     },
+     {
+      "name": "GratefulElephantGift",
+      "active": 440
+     },
+     {
+      "name": "GratefulSweats",
+      "active": 385
+     },
+     {
+      "name": "GratefulDazeBoutique",
+      "active": 382
+     },
+     {
+      "name": "GratefullyLettered",
+      "active": 334
+     },
+     {
+      "name": "GratefulCollective",
+      "active": 322
+     }
+    ]
+   }
+  },
+  "P3": {
+   "phrase": "TURKEY DAY",
+   "counts": {
+    "exact": 0,
+    "contained": 0,
+    "scanned": 60
+   },
+   "blocking_live_16_9": [],
+   "etsy": {
+    "exact": [],
+    "containing_active": 0,
+    "containing_dormant": 0,
+    "top_active": []
+   }
+  },
+  "P5": {
+   "phrase": "PUMPKIN PIE",
+   "counts": {
+    "exact": 12,
+    "contained": 0,
+    "scanned": 60
+   },
+   "blocking_live_16_9": [],
+   "etsy": {
+    "exact": [
+     {
+      "shop_id": 5136882,
+      "shop_name": "PumpkinPie",
+      "active": 0,
+      "url": "https://www.etsy.com/shop/PumpkinPie",
+      "exact": true,
+      "containing": false
+     }
+    ],
+    "containing_active": 8,
+    "containing_dormant": 18,
+    "top_active": [
+     {
+      "name": "PumpkinPiePrintsShop",
+      "active": 90
+     },
+     {
+      "name": "PumpkinPieCreations",
+      "active": 41
+     },
+     {
+      "name": "PumpkinPieProjectz",
+      "active": 21
+     },
+     {
+      "name": "PumpkinPiePrintables",
+      "active": 18
+     },
+     {
+      "name": "PumpkinpieCo",
+      "active": 12
+     },
+     {
+      "name": "PumpkinPieProducts",
+      "active": 4
+     },
+     {
+      "name": "MyPumpkinPieClothing",
+      "active": 4
+     },
+     {
+      "name": "PieceOfPumpkinPie",
+      "active": 2
+     }
+    ]
+   }
+  },
+  "P6": {
+   "phrase": "GRATITUDE JAR",
+   "counts": {
+    "exact": 0,
+    "contained": 37,
+    "scanned": 76
+   },
+   "blocking_live_16_9": [],
+   "etsy": {
+    "exact": [
+     {
+      "shop_id": 38685594,
+      "shop_name": "GratitudeJar",
+      "active": 0,
+      "url": "https://www.etsy.com/shop/GratitudeJar",
+      "exact": true,
+      "containing": false
+     }
+    ],
+    "containing_active": 0,
+    "containing_dormant": 0,
+    "top_active": []
+   }
+  }
+ }
+}

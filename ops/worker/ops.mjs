@@ -214,6 +214,7 @@ const COMMANDS = {
   'etsy-retag': () => run('etsy-retag.mjs', rest),
   scout: () => run('scout.mjs', rest),
   'etsy-sections': () => run('etsy-sections.mjs', rest),
+  'etsy-digital': () => run('etsy-digital.mjs', rest),
   leadtime: () => run('leadtime.mjs', rest),
   margins: () => run('margins.mjs', rest),
   etsy: () => run('etsy.mjs', rest),
