@@ -35,3 +35,6 @@ ops/BATCH-01.listings.json
 **/.obsidian/workspace-mobile.json
 **/.obsidian/cache
 .trash/
+
+# Deliverable digital files — regenerated from ops/worker/printables/, too big for git
+ops/digital/
