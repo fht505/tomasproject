@@ -5,7 +5,7 @@ tags:
 
 # Revenue lanes — decision board
 
-44 lanes researched. Generated from `ops/lanes.data.json`.
+50 lanes researched. Generated from `ops/lanes.data.json`.
 **Do not edit these notes by hand** — edit the data file and run `node ops.mjs vault`.
 
 ## The two rules that decide everything
@@ -27,7 +27,7 @@ tags:
 |---|---|---|---|---|
 | [[Etsy]] | POD marketplace | allowed with disclosure | sanctioned via official API | 2026-07-25 |
 
-## ✅ candidate (11)
+## ✅ candidate (12)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -42,8 +42,9 @@ tags:
 | [[FHT shop skills as a service]] | Services | not applicable | not applicable | 2026-07-26 |
 | [[White-label agency subcontracting]] | Services | not applicable | not applicable | 2026-07-26 |
 | [[Apify Store]] | AI-native | not applicable | sanctioned via official API | 2026-07-28 |
+| [[DistroKid (AI music)]] | AI-native | allowed (in writing) | NO RULE FOUND — a gap | 2026-08-04 |
 
-## ⚠️ flagged (12)
+## ⚠️ flagged (15)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -59,8 +60,11 @@ tags:
 | [[Creative Fabrica]] | Digital assets | allowed (in writing) | NO RULE FOUND — a gap | 2026-07-25 |
 | [[PromptBase]] | AI-native | not applicable | PROHIBITED | 2026-07-28 |
 | [[Hugging Face - GPT Store - MCP registries]] | AI-native | not applicable | NO RULE FOUND — a gap | 2026-07-28 |
+| [[YouTube (AI explainer)]] | Audience / community | allowed with disclosure | NO RULE FOUND — a gap | 2026-08-04 |
+| [[X creator revenue]] | Audience / community | NO POLICY FOUND — a gap | PROHIBITED | 2026-08-04 |
+| [[KDP Virtual Voice (AI audiobooks)]] | Publishing | allowed (in writing) | NO RULE FOUND — a gap | 2026-08-04 |
 
-## ❌ disqualified (20)
+## ❌ disqualified (22)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -84,6 +88,8 @@ tags:
 | [[B2B data - lead lists]] | Services | NO POLICY FOUND — a gap | NO RULE FOUND — a gap | 2025-12-17 |
 | [[itch.io]] | Digital assets | allowed with disclosure | PROHIBITED | 2026-07-28 |
 | [[Draft2Digital - Kobo]] | Publishing | BANNED | NO RULE FOUND — a gap | 2026-07-28 |
+| [[Medium Partner Program]] | Audience / community | BANNED | NO RULE FOUND — a gap | 2026-08-04 |
+| [[Storyblocks]] | Stock imagery | BANNED | NO RULE FOUND — a gap | 2026-08-04 |
 
 ## ❓ unresearched (0)
 
@@ -91,7 +97,7 @@ _none_
 
 ## ⚠️ Lanes resting on a gap
 
-32 lanes have no located AI or automation policy. A gap is unallocated risk, not permission — and it can close overnight. Fine Art America's terms are dated **June 2020**, before generative AI existed.
+38 lanes have no located AI or automation policy. A gap is unallocated risk, not permission — and it can close overnight. Fine Art America's terms are dated **June 2020**, before generative AI existed.
 
 - [[Creative Market]]
 - [[Gumroad]]
@@ -125,10 +131,16 @@ _none_
 - [[Creative Fabrica]]
 - [[Hugging Face - GPT Store - MCP registries]]
 - [[Draft2Digital - Kobo]]
+- [[YouTube (AI explainer)]]
+- [[X creator revenue]]
+- [[Medium Partner Program]]
+- [[DistroKid (AI music)]]
+- [[KDP Virtual Voice (AI audiobooks)]]
+- [[Storyblocks]]
 
 ## 🚫 Automation contractually prohibited
 
-9 lanes ban automated access outright. Unworkable however friendly the AI stance.
+10 lanes ban automated access outright. Unworkable however friendly the AI stance.
 
 - [[Amazon Associates]]
 - [[Redbubble]]
@@ -139,6 +151,7 @@ _none_
 - [[Display ad networks]]
 - [[PromptBase]]
 - [[itch.io]]
+- [[X creator revenue]]
 
 ## Staleness
 
@@ -190,3 +203,9 @@ Policies moved four times during our own research window. Alamy banned AI thirte
 | [[Apify Store]] | 2026-07-28 |
 | [[itch.io]] | 2026-07-28 |
 | [[Draft2Digital - Kobo]] | 2026-07-28 |
+| [[YouTube (AI explainer)]] | 2026-08-04 |
+| [[X creator revenue]] | 2026-08-04 |
+| [[Medium Partner Program]] | 2026-08-04 |
+| [[DistroKid (AI music)]] | 2026-08-04 |
+| [[KDP Virtual Voice (AI audiobooks)]] | 2026-08-04 |
+| [[Storyblocks]] | 2026-08-04 |
