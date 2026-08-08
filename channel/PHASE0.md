@@ -3,6 +3,16 @@
 Per the approved design (`docs/superpowers/specs/2026-08-05-yt-explainer-channel-distrokid-design.md`).
 Niche re-confirmed by operator 2026-08-07 over the economics-of-X alternative.
 
+## DECIDED 2026-08-07: **Why Is My Car Doing That?** (@WhyIsMyCarDoingThat)
+
+Operator pick. Handle verified free same day. Trademark screen status:
+exact-phrase discovery via search-engine index of Justia/USPTO returned
+zero hits, but Justia full-text now 403s our fetches and the USPTO search
+API is unreachable — per the RATE-LIMITED rule that is NOT a verified
+absence. Formal Justia+TSDR screen spec: `ops/CHANNEL-NAME-SCREEN.md`
+(terminal-2 method, same as the product batches). Risk while pending:
+minimal — six-word descriptive question, Class 41 use.
+
 ## Channel name — availability-checked 2026-08-07 (operator picks one)
 
 Method: HTTP GET on `youtube.com/@handle` — 404 means the handle is free, a
