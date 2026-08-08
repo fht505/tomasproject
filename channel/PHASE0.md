@@ -3,17 +3,21 @@
 Per the approved design (`docs/superpowers/specs/2026-08-05-yt-explainer-channel-distrokid-design.md`).
 Niche re-confirmed by operator 2026-08-07 over the economics-of-X alternative.
 
-## Channel name — 4 candidates (operator picks one)
+## Channel name — availability-checked 2026-08-07 (operator picks one)
 
-| Candidate | Case |
-|---|---|
-| **Why Is My Car Doing That?** | Literally the phrasing of every target search; the channel name IS the promise. Long, but memorable. |
-| **The Diagnostic Bay** | Shop-authentic; frames every video as "on the lift." Room to grow past symptoms. |
-| **Car Sense** | Short, brandable, thumbnail-friendly. Weakest niche signal. |
-| **First, Check This** | Hook-forward; matches the ranked most-to-least-likely script structure. |
+Method: HTTP GET on `youtube.com/@handle` — 404 means the handle is free, a
+page load means a channel holds it. Availability is only locked when the
+handle is actually claimed; the finalist also gets a trademark screen
+(Justia + TSDR, Class 41) before the channel goes live.
 
-Handle availability on YouTube must be checked at channel creation (operator
-task — name picking and handle checking happen together).
+| Candidate | Handle | Status | Case |
+|---|---|---|---|
+| **Why Is My Car Doing That?** | @WhyIsMyCarDoingThat | ✅ free, no name collision found | The channel name IS every video's search phrasing. Long, but memorable. |
+| **First, Check This** | @FirstCheckThis | ✅ free | Hook-forward; matches the ranked most-to-least-likely script structure. |
+| **The Symptom Shop** | @TheSymptomShop | ✅ free | Shop-authentic + symptom-first in three words. |
+| **Car Symptoms Explained** | @CarSymptomsExplained | ✅ free | Zero-ambiguity SEO name; least personality. |
+| ~~The Diagnostic Bay~~ | @TheDiagnosticBay | ❌ TAKEN (existing channel) | dropped |
+| ~~Car Sense~~ | @CarSense | ⚠️ handle free but TM risk | CarSense = major PA used-car dealer (Penske → CarShop 2021); automotive-services mark vs car channel is too close. Dropped without a full screen. |
 
 ## Topic bank — 16 slots, demand-verified (Semrush US, 2026-08-07)
 
