@@ -65,7 +65,8 @@ bpy.context.view_layer.objects.active = drills[0]
 bpy.ops.object.join()
 drill_obj = bpy.context.object
 boo = rotor.modifiers.new('drill', 'BOOLEAN'); boo.operation = 'DIFFERENCE'; boo.object = drill_obj
-wn = rotor.modifiers.new('wn', 'WEIGHTED_NORMAL'); wn.keep_sharp = True
+bpy.context.view_layer.objects.active = rotor
+bpy.ops.object.shade_flat()
 drill_obj.hide_render = True
 
 # ---- hub + lugs ----------------------------------------------------------
@@ -188,9 +189,9 @@ scene.camera = cam
 scene.frame_start = 1; scene.frame_end = FRAMES
 prefs = bpy.context.preferences.edit
 prefs.keyframe_new_interpolation_type = 'BEZIER'
-pivot.rotation_euler = (0, 0, math.radians(-18))
+pivot.rotation_euler = (0, 0, math.radians(-34))
 pivot.keyframe_insert('rotation_euler', frame=1)
-pivot.rotation_euler = (0, 0, math.radians(38))
+pivot.rotation_euler = (0, 0, math.radians(0))
 pivot.keyframe_insert('rotation_euler', frame=FRAMES)
 cam.location = (3.1, -5.3, 0.85); cam.keyframe_insert('location', frame=1)
 cam.location = (2.4, -4.2, 0.6); cam.keyframe_insert('location', frame=FRAMES)
