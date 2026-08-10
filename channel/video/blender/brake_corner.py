@@ -27,8 +27,47 @@ def mat(name, base, metallic=0.0, rough=0.5, clearcoat=0.0, aniso=0.0):
     return m
 
 STEEL   = mat('steel',   (0.35, 0.38, 0.42), metallic=1.0, rough=0.26, aniso=0.9)
+
+def pbr_metal(name):
+    # Poly Haven scanned metal: real diffuse/roughness/normal detail is what
+    # separates "rendered" from "photographed" — flat values always read CG
+    import os as _os
+    base = _os.path.dirname(_os.path.abspath(__file__))
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    b = nt.nodes['Principled BSDF']
+    b.inputs['Metallic'].default_value = 1.0
+    def tex(fname, colorspace):
+        n = nt.nodes.new('ShaderNodeTexImage')
+        n.image = bpy.data.images.load(_os.path.join(base, fname))
+        n.image.colorspace_settings.name = colorspace
+        n.projection = 'BOX'; n.projection_blend = 0.3
+        co = nt.nodes.new('ShaderNodeTexCoord')
+        mp = nt.nodes.new('ShaderNodeMapping')
+        mp.inputs['Scale'].default_value = (3.5, 3.5, 3.5)
+        nt.links.new(co.outputs['Object'], mp.inputs['Vector'])
+        nt.links.new(mp.outputs['Vector'], n.inputs['Vector'])
+        return n
+    try:
+        d = tex('metal032/Metal032_1K-JPG_Color.jpg', 'sRGB')
+        nt.links.new(d.outputs['Color'], b.inputs['Base Color'])
+        r = tex('metal032/Metal032_1K-JPG_Roughness.jpg', 'Non-Color')
+        nt.links.new(r.outputs['Color'], b.inputs['Roughness'])
+        nrm = tex('metal032/Metal032_1K-JPG_NormalGL.jpg', 'Non-Color')
+        nm = nt.nodes.new('ShaderNodeNormalMap')
+        nm.inputs['Strength'].default_value = 0.6
+        nt.links.new(nrm.outputs['Color'], nm.inputs['Color'])
+        nt.links.new(nm.outputs['Normal'], b.inputs['Normal'])
+    except Exception as e:
+        print('PBR fallback:', e)
+        b.inputs['Base Color'].default_value = (0.35, 0.38, 0.42, 1)
+        b.inputs['Roughness'].default_value = 0.26
+    return m
+
+STEEL_PBR = pbr_metal('steel_pbr')
 DARKST  = mat('darkst',  (0.06, 0.07, 0.09), metallic=1.0, rough=0.4)
-ORANGE  = mat('caliper', (0.72, 0.18, 0.04), metallic=0.2, rough=0.25, clearcoat=1.0)
+ORANGE  = mat('caliper', (0.48, 0.055, 0.015), metallic=0.35, rough=0.32, clearcoat=1.0)
 PAD     = mat('pad',     (0.65, 0.50, 0.16), metallic=0.0, rough=0.7)
 FLOOR   = mat('floor',   (0.012, 0.015, 0.02), metallic=0.0, rough=0.6)
 
@@ -48,9 +87,9 @@ def add_cyl(name, r, d, loc=(0, 0, 0), rot=(0, 0, 0), verts=96, material=None):
     return o
 
 # ---- rotor: disc + hat, cross-drilled ------------------------------------
-rotor = add_cyl('rotor', 1.0, 0.055, material=STEEL)
+rotor = add_cyl('rotor', 1.0, 0.055, material=STEEL_PBR)
 bev = rotor.modifiers.new('bev', 'BEVEL'); bev.width = 0.008; bev.segments = 3
-hat = add_cyl('hat', 0.42, 0.16, loc=(0, 0, 0.055), material=STEEL)
+hat = add_cyl('hat', 0.42, 0.16, loc=(0, 0, 0.055), material=STEEL_PBR)
 bev2 = hat.modifiers.new('bev', 'BEVEL'); bev2.width = 0.006; bev2.segments = 3
 
 # drill two rings of holes via boolean
@@ -70,7 +109,7 @@ bpy.ops.object.shade_flat()
 drill_obj.hide_render = True
 
 # ---- hub + lugs ----------------------------------------------------------
-hub = add_cyl('hub', 0.30, 0.10, loc=(0, 0, 0.135), material=STEEL)
+hub = add_cyl('hub', 0.30, 0.10, loc=(0, 0, 0.135), material=STEEL_PBR)
 for i in range(5):
     a = i * 2 * math.pi / 5
     add_cyl('lug', 0.045, 0.06, loc=(math.cos(a) * 0.19, math.sin(a) * 0.19, 0.20), verts=6, material=DARKST)
@@ -164,13 +203,14 @@ def light(name, kind, loc, energy, size=3.0, color=(1, 1, 1)):
     c = o.constraints.new('TRACK_TO'); c.target = None
     return o
 
-key = light('key', 'AREA', (4.2, -1.2, 2.6), 1400, size=2.5)
+key = light('key', 'AREA', (4.2, -1.2, 2.6), 1200, size=2.5)
+bounce = light('bounce', 'AREA', (0, -2.0, -0.7), 300, size=6)
 rim = light('rim', 'AREA', (-3.6, 3.2, 2.4), 900, size=2, color=(0.7, 0.82, 1.0))
 fill = light('fill', 'AREA', (0.5, -4.0, 0.6), 180, size=5)
 # aim lights at the rotor
 target = bpy.data.objects.new('aim', None); target.location = (0, 0, 0)
 bpy.context.collection.objects.link(target)
-for o in (key, rim, fill):
+for o in (key, rim, fill, bounce):
     o.constraints[0].target = target
 
 # ---- camera: orbit + push-in --------------------------------------------
@@ -189,10 +229,9 @@ scene.camera = cam
 scene.frame_start = 1; scene.frame_end = FRAMES
 prefs = bpy.context.preferences.edit
 prefs.keyframe_new_interpolation_type = 'BEZIER'
-pivot.rotation_euler = (0, 0, math.radians(-34))
-pivot.keyframe_insert('rotation_euler', frame=1)
-pivot.rotation_euler = (0, 0, math.radians(0))
-pivot.keyframe_insert('rotation_euler', frame=FRAMES)
+for fr, deg in ((1, -34), (int(FRAMES*0.42), -26), (int(FRAMES*0.62), -8), (FRAMES, 0)):
+    pivot.rotation_euler = (0, 0, math.radians(deg))
+    pivot.keyframe_insert('rotation_euler', frame=fr)
 cam.location = (3.1, -5.3, 0.85); cam.keyframe_insert('location', frame=1)
 cam.location = (2.4, -4.2, 0.6); cam.keyframe_insert('location', frame=FRAMES)
 
