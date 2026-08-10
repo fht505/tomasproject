@@ -1,0 +1,202 @@
+# Episode 5 — Why Is My Car Overheating?
+
+Target query: "car overheating" (6,600/mo, KD 42)
+Target length: 10–12 min (~1,800 words)
+Template reuse: engine block cutaway from ep 4; new: cooling-loop flow diagram (radiator, pump, thermostat, hoses, fans)
+Structure: cold-open hook → the 15 minutes that matter → mechanism → causes ranked → the repair → urgent vs. ignorable
+
+---
+
+## COLD OPEN
+
+[broll: temperature gauge needle climbing toward red, dash warning light]
+
+Every gauge on your dashboard is information. This one is a countdown.
+
+When the temperature needle starts climbing past its usual home, you have
+— depending on how far and how fast — somewhere between fifteen minutes
+and fifteen seconds of engine-saving decisions to make. Cars survive
+overheating events every day. Engines die from them every day too. The
+difference is almost never the part that failed. It's what the driver did
+in the first few minutes.
+
+So this episode runs backwards from every other one we've made: first
+what to DO, then why it happened.
+
+[callout: channel card — "Why Is My Car Doing That?"]
+
+## THE FIFTEEN MINUTES THAT MATTER
+
+[callout: numbered action card — "1. Heater on full 2. Pull over safely 3. Engine off 4. Do NOT open anything 5. Look, don't touch"]
+
+The needle's climbing. In order:
+
+**Heater on, full blast, windows down.** Sounds insane in July. Do it
+anyway — your heater core is a small second radiator inside the dash,
+and running it full-hot pulls real heat out of the engine. It can buy
+you the minutes you need to get somewhere safe. [TECH CONFIRM — bless
+this as step one, it's the classic move but you know if it still holds
+on modern cars with electric thermostats]
+
+**Pull over when it's safe — not eventually, soon.** A climbing needle
+with the AC off and heater on is not going to fix itself at highway
+speed.
+
+**Engine off.** If the needle is pegged or you see steam: off now.
+
+**Open nothing.** The cooling system is pressurized and somewhere north
+of boiling. The radiator cap stays on until the engine is genuinely
+cold — an hour, not ten minutes. Opening it hot is a geyser of
+200-degree coolant aimed at your face. Every year people wear that
+mistake. [TECH CONFIRM — safety phrasing strength]
+
+**Look, don't touch.** Puddle under the car? Steam from the hood seams?
+A snapped belt hanging? That's free diagnosis for whoever fixes it —
+phone photos help.
+
+The one thing you never do: keep driving to "make it home." Aluminum
+heads warp measured in *minutes* of pegged-needle driving. The tow is
+always cheaper. Always. [TECH CONFIRM — a real anonymized FHT story of a
+drove-it-home engine would be the strongest 20 seconds in this episode,
+if you have one you're comfortable telling]
+
+## THE MECHANISM — THE COOLING LOOP IN ONE MINUTE
+
+[flow: NEW 3D/diagram — the cooling loop: water pump pushes coolant through block jackets → thermostat → radiator → back; fans pull air; heater core on a side loop]
+
+One minute of plumbing. Coolant is pumped through passages around the
+combustion chambers — the jackets from our white-smoke episode — where
+it picks up heat. It flows through the **thermostat**, a temperature-
+controlled gate, to the **radiator**, where airflow strips the heat out,
+and back around. **Fans** guarantee airflow when the car isn't moving.
+The **heater core** taps the loop to warm the cabin.
+
+Every overheat is one sentence: *heat is being made faster than this
+loop is removing it.* Which means the diagnosis is always: what part of
+the loop quit?
+
+## CAUSE #1 — LOW COOLANT, WHICH MEANS A LEAK (most common)
+
+[cutaway: loop from above with level dropping; leak points glowing — hoses, radiator seams, water pump weep hole, heater core]
+
+The loop only works full. And here's the rule that saves diagnostic
+money: **coolant doesn't evaporate — a low system is a leaking system.**
+The usual suspects, roughly in order: aging **hoses** and their clamps,
+**radiator** seams and tanks, the **water pump's weep hole** (a designed
+tell-tale drip when its seal is dying), the **heater core** (sweet smell
+inside the cabin, foggy windshield film), and the invisible one — the
+head gasket, burning it out the exhaust, which is last week's episode.
+[TECH CONFIRM — your leak-frequency ranking; is the pump weep or hoses
+the more common walk-in?]
+
+Driveway tell: the color of the puddle. Coolant is dyed — green, orange,
+pink, blue — and slightly sweet-smelling. Clear water under the front on
+a summer day is usually just AC condensation, which is normal.
+
+## CAUSE #2 — THERMOSTAT STUCK CLOSED (the cheap villain)
+
+[flow: loop with the thermostat gate frozen shut — engine side boiling while the radiator sits cold]
+
+The thermostat is a spring-loaded gate that stays closed on cold starts
+so the engine warms quickly, then opens. When one fails closed, coolant
+never reaches the radiator: the engine side of the loop cooks while the
+radiator sits there cold and useless. The tell a tech checks in thirty
+seconds: engine roasting, **upper radiator hose still cool** — heat
+isn't getting through the gate. As failures go this is the good one:
+the part is cheap and the job is usually quick. [TECH CONFIRM — fair
+characterization of thermostat job on most cars? Name exceptions where
+it's buried and pricey?]
+
+## CAUSE #3 — FANS NOT RUNNING (the traffic-jam special)
+
+[flow: car moving = airflow through radiator; car stopped = fans should spin; fans dead = temp climbs at idle only]
+
+The pattern that names this one: **fine on the highway, hot in
+traffic.** Moving cars get free airflow; stopped cars depend on the
+electric fans. Dead fan motor, blown relay or fuse, or a bad temp sensor
+that never tells the fans to start — and the car only overheats when
+it's stuck at a light or in the drive-through line. If your overheating
+has a stop-and-go signature, tell your shop exactly that sentence — it
+cuts the diagnosis in half. [TECH CONFIRM — agree the symptom phrasing
+is that diagnostic? Relay vs motor vs sensor: what do you replace most?]
+
+## CAUSE #4 — WATER PUMP FAILURE
+
+[cutaway: pump impeller — healthy vanes vs corroded/stripped vanes spinning uselessly]
+
+The pump is the loop's heart, usually spun by a belt. It fails two ways:
+the **bearing/seal** way — whining noise, weep-hole drip, wobble — and
+the sneaky **impeller** way, where corroded or stripped vanes just stop
+moving coolant while everything looks fine from outside. Pump failures
+often arrive with a soundtrack: squeal, grind, or a drip that's been
+photographed on the driveway for weeks. [TECH CONFIRM — how often do you
+catch pumps at the weep-drip stage vs after an overheat event?]
+
+## CAUSE #5 — THE CLOGGED OR AGED SYSTEM
+
+[cutaway: radiator internals — clean tubes vs scale-blocked tubes; exterior fins packed with bugs/debris]
+
+Cooling systems age like arteries. Inside: old coolant turns acidic and
+scale narrows the radiator's tubes. Outside: bug guts, leaves, and road
+grime blanket the fins. Each one steals a few percent of capacity — the
+car that "runs a little warm" on hills, then a little warmer towing,
+then one hot day tips over the edge. This is why coolant has a change
+interval nobody reads [TECH CONFIRM — the interval guidance you actually
+give customers, and whether you see electrolysis/scale problems from
+neglected coolant often].
+
+## THE REPAIR — WHAT THE MONEY LOOKS LIKE
+
+[flow: decision tree — symptom pattern in, subsystem out]
+
+The honest news: most overheating fixes are **plumbing money, not
+engine money** — hoses, thermostats, fans, pumps, radiators. The
+catastrophic bills come almost exclusively from *continuing to drive*.
+Same lesson as the brakes episodes, hotter stakes: the early symptom is
+the cheap one.
+
+[callout: typical US shop ranges — "Thermostat: $___–$___ · Radiator:
+$___–$___ · Water pump: $___–$___ · Fan motor/relay: $___–$___"]
+[TECH CONFIRM — fill from real FHT invoices]
+
+## URGENT OR IGNORABLE?
+
+[callout: three-tier verdict card — "Watch it" / "This week" / "Stop now"]
+
+**Watch it:** runs slightly warm on long hills or towing, always
+recovers, level steady. Book a cooling-system health check at your
+convenience — that's the aging-system tier.
+
+**This week:** any repeatable overheat pattern — traffic-jam climbs,
+level dropping week over week, sweet smell, a drip you can photograph.
+It has a cause; it will not improve.
+
+**Stop now:** needle pegged, steam, low-coolant light, or heat plus
+*anything* from the white-smoke episode. Engine off, tow it. This is
+the tier where minutes of stubbornness cost thousands.
+
+[TECH CONFIRM — bless the tiers]
+
+## OUTRO
+
+So: overheating is always the same sentence — heat in faster than heat
+out — and the loop only has so many parts that can quit: level, gate,
+fans, pump, radiator. The driveway clues — WHEN it overheats, WHAT'S
+under it, WHERE the heat is — usually name the part before a wrench
+comes out. And the fifteen-minute drill at the top of this video is the
+difference between plumbing money and engine money.
+
+Next time: where IS that coolant going? The leak-hunt episode — five
+places coolant escapes, and how to find yours with a flashlight and a
+piece of cardboard.
+
+[callout: subscribe card + next-episode thumbnail: "Where Is My Coolant Going?"]
+
+---
+
+## DESCRIPTION-BLOCK NOTES (packaging phase)
+
+- AI disclosure line (non-negotiable, every upload).
+- Chapters from section headings.
+- Safety note top of description: never open a hot cooling system.
+- Standard disclaimer: general education, not a diagnosis.
