@@ -4,13 +4,15 @@ import { Callout } from './scenes/Callout';
 import { Diagram } from './scenes/Diagram';
 import { BrakeCorner } from './scenes/diagrams/BrakeCorner';
 import { ThickSpot } from './scenes/diagrams/ThickSpot';
+import { PadDeposits } from './scenes/diagrams/PadDeposits';
+import { HubRust } from './scenes/diagrams/HubRust';
 import { T } from './theme';
 import manifest from '../manifests/01-car-shakes-when-braking.scenes.json';
 
 const FPS = 30;
 
 // real diagrams by scene index; everything else falls back to the placeholder
-const DIAGRAMS = { 7: BrakeCorner, 8: ThickSpot };
+const DIAGRAMS = { 7: BrakeCorner, 8: ThickSpot, 9: PadDeposits, 11: HubRust };
 
 const Scene = ({ s }) => {
   const Real = DIAGRAMS[s.idx];
