@@ -67,9 +67,9 @@ def pbr_metal(name):
 
 STEEL_PBR = pbr_metal('steel_pbr')
 DARKST  = mat('darkst',  (0.06, 0.07, 0.09), metallic=1.0, rough=0.4)
-ORANGE  = mat('caliper', (0.48, 0.055, 0.015), metallic=0.35, rough=0.32, clearcoat=1.0)
+ORANGE  = mat('caliper', (0.30, 0.012, 0.006), metallic=0.05, rough=0.38, clearcoat=0.6)
 PAD     = mat('pad',     (0.65, 0.50, 0.16), metallic=0.0, rough=0.7)
-FLOOR   = mat('floor',   (0.012, 0.015, 0.02), metallic=0.0, rough=0.6)
+FLOOR   = mat('floor',   (0.006, 0.008, 0.012), metallic=0.0, rough=0.65)
 
 def smooth(o):
     # auto-smooth keeps machined flat faces flat while rounding bevels —
@@ -186,7 +186,7 @@ if os.path.exists(_hdri_path):
     _nt.links.new(_lp.outputs['Is Camera Ray'], _mix.inputs[0])
     _nt.links.new(_env.outputs['Color'], _mix.inputs[6])  # A (RGBA)
     _nt.links.new(_mix.outputs[2], _bg.inputs['Color'])  # Result (RGBA)
-    _bg.inputs['Strength'].default_value = 0.55
+    _bg.inputs['Strength'].default_value = 0.38
 else:
     _bg.inputs['Color'].default_value = (0.012, 0.016, 0.022, 1)
 
