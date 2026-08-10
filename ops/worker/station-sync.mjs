@@ -33,10 +33,15 @@ const digitalItems = digital ? Object.entries(digital.items).map(([code, listing
 // ---- social bay ---------------------------------------------------------
 const socialImgDir = join(opsDir, 'social', 'img');
 const conn = readJson(join(stateDir, 'social-connections.json'));
+const approval = readJson(join(stateDir, 'social-approval.json'));
+const postedLog = readJson(join(stateDir, 'social-posted.json'));
 const social = {
   posts_composed: existsSync(socialImgDir) ? readdirSync(socialImgDir).filter(f => f.endsWith('.jpg')).length : 0,
   plan_written: existsSync(join(opsDir, 'social', 'PLAN.md')),
-  operator_approved: false,          // flips only on explicit operator approval
+  operator_approved: !!approval?.approved,   // written only on explicit operator approval
+  posts_published: postedLog?.posted?.length ?? 0,
+  latest_post: postedLog?.posted?.at(-1) ?? null,
+  queue_remaining: postedLog?.queue_remaining?.length ?? null,
   instagram_connected: !!conn?.instagram?.connected,
   instagram_username: conn?.instagram?.username ?? null,
   facebook_connected: !!conn?.facebook?.connected,

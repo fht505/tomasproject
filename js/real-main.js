@@ -422,8 +422,14 @@ function buildRoom(root, roomId) {
       body.appendChild(el('div', 'trow', `<span class="tk">POST IMAGES COMPOSED</span><span class="tv">${soc.posts_composed}</span>`));
       body.appendChild(el('div', 'trow', `<span class="tk">WEEK-1 PLAN (ops/social/PLAN.md)</span><span class="tv">${soc.plan_written ? 'WRITTEN' : 'absent'}</span>`));
       body.appendChild(el('div', 'trow', `<span class="tk">OPERATOR APPROVAL</span><span class="tv">${soc.operator_approved ? 'APPROVED' : 'PENDING'}</span>`));
-      body.appendChild(el('div', 'trow', `<span class="tk">INSTAGRAM (via Composio)</span><span class="tv">${soc.instagram_connected ? 'CONNECTED' : 'NOT CONNECTED'}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">INSTAGRAM (via Composio)</span><span class="tv">${soc.instagram_connected ? 'CONNECTED — @' + esc(soc.instagram_username ?? '') : 'NOT CONNECTED'}</span>`));
       body.appendChild(el('div', 'trow', `<span class="tk">FACEBOOK PAGE (via Composio)</span><span class="tv">${soc.facebook_connected ? 'CONNECTED' : 'NOT CONNECTED'}</span>`));
+      if (soc.posts_published) {
+        body.appendChild(el('div', 'trow', `<span class="tk">POSTS PUBLISHED</span><span class="tv">${soc.posts_published} live · ${soc.queue_remaining ?? '?'} queued daily</span>`));
+        if (soc.latest_post?.ig_permalink) {
+          body.appendChild(el('div', 'trow', `<span class="tk">LATEST</span><span class="dim">${esc(soc.latest_post.code)} · ${esc(soc.latest_post.ig_permalink)}</span>`));
+        }
+      }
       body.appendChild(el('div', 'panel-note',
         'Nothing posts without operator approval. Buyer-message note: Etsy\'s Open API exposes no conversations endpoint — inbound buyer messages can never render here.'));
       break;
