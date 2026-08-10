@@ -219,6 +219,7 @@ const COMMANDS = {
   margins: () => run('margins.mjs', rest),
   etsy: () => run('etsy.mjs', rest),
   'etsy-sync': () => run('etsy-sync.mjs', rest),
+  station: () => run('station-sync.mjs'),
   doctor: () => run('doctor.mjs'),
   test: () => run('test-margin.mjs'),
   tm: () => run('tm.mjs', [arg0 ?? 'list', ...rest.slice(1)]),

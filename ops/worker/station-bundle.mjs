@@ -19,7 +19,7 @@ const strip = (s) => s
   .replace(/^export /gm, '');
 
 // mirror FEEDS in real-main.js — the console requests exactly these paths
-const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'lanes', 'shops'];
+const FEEDS = ['station', 'ledger', 'orders', 'products', 'signals', 'art', 'lanes', 'shops'];
 const state = {};
 for (const f of FEEDS) {
   const p = join(root, 'ops', 'state', `${f}.json`);

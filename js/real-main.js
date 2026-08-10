@@ -22,7 +22,7 @@ const esc = (s) => String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').re
 // No 'inbox': Etsy's Open API v3 exposes no messages/conversations endpoint, so
 // no state file can ever back an inbox feed. Listing one implied a connection
 // that cannot exist.
-const FEEDS = ['ledger', 'orders', 'products', 'signals', 'art', 'lanes', 'shops'];
+const FEEDS = ['station', 'ledger', 'orders', 'products', 'signals', 'art', 'lanes', 'shops'];
 
 // Channels a customer can actually buy from, vs internal/API stores. The
 // custom_integration store exists so cost probes never touch a storefront.
@@ -97,21 +97,19 @@ function artRequired() {
 }
 
 function checklist() {
-  const art = S.files.art;
-  const products = S.files.products;
+  const st = S.files.station;
   const orders = S.files.orders;
-  const artOk = art?.ok?.length ?? 0;
-  const artNeeded = artRequired();
-  const drafts = products?.data?.length ?? 0;
-  const published = products?.data?.filter?.((p) => p.external?.length || p.is_published)?.length ?? 0;
   const orderCount = orders?.data?.data?.length ?? orders?.data?.length ?? 0;
+  const phys = st?.physical?.length ?? 0;
+  const digi = st?.digitalItems?.length ?? 0;
+  const soc = st?.social;
+  const yt = st?.youtube;
   return [
-    { label: 'Niche research (real Semrush pull)', done: !!S.files.signals, detail: S.files.signals ? `${S.files.signals.signals.length} signals` : 'pending' },
-    { label: 'Batch-01 spec authored', done: !!S.batch, detail: S.batch ? `${S.batch.count}/40 listings` : 'pending' },
-    { label: 'Design art generated + validated', done: artNeeded !== null && artOk >= artNeeded && artOk > 0, detail: artNeeded === null ? 'batch spec not loaded' : `${artOk}/${artNeeded} files` },
-    { label: 'Printify token verified (shop linked)', done: !!products, detail: products ? 'connected' : 'waiting on operator' },
-    { label: 'Drafts staged on Printify', done: drafts >= 40, detail: `${drafts}/40` },
-    { label: 'Listings published to Etsy', done: published >= 40, detail: `${published}/40` },
+    { label: 'KindlyPut catalog live (physical + digital)', done: phys + digi >= 52, detail: st ? `${phys} + ${digi} listings` : 'no station sync' },
+    { label: 'Etsy API operational', done: !!st?.probes?.etsyApi?.ok, detail: st ? `probe ${st.probes.etsyApi.status} — ${st.probes.etsyApi.note}` : '—' },
+    { label: 'Social batch approved by operator', done: !!soc?.operator_approved, detail: soc ? `${soc.posts_composed} posts staged` : '—' },
+    { label: 'Social channels connected (IG + FB)', done: !!(soc?.instagram_connected && soc?.facebook_connected), detail: soc ? [soc.instagram_connected ? 'IG ✔' : 'IG ✕', soc.facebook_connected ? 'FB ✔' : 'FB ✕'].join(' · ') : '—' },
+    { label: 'Channel created (media bay)', done: !!yt?.channel_created, detail: yt ? `${yt.scripts_drafted} script(s), ${yt.topics_banked} topics banked` : 'not started' },
     { label: 'First real order', done: orderCount > 0, detail: orderCount ? `${orderCount} orders` : '—' },
   ];
 }
@@ -121,10 +119,16 @@ function renderHUD() {
   const rev = revenue();
   $('hud-rev').textContent = fmtMoney(rev.total);
   $('hud-etsy').textContent = fmtMoney(rev.etsy);
-  $('hud-fiverr').textContent = fmtMoney(rev.fiverr);
+  $('hud-fiverr').textContent = fmtMoney(rev.total - rev.costs);
   $('hud-assets').textContent = `${FEEDS.filter(f => S.files[f]).length}/${FEEDS.length}`;
   document.querySelector('#hud-assets').previousElementSibling.textContent = 'FEEDS';
-  $('hud-ops').textContent = `${AGENTS.length} PLANNED`;
+  const st = S.files.station;
+  if (st?.probes) {
+    $('hud-ops').textContent = `ETSY ${st.probes.etsyApi.ok ? '✔' : '✕'} · PFY ${st.probes.printifyApi.ok ? '✔' : '✕'}`;
+    document.querySelector('#hud-ops').previousElementSibling.textContent = 'APIS';
+  } else {
+    $('hud-ops').textContent = `${AGENTS.length} PLANNED`;
+  }
   const cl = checklist();
   const pct = cl.filter(c => c.done).length / cl.length;
   $('hud-level').textContent = `${Math.round(pct * 100)}%`;
@@ -154,15 +158,36 @@ function renderClock() {
 }
 
 // --------------------------- rails -------------------------------
-// an agent counts as having run only when a real state file proves it
+// an agent counts as having run only when a real state file proves it.
+// File-name entries require the feed to exist; function entries test a field
+// inside station.json (itself built from real files and live probes).
 // ECHO is absent on purpose: there is no API that could prove it ran, so it
 // reads as never-run rather than borrowing another agent's evidence.
-const AGENT_EVIDENCE = { nova: 'signals', scout: 'lanes', flora: 'art', merch: 'products', ledger: 'orders' };
-const agentHasRun = (id) => !!S.files[AGENT_EVIDENCE[id]];
+const AGENT_EVIDENCE = {
+  nova: 'signals', scout: 'lanes', flora: 'art', merch: 'products', ledger: 'ledger',
+  wick:  (f) => (f.station?.physical?.length ?? 0) > 0,
+  forge: (f) => (f.station?.digitalItems?.length ?? 0) > 0,
+  halo:  (f) => (f.station?.social?.posts_composed ?? 0) > 0,
+  prism: (f) => (f.station?.youtube?.scripts_drafted ?? 0) > 0,
+};
+const agentHasRun = (id) => {
+  const ev = AGENT_EVIDENCE[id];
+  if (!ev) return false;
+  return typeof ev === 'function' ? !!ev(S.files) : !!S.files[ev];
+};
+const agentEvidenceLabel = (id) => {
+  const ev = AGENT_EVIDENCE[id];
+  return typeof ev === 'function' ? 'ops/state/station.json' : `ops/state/${ev}.json`;
+};
 
 function moduleStatus(roomId) {
+  const st = S.files.station;
   switch (roomId) {
-    case 'factory1': return S.batch ? `${S.batch.count} spec` : '—';
+    case 'factory1': return st?.physical ? `${st.physical.length} live` : (S.batch ? `${S.batch.count} spec` : '—');
+    case 'factory2': return st?.digitalItems ? `${st.digitalItems.length} live` : '—';
+    case 'comms': return st?.social ? `${st.social.posts_composed} staged` : '—';
+    case 'quarters': return st?.youtube ? `${st.youtube.scripts_drafted} script` : '—';
+    case 'ventures': return st?.lanes ? `${st.lanes.total} lanes` : '—';
     case 'research': return S.files.signals ? `${S.files.signals.signals.length} sig` : '—';
     case 'treasury': return fmtMoney(revenue().total - revenue().costs).replace('.00', '');
     default: return '—';
@@ -239,6 +264,7 @@ function renderFeeds() {
   const gc = $('gridchat');
   gc.innerHTML = '';
   const runs = [];
+  if (S.files.station) runs.push({ who: 'STATION SYNC', what: `station sync — ${S.files.station.physical?.length ?? 0} physical · ${S.files.station.digitalItems?.length ?? 0} digital · probes etsy ${S.files.station.probes.etsyApi.status} / printify ${S.files.station.probes.printifyApi.status}`, when: S.files.station.fetchedAt });
   if (S.files.signals) runs.push({ who: 'RESEARCH', what: `research run — ${S.files.signals.signals.length} signals`, when: S.files.signals.fetchedAt });
   if (S.files.lanes) runs.push({ who: 'LANE SCOUT', what: `lane research — ${S.files.lanes.lanes.length} lanes ranked`, when: S.files.lanes.fetchedAt });
   if (S.files.art) runs.push({ who: 'ART INTAKE', what: `art intake — ${S.files.art.ok.length} validated`, when: S.files.art.fetchedAt });
@@ -288,17 +314,27 @@ function buildRoom(root, roomId) {
 
   switch (roomId) {
     case 'factory1': {
-      const flow = panel(root, 'PRODUCTION FLOW (PROCESS PLAN)');
-      flow.appendChild(el('div', 'panel-note',
-        PIPELINES.factory1.map((s, i) => `0${i + 1} ${s.key}`).join('  →  ') +
-        ' — executes as real agent runs once keys land.'));
-      const body = panel(root, `BATCH-01 — ${S.batch ? S.batch.count : 0} LISTINGS`);
-      if (!S.batch) { body.appendChild(el('div', 'panel-note', 'batch spec not loaded.')); break; }
-      for (const l of S.batch.listings) {
-        body.appendChild(el('div', 'trow',
-          `<span class="tk">${esc(l.code)} · ${esc(l.title.slice(0, 60))}…</span>` +
-          `<span class="dim">${esc(l.product)} · $${l.price_usd}</span>` +
-          `<span class="tv">${listingStatus(l)}</span>`));
+      const st = S.files.station;
+      if (!st?.physical) {
+        panel(root, 'PHYSICAL SHELF').appendChild(el('div', 'panel-note',
+          'no station sync yet — run: node ops.mjs station'));
+        break;
+      }
+      const byProduct = {};
+      for (const p of st.physical) (byProduct[p.product] ??= []).push(p);
+      const body = panel(root, `KINDLYPUT PHYSICAL — ${st.physical.length} STAGED/LIVE · synced ${new Date(st.fetchedAt).toLocaleString()}`);
+      if (!st.probes.etsyApi.ok) {
+        body.appendChild(el('div', 'panel-note',
+          `⚠ Etsy API probe: ${st.probes.etsyApi.status} — live listing states unverifiable until the key is fixed; rows below are the staged catalog of record.`));
+      }
+      for (const [prod, items] of Object.entries(byProduct)) {
+        body.appendChild(el('div', 'panel-note', `${esc(prod)} × ${items.length}`));
+        for (const p of items) {
+          body.appendChild(el('div', 'trow',
+            `<span class="tk">${esc(p.code)} · ${esc(p.title.slice(0, 55))}</span>` +
+            `<span class="dim">$${p.price_usd}</span>` +
+            `<span class="tv">${esc(new Date(p.staged_at).toLocaleDateString())}</span>`));
+        }
       }
       break;
     }
@@ -339,43 +375,57 @@ function buildRoom(root, roomId) {
       break;
     }
     case 'factory2': {
-      panel(root, 'LANE 2 STATUS').appendChild(el('div', 'panel-note',
-        'Not launched. Fiverr thumbnail studio is queued behind lane 1 — demand is marketplace-internal, no public API, human-fronted account. Revisit after first Etsy orders.'));
+      const st = S.files.station;
+      if (!st?.digitalItems) {
+        panel(root, 'DIGITAL PRESS').appendChild(el('div', 'panel-note',
+          'no digital shelf recorded yet.'));
+        break;
+      }
+      const body = panel(root, `DIGITAL SHELF — ${st.digitalItems.length} LISTED VIA ETSY API`);
+      for (const d of st.digitalItems) {
+        body.appendChild(el('div', 'trow',
+          `<span class="tk">${esc(d.code)}</span>` +
+          `<span class="dim">listing ${esc(String(d.listing_id))}</span>` +
+          `<span class="tv">${d.built ? 'PDF BUILT' : 'build artifacts absent'}</span>`));
+      }
+      body.appendChild(el('div', 'panel-note',
+        'Rendered from SVG primitives (no image model) — ops/worker/printables/. Activated 2026-08-05 after operator approval.'));
       break;
     }
     case 'ventures': {
-      const lanes = S.files.lanes;
-      if (!lanes) {
-        panel(root, 'LANE PIPELINE').appendChild(el('div', 'panel-note',
-          'No lane research recorded yet.'));
+      const board = S.files.station?.lanes;
+      if (!board) {
+        panel(root, 'LANE BOARD').appendChild(el('div', 'panel-note',
+          'No lane board recorded yet.'));
         break;
       }
-      const qBody = panel(root, `LANE QUEUE — SCOUT RUN · ${new Date(lanes.fetchedAt).toLocaleString()}`);
-      qBody.appendChild(el('div', 'panel-note', esc(lanes.source)));
-      lanes.queue.forEach((q, i) => {
-        qBody.appendChild(el('div', 'trow',
-          `<span class="tk">${i === 0 ? '▶' : String(i + 1)} ${esc(q)}</span>`));
-      });
-      const lBody = panel(root, 'RANKED LANES (VERIFIED)');
-      for (const l of lanes.lanes) {
-        lBody.appendChild(el('div', 'trow',
-          `<span class="tk">#${l.rank} ${esc(l.name)}</span>` +
-          `<span class="dim">${esc(l.note)}</span>` +
-          `<span class="tv">${esc(l.automation)} auto · ${esc(l.startup)} · ${esc(l.firstDollar)}</span>`));
+      const sum = panel(root, `LANE BOARD — ${board.total} LANES RESEARCHED`);
+      for (const [verdict, n] of Object.entries(board.by_verdict)) {
+        sum.appendChild(el('div', 'trow',
+          `<span class="tk">${esc(verdict.toUpperCase())}</span><span class="tv">${n}</span>`));
       }
-      const dBody = panel(root, 'DO NOT BOTHER (DISQUALIFIED ON POLICY/ECONOMICS)');
-      for (const d of lanes.doNotBother) {
-        dBody.appendChild(el('div', 'log-line warn', esc(d)));
+      const bBody = panel(root, 'BUILDING');
+      for (const name of board.building) bBody.appendChild(el('div', 'trow', `<span class="tk">▶ ${esc(name)}</span>`));
+      const cBody = panel(root, 'CANDIDATES ON DECK');
+      for (const c of board.candidates) {
+        cBody.appendChild(el('div', 'trow',
+          `<span class="tk">${esc(c.name)}</span><span class="tv">checked ${esc(c.checked)}</span>`));
       }
-      panel(root, 'FULL REPORT').appendChild(el('div', 'panel-note',
-        'Complete scored report with 48 sources: ops/LANES.md in the repo.'));
+      panel(root, 'FULL BOARD').appendChild(el('div', 'panel-note',
+        'Per-lane verdicts, policies, and risks: PERPETUA ORBITAL/Dashboard.md (Obsidian vault, generated from ops/lanes.data.json).'));
       break;
     }
     case 'comms': {
-      const body = panel(root, 'CHANNELS');
+      const soc = S.files.station?.social;
+      const body = panel(root, 'SOCIAL LAUNCH — KINDLYPUT');
+      if (!soc) { body.appendChild(el('div', 'panel-note', 'no station sync yet.')); break; }
+      body.appendChild(el('div', 'trow', `<span class="tk">POST IMAGES COMPOSED</span><span class="tv">${soc.posts_composed}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">WEEK-1 PLAN (ops/social/PLAN.md)</span><span class="tv">${soc.plan_written ? 'WRITTEN' : 'absent'}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">OPERATOR APPROVAL</span><span class="tv">${soc.operator_approved ? 'APPROVED' : 'PENDING'}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">INSTAGRAM (via Composio)</span><span class="tv">${soc.instagram_connected ? 'CONNECTED' : 'NOT CONNECTED'}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">FACEBOOK PAGE (via Composio)</span><span class="tv">${soc.facebook_connected ? 'CONNECTED' : 'NOT CONNECTED'}</span>`));
       body.appendChild(el('div', 'panel-note',
-        'Etsy has no messages API — Open API v3 exposes no conversations endpoint, so nothing here can read or send buyer messages, now or later. '
-        + 'What is real: Etsy\'s own auto-reply answers first and counts toward the response-rate metric, and a pasted message can be drafted into a reply for the operator to send.'));
+        'Nothing posts without operator approval. Buyer-message note: Etsy\'s Open API exposes no conversations endpoint — inbound buyer messages can never render here.'));
       break;
     }
     case 'warroom': {
@@ -396,8 +446,17 @@ function buildRoom(root, roomId) {
       break;
     }
     case 'quarters': {
-      panel(root, 'CREW QUARTERS').appendChild(el('div', 'panel-note',
-        'Cosmetic deck. The bar opens when the crew has runs to recover from.'));
+      const yt = S.files.station?.youtube;
+      const body = panel(root, 'MEDIA BAY — YOUTUBE CHANNEL');
+      if (!yt) { body.appendChild(el('div', 'panel-note', 'channel build not started.')); break; }
+      body.appendChild(el('div', 'trow', `<span class="tk">CHANNEL NAME</span><span class="tv">${esc(yt.name)}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">HANDLE (verified free 2026-08-07)</span><span class="tv">${esc(yt.handle)}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">TOPIC BANK (Semrush-verified)</span><span class="tv">${yt.topics_banked} topics</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">SCRIPTS DRAFTED</span><span class="tv">${yt.scripts_drafted}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">NAME TM SCREEN</span><span class="tv">${esc(yt.tm_screen)}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">CHANNEL CREATED</span><span class="tv">${yt.channel_created ? 'YES' : 'NOT YET (operator)'}</span>`));
+      body.appendChild(el('div', 'trow', `<span class="tk">NARRATOR VOICE</span><span class="tv">${yt.voice_chosen ? 'CHOSEN' : 'pending ElevenLabs'}</span>`));
+      body.appendChild(el('div', 'panel-note', 'Design spec: ' + esc(yt.design_spec)));
       break;
     }
     case 'bridge': {
@@ -488,7 +547,7 @@ function openAgent(id) {
   f('DUTY', a.duty);
   f('FUNCTION', a.func);
   f('STATUS', agentHasRun(a.id)
-    ? `HAS RUN — evidence: ops/state/${AGENT_EVIDENCE[a.id]}.json`
+    ? `HAS RUN — evidence: ${agentEvidenceLabel(a.id)}`
     : 'NOT YET RUN — no real output exists for this agent');
   fields.appendChild(el('div', 'agent-directive', '&raquo; ' + esc(a.directive)));
   card.appendChild(fields);
@@ -512,7 +571,7 @@ function checklistModal() {
     wrap.appendChild(row);
   }
   wrap.appendChild(el('div', 'panel-note',
-    'Operator gates tonight: new repo · Etsy shop · Printify token · (optional) image API key. Everything else is agent work.'));
+    'Operator gates: Etsy shared secret → .env · social approval + FB/IG accounts · channel creation. Everything else is agent work.'));
   return wrap;
 }
 
