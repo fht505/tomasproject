@@ -32,12 +32,15 @@ const digitalItems = digital ? Object.entries(digital.items).map(([code, listing
 
 // ---- social bay ---------------------------------------------------------
 const socialImgDir = join(opsDir, 'social', 'img');
+const conn = readJson(join(stateDir, 'social-connections.json'));
 const social = {
   posts_composed: existsSync(socialImgDir) ? readdirSync(socialImgDir).filter(f => f.endsWith('.jpg')).length : 0,
   plan_written: existsSync(join(opsDir, 'social', 'PLAN.md')),
   operator_approved: false,          // flips only on explicit operator approval
-  instagram_connected: false,        // flips when Composio connection verified
-  facebook_connected: false,
+  instagram_connected: !!conn?.instagram?.connected,
+  instagram_username: conn?.instagram?.username ?? null,
+  facebook_connected: !!conn?.facebook?.connected,
+  facebook_page_id: conn?.facebook?.page_id ?? null,
 };
 
 // ---- media bay: the YouTube channel ------------------------------------
