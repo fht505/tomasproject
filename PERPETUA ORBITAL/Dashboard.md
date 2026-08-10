@@ -5,7 +5,7 @@ tags:
 
 # Revenue lanes — decision board
 
-50 lanes researched. Generated from `ops/lanes.data.json`.
+52 lanes researched. Generated from `ops/lanes.data.json`.
 **Do not edit these notes by hand** — edit the data file and run `node ops.mjs vault`.
 
 ## The two rules that decide everything
@@ -27,7 +27,7 @@ tags:
 |---|---|---|---|---|
 | [[Etsy]] | POD marketplace | allowed with disclosure | sanctioned via official API | 2026-07-25 |
 
-## ✅ candidate (12)
+## ✅ candidate (13)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -43,8 +43,9 @@ tags:
 | [[White-label agency subcontracting]] | Services | not applicable | not applicable | 2026-07-26 |
 | [[Apify Store]] | AI-native | not applicable | sanctioned via official API | 2026-07-28 |
 | [[DistroKid (AI music)]] | AI-native | allowed (in writing) | NO RULE FOUND — a gap | 2026-08-04 |
+| [[Kalshi (prediction markets)]] | Trading | undefined | sanctioned via official API | 2026-08-10 |
 
-## ⚠️ flagged (15)
+## ⚠️ flagged (16)
 
 | Lane | Category | AI | Automation | Checked |
 |---|---|---|---|---|
@@ -63,6 +64,7 @@ tags:
 | [[YouTube (AI explainer)]] | Audience / community | allowed with disclosure | NO RULE FOUND — a gap | 2026-08-04 |
 | [[X creator revenue]] | Audience / community | NO POLICY FOUND — a gap | PROHIBITED | 2026-08-04 |
 | [[KDP Virtual Voice (AI audiobooks)]] | Publishing | allowed (in writing) | NO RULE FOUND — a gap | 2026-08-04 |
+| [[Polymarket US (prediction markets)]] | Trading | undefined | sanctioned via official API | 2026-08-10 |
 
 ## ❌ disqualified (22)
 
@@ -209,3 +211,5 @@ Policies moved four times during our own research window. Alamy banned AI thirte
 | [[DistroKid (AI music)]] | 2026-08-04 |
 | [[KDP Virtual Voice (AI audiobooks)]] | 2026-08-04 |
 | [[Storyblocks]] | 2026-08-04 |
+| [[Kalshi (prediction markets)]] | 2026-08-10 |
+| [[Polymarket US (prediction markets)]] | 2026-08-10 |
