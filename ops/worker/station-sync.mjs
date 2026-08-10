@@ -66,7 +66,7 @@ const lanes = lanesData ? {
 // ---- live API probes (the "wired" part) ---------------------------------
 async function probeEtsy() {
   try {
-    const hdr = `${env('ETSY_API_KEY')}:${env('ETSY_SHARED_SECRET')}`;
+    const hdr = `${env('ETSY_KEYSTRING')}:${env('ETSY_SHARED_SECRET')}`;
     const r = await fetch('https://api.etsy.com/v3/application/shops/67181250', { headers: { 'x-api-key': hdr } });
     return { status: r.status, ok: r.ok, note: r.ok ? 'API live' : (await r.json()).error?.slice(0, 80) ?? 'error' };
   } catch (e) { return { status: 0, ok: false, note: 'unreachable: ' + e.message.slice(0, 60) }; }
