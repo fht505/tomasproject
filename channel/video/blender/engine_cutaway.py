@@ -32,11 +32,12 @@ def mat(name, base, metallic=0.0, rough=0.5, clearcoat=0.0, alpha=1.0, emit=0.0)
         b.inputs['Emission Strength'].default_value = emit
     return m
 
-CAST    = mat('cast_alu',  (0.52, 0.55, 0.58), metallic=1.0, rough=0.45)   # cast aluminum block
+CAST    = mat('cast_alu',  (0.58, 0.60, 0.63), metallic=1.0, rough=0.4)    # aluminum head
+IRON    = mat('cast_iron', (0.13, 0.14, 0.16), metallic=1.0, rough=0.55)   # dark iron block
 BORE    = mat('bore',      (0.75, 0.78, 0.80), metallic=1.0, rough=0.15)   # honed cylinder walls
 PISTON  = mat('piston',    (0.62, 0.64, 0.66), metallic=1.0, rough=0.3)
-COOLANT = mat('coolant',   (0.12, 0.50, 0.95), metallic=0.0, rough=0.12, alpha=0.60, emit=0.35)
-GASKET  = mat('gasket',    (1.0, 0.55, 0.15), metallic=0.3, rough=0.4, emit=1.6)  # the star of eps 4-8
+COOLANT = mat('coolant',   (0.10, 0.55, 1.0), metallic=0.0, rough=0.1, alpha=0.75, emit=0.9)
+GASKET  = mat('gasket',    (1.0, 0.42, 0.05), metallic=0.0, rough=0.5, emit=3.2)  # the star of eps 4-8
 DARK    = mat('dark',      (0.06, 0.07, 0.09), metallic=1.0, rough=0.4)
 FLOOR   = mat('floor',     (0.006, 0.008, 0.012), metallic=0.0, rough=0.65)
 
@@ -53,7 +54,7 @@ bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0.45, -0.1))
 block = bpy.context.object; block.name = 'block'
 block.scale = (3.7, 1.5, 1.05)
 bev = block.modifiers.new('bev', 'BEVEL'); bev.width = 0.06; bev.segments = 4
-block.data.materials.append(CAST)
+block.data.materials.append(IRON)
 
 # section cut: remove the front half (−Y side) of the block
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0, -0.53, -0.1))
@@ -106,7 +107,7 @@ for i, z in ((0, 0.12), (1, -0.42)):
 # ---- coolant jackets: translucent shells around the exposed bores ---------
 for i in range(N_SHOWN):
     x = (i - 1.5) * BORE_SPACING
-    bpy.ops.mesh.primitive_cylinder_add(radius=BORE_R + 0.15, depth=0.95, location=(x, 0.45, -0.11), vertices=64)
+    bpy.ops.mesh.primitive_cylinder_add(radius=BORE_R + 0.18, depth=0.95, location=(x, 0.45, -0.11), vertices=64)
     jacket = bpy.context.object; jacket.name = f'jacket{i}'
     # hollow it: inner cylinder boolean
     bpy.ops.mesh.primitive_cylinder_add(radius=BORE_R + 0.035, depth=2.0, location=(x, 0.45, -0.1), vertices=64)
@@ -203,7 +204,7 @@ cam.location = (2.8, -6.4, 1.9); cam.keyframe_insert('location', frame=FRAMES)
 # gasket glow pulse so the sealing plane reads as "the subject"
 g = GASKET.node_tree.nodes['Principled BSDF'].inputs['Emission Strength']
 prefs.keyframe_new_interpolation_type = 'BEZIER'
-for fr, v in ((1, 0.8), (FRAMES // 2, 2.2), (FRAMES, 0.8)):
+for fr, v in ((1, 2.0), (FRAMES // 2, 4.5), (FRAMES, 2.0)):
     g.default_value = v
     g.keyframe_insert('default_value', frame=fr)
 
