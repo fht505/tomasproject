@@ -1,0 +1,178 @@
+# Episode 10 — Why Does My Car Jerk When Accelerating?
+
+Target query: "car jerks when accelerating" (2,900/mo, KD 23)
+Target length: 10–12 min (~1,750 words)
+New 3D asset: air/fuel/spark path (intake → throttle → injectors → coil/plug → chamber); reuse engine cutaway
+Structure: cold-open hook → symptom precisely → mechanism → causes ranked → the repair → urgent vs. ignorable
+
+---
+
+## COLD OPEN
+
+[broll: city street, car pulling from a green light, subtle lurch-stumble-lurch]
+
+Green light. You press the gas, and the car goes — then hiccups — then
+goes again. A stumble, a lurch, maybe a shudder you feel in the seat.
+Like the engine briefly forgot what it was doing.
+
+An engine needs exactly three things delivered on time, thousands of
+times a minute: air, fuel, spark. A jerk under acceleration is one of
+those three showing up late. The suspect list runs from a five-dollar
+part to a fuel pump — and the pattern of WHEN it stumbles is what names
+the suspect. Let's build the lineup.
+
+[callout: channel card — "Why Is My Car Doing That?"]
+
+## THE SYMPTOM, PRECISELY
+
+[callout: three-way split — "Check engine light on?" / "Stumble at tip-in, under load, or at cruise?" / "Worse cold, wet, or uphill?"]
+
+**First: is the check engine light on — or flashing?** Solid light: pull
+the codes, they'll shortcut this whole episode. **Flashing light: that's
+not a suggestion** — it means active misfire dumping raw fuel into the
+catalytic converter, and continuing to drive hard is how a $200 problem
+buys an exhaust-system problem. Ease off, get it read. [TECH CONFIRM —
+bless the flashing-CEL urgency framing]
+
+**Second: when exactly?** Right at tip-in (the first inch of pedal)?
+Under hard load uphill? Random single hiccups at steady cruise? Each
+pattern leans a different direction.
+
+**Third: conditions.** Worse on cold, damp mornings — classic spark
+leak. Worse uphill loaded — leans fuel delivery. After a fill-up at a
+sketchy station — fuel quality enters the chat.
+
+## THE MECHANISM — AIR, FUEL, SPARK, TIMING
+
+[flow: NEW 3D — the delivery path: air through filter and throttle, fuel through injectors, spark from coils; a metronome bar showing thousands of events/minute; one missed beat = jerk]
+
+Every power pulse is a scheduled event: a cylinder full of air, a
+precisely metered spray of fuel, a spark at the exact right moment. At
+2,000 RPM that's over sixty scheduled explosions a second across your
+cylinders. A "jerk" is missed appointments — a cylinder that got no
+spark, wrong fuel, or bad air math, producing a power gap the whole car
+feels. The computer watches for these misses; that's what misfire codes
+literally count.
+
+## CAUSE #1 — IGNITION: PLUGS AND COILS (the modern classic)
+
+[cutaway: coil-on-plug stack — worn plug gap wide, coil boot cracked, spark jumping weakly; misfire counter ticking]
+
+Spark plugs erode; their gaps grow; the voltage needed to jump climbs
+until, under load — exactly when cylinder pressure is highest and spark
+is hardest — it doesn't. Coils and their rubber boots crack with heat
+age and leak voltage, famously worse on damp mornings. The pattern:
+stumble under acceleration, often a P030X code naming the exact
+cylinder, sometimes a flashing light under hard load.
+
+The honest maintenance angle: plugs have a scheduled interval most
+people blow past [TECH CONFIRM — the interval reality you see: how
+overdue is the average jerk-complaint car's plug set?]. And the
+diagnostic gift of coil-on-plug engines: **swap the suspect coil to
+another cylinder — if the misfire code follows it, you've named the
+part** for free. [TECH CONFIRM — bless the coil-swap test as
+shop-standard]
+
+## CAUSE #2 — FUEL DELIVERY: FILTERS, PUMPS, INJECTORS
+
+[cutaway: fuel path — tank pump, filter, rail, injectors; pressure gauge sagging under load]
+
+Fuel problems jerk hardest **under load and uphill** — when demand
+peaks. A tired **fuel pump** or clogged **filter** holds pressure fine
+at cruise, then sags exactly when the engine asks for more: stumble,
+surge, sometimes a long crank when hot. Dirty **injectors** mist badly
+instead of atomizing — rougher running, worse mileage, tip-in stumble.
+[TECH CONFIRM — pump-vs-filter-vs-injector frequency at FHT; and do you
+endorse injector cleaner bottles or is that another stop-leak-tier
+honesty beat?]
+
+## CAUSE #3 — AIR AND SENSOR MATH: VACUUM LEAKS AND THE MAF
+
+[cutaway: intake tract — cracked vacuum hose hissing unmetered air; MAF sensor element dirty; ECU math wrong]
+
+The computer meters fuel against the air it *measures*. Two ways the
+math breaks: **unmetered air** sneaking past a cracked vacuum hose or
+intake boot (hiss, rough idle that smooths with RPM, lean codes
+P0171/P0174), and a **dirty MAF sensor** under-reading the air that IS
+coming (hesitation right at tip-in, often fixed with a $10 can of MAF
+cleaner — one of the great cheap fixes in this hobby). The five-dollar
+hose from the cold open lives here. [TECH CONFIRM — MAF cleaning as a
+legit DIY: bless with cautions, or shop-only?]
+
+## CAUSE #4 — THE TRANSMISSION IMPOSTOR
+
+[callout: cross-reference card — "Revs flare with the jerk? → Episode 9"]
+
+Quick boundary call with last episode: if the jerk comes WITH an RPM
+flare — engine races, car doesn't — that's slipping, episode 9's
+territory. If RPM and car stumble *together*, stay here: that's a
+power-delivery miss, not a grip miss. One glance at the tach during the
+next jerk sorts you. [TECH CONFIRM — clean enough boundary for viewers?]
+
+## CAUSE #5 — EGR, GUNKED THROTTLE BODIES, AND FUEL QUALITY (the misc bin)
+
+[cutaway: throttle body carbon-ringed; EGR valve stuck part-open; gas cap/water-in-fuel beat]
+
+The supporting cast: a **carbon-gunked throttle body** stumbles right
+off idle (and is a cheap clean); an **EGR valve** stuck open recycles
+exhaust at the wrong time and shudders the engine at low RPM; and a bad
+tank of gas — water or low octane under load — can stumble a healthy
+engine for a tank's length. If the jerk showed up within miles of a
+fill-up, run it low, refill somewhere reputable, and reassess before
+spending money. [TECH CONFIRM — how often does "bad gas" turn out real
+at FHT vs being an excuse?]
+
+## THE REPAIR — WHAT THE MONEY LOOKS LIKE
+
+[flow: decision ladder — scan codes → cheap air/spark items → fuel pressure test → deeper]
+
+The evidence ladder an honest shop climbs: **scan first** (codes name
+cylinders and lean/rich stories), **look at the cheap stuff** (plugs
+overdue? boots cracked? hoses split? MAF dirty?), **measure fuel
+pressure under load** before condemning pumps, and only then go deep.
+Most jerk complaints resolve in the first two rungs.
+
+[callout: typical US shop ranges — "Plugs (set): $___–$___ · Coil:
+$___–$___ · MAF clean/replace: $___–$___ · Fuel pump: $___–$___ ·
+Diagnostic hour: $___–$___"]
+[TECH CONFIRM — fill from real FHT invoices]
+
+## URGENT OR IGNORABLE?
+
+[callout: three-tier verdict card — "Book it" / "This week" / "Ease off now"]
+
+**Book it:** occasional single stumble, no light, no pattern growth.
+Note conditions, book convenient.
+
+**This week:** repeatable stumble, solid check engine light, or worse-
+when-loaded pattern. Misfires wash cylinders with unburnt fuel —
+that's oil dilution and cat stress accumulating.
+
+**Ease off now:** FLASHING check engine light, jerking with loss of
+power, or stumble plus the smell of raw fuel. Flashing means the
+catalytic converter is eating raw fuel and overheating — drive gently,
+directly, to a shop.
+
+[TECH CONFIRM — bless the tiers]
+
+## OUTRO
+
+So: a jerk is a missed appointment in the air-fuel-spark schedule. The
+tach separates it from the transmission's version, the conditions point
+at spark (damp), fuel (load), or air (tip-in), the codes name
+cylinders, and the flashing light is the one that changes your plans
+today. Start at the scan, spend at the bottom of the ladder first.
+
+Next time: the stumble that happens standing still — rough idle, and
+why an engine shakes at a red light but smooths out driving.
+
+[callout: subscribe card + next-episode thumbnail: "Why Is My Idle Rough?"]
+
+---
+
+## DESCRIPTION-BLOCK NOTES (packaging phase)
+
+- AI disclosure line (non-negotiable, every upload).
+- Chapters from section headings.
+- Standard disclaimer: general education, not a diagnosis; a flashing
+  check engine light warrants immediate attention.
