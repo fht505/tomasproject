@@ -32,9 +32,9 @@ def mat(name, base, metallic=0.0, rough=0.5, alpha=1.0, emit=0.0, emit_color=Non
 
 IRON   = mat('block',   (0.16, 0.17, 0.19), metallic=1.0, rough=0.5)
 ALU    = mat('alu',     (0.55, 0.58, 0.61), metallic=1.0, rough=0.35)
-TUBE   = mat('tube',    (0.55, 0.60, 0.65), metallic=0.0, rough=0.12, alpha=0.38)
-HOT    = mat('hot',     (1.0, 0.32, 0.06), emit=6.0)
-COLD   = mat('cold',    (0.15, 0.55, 1.0), emit=6.0)
+TUBE   = mat('tube',    (0.55, 0.60, 0.65), metallic=0.0, rough=0.12, alpha=0.30)
+HOT    = mat('hot',     (1.0, 0.32, 0.06), emit=14.0)
+COLD   = mat('cold',    (0.15, 0.55, 1.0), emit=14.0)
 BRASS  = mat('brass',   (0.75, 0.55, 0.2), metallic=1.0, rough=0.3)
 DARK   = mat('dark',    (0.06, 0.07, 0.09), metallic=1.0, rough=0.4)
 FLOOR  = mat('floor',   (0.006, 0.008, 0.012), rough=0.65)
@@ -114,23 +114,15 @@ bpy.ops.mesh.primitive_cylinder_add(radius=0.22, depth=0.22, location=(1.45, 0, 
 pump = bpy.context.object; pump.data.materials.append(BRASS); smooth(pump)
 
 # ---- flow particles: spheres following each hose curve --------------------
-def flow(curve_obj, material, n=7, dur=70):
+def flow(curve_obj, material, n=12, dur=90):
+    # driver-based cycling: evenly spaced bead chain, constant speed, no
+    # keyframe bookkeeping - offset = (phase + frame/dur) mod 1
     for i in range(n):
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.075, location=(0, 0, 0), segments=16, ring_count=8)
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.085, location=(0, 0, 0), segments=16, ring_count=8)
         p = bpy.context.object; p.data.materials.append(material)
         c = p.constraints.new('FOLLOW_PATH'); c.target = curve_obj; c.use_fixed_location = True
-        phase = i / n
-        # loop the travel: several passes across the render
-        for k in range(0, FRAMES + dur, dur):
-            c.offset_factor = 0.0 if (k + int(phase * dur)) == 0 else 0.0
-        # keyframe offset_factor cycling with per-particle phase
-        f0 = 1 - phase * dur
-        while f0 < FRAMES + dur:
-            c.offset_factor = 0.0
-            c.keyframe_insert('offset_factor', frame=max(int(f0), 1))
-            c.offset_factor = 1.0
-            c.keyframe_insert('offset_factor', frame=int(f0 + dur))
-            f0 += dur
+        drv = c.driver_add('offset_factor').driver
+        drv.expression = f'({i / n} + frame / {dur}) % 1'
 flow(hot_hose, HOT)
 flow(cold_hose, COLD)
 
