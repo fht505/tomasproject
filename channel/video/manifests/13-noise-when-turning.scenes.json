@@ -1,0 +1,128 @@
+{
+  "source": "13-noise-when-turning.md",
+  "generatedAt": "2026-08-11T00:45:01.176Z",
+  "wps": 2.4,
+  "est_total_seconds": 376,
+  "scenes": [
+    {
+      "idx": 1,
+      "section": "COLD OPEN",
+      "kind": "broll",
+      "spec": "parking lot, slow full-lock turn, window down",
+      "narration": "Roll through a parking lot with the wheel cranked, window down, and your car performs its little concert: maybe a click-click-click, maybe a groan, maybe a whine that follows the wheel. Straighten out — silence. Turning is when your front end works hardest: joints articulate to their limits, weight shifts onto one side, and parts that pass the straight-line test get cross-examined. Which is great news for diagnosis — because each part fails with its own *specific sound*. This episode is an ear-training course: five noises, five names, five very different bills.",
+      "words": 92,
+      "est_seconds": 38.3,
+      "tech_confirm": false
+    },
+    {
+      "idx": 2,
+      "section": "COLD OPEN",
+      "kind": "callout",
+      "spec": "channel card — \"Why Is My Car Doing That?\"",
+      "narration": null,
+      "words": 0,
+      "est_seconds": 2.5,
+      "tech_confirm": false
+    },
+    {
+      "idx": 3,
+      "section": "THE SYMPTOM, PRECISELY",
+      "kind": "callout",
+      "spec": "sound-map card — \"CLICKING in tight turns\" / \"HUM/GROWL in sweeping turns\" / \"WHINE with the wheel\" / \"CLUNK over bumps while turning\" / \"CREAK/GROAN low speed\"",
+      "narration": "Five sounds, and WHEN each speaks: (parking lots, U-turns) when you swing the wheel the other way especially at full lock Match your noise now; the causes below run in that order.",
+      "words": 32,
+      "est_seconds": 13.3,
+      "tech_confirm": false
+    },
+    {
+      "idx": 4,
+      "section": "CAUSE #1 — CLICKING: THE CV JOINT (the parking-lot drumbeat)",
+      "kind": "cutaway",
+      "spec": "NEW 3D — CV axle: shaft, constant-velocity joint ball cage, rubber boot; boot torn, grease flung, grit inside",
+      "narration": "Front-wheel-drive cars send power through **CV (constant velocity) joints** — caged ball bearings that let the axle bend with steering and suspension while spinning. Each lives inside a rubber **boot** full of grease. The boot tears with age, grease flings out, grit gets in, and the dry joint starts announcing tight turns: *click-click-click* in time with wheel speed. The inspection beat: a torn boot with flung grease is visible with a flashlight behind the front wheels — and caught at TORN-BOOT stage (before the clicking starts) it's a cheap reboot job instead of an axle. Clicking already? The joint's eating itself; axle replacement territory, and the noise only grows. [TECH CONFIRM — do you still reboot caught-early joints, or is replacement-axle-always the modern economics? Your boot-inspection interval advice]",
+      "words": 128,
+      "est_seconds": 53.3,
+      "tech_confirm": true
+    },
+    {
+      "idx": 5,
+      "section": "CAUSE #2 — HUM/GROWL IN SWEEPING TURNS: THE WHEEL BEARING RETURNS",
+      "kind": "cutaway",
+      "spec": "hub/bearing from ep 1 — load shifting onto outer wheel in a sweeper; growl waves loudest with weight on the bad side",
+      "narration": "Episode 3's impostor gets its turn as the headliner. In a sweeping turn, the car's weight rolls onto the outside wheel — and a worn bearing under load hums, growls, or roars. The steering-input version of the S-weave test: noise that gets LOUDER turning one direction and QUIETER the other names the loaded side. [TECH CONFIRM — restate: the noisy-when-loaded side is the bad bearing, correct? People get this backwards constantly] Bearing urgency recap from ep 3 applies: loud bearings are a today-not-someday item — wheels depend on them. [TECH CONFIRM — has FHT seen a genuinely failed/separated bearing case worth a 10-second cautionary mention?]",
+      "words": 105,
+      "est_seconds": 43.8,
+      "tech_confirm": true
+    },
+    {
+      "idx": 6,
+      "section": "CAUSE #3 — WHINE WITH THE WHEEL: POWER STEERING",
+      "kind": "flow",
+      "spec": "steering path — pump (hydraulic) pulling fluid, whining at low level/full lock; EPS note for electric cars",
+      "narration": "A whine that tracks your steering input — worse the further you turn, loudest at full lock — is the **power steering pump** talking (hydraulic systems): low fluid, aerated fluid, or a tired pump. Check the reservoir; a foamy, low, or burnt fluid tells the story, and full-lock-held-too-long is genuinely hard on pumps. Electric-assist cars (most new ones) skip the pump — their version is usually a column/rack noise or motor complaint, different sound family. [TECH CONFIRM — the hydraulic-vs-EPS split in FHT's actual fleet mix; worth tailoring emphasis?]",
+      "words": 89,
+      "est_seconds": 37.1,
+      "tech_confirm": true
+    },
+    {
+      "idx": 7,
+      "section": "CAUSE #4 — CLUNK OVER BUMPS WHILE TURNING: LINKS, TIE RODS, BALL JOINTS",
+      "kind": "cutaway",
+      "spec": "suspension corner — sway bar end link loose, tie rod end play, ball joint worn; clunk on articulation",
+      "narration": "The clunk family lives where suspension meets steering: **sway bar end links** (the most common cheap clunk), **tie rod ends**, and **ball joints**. Turning plus a bump articulates everything at once, and worn joints knock in their sockets. Ep 1's suspension section is cousins with this one — vague steering and wandering often ride along. The shop test is play-checking with the wheel jacked up; the serious end (separating ball joint or tie rod) is a lose-steering-control failure mode, which is why clunks earn prompt inspections even though most turn out to be the cheap link. [TECH CONFIRM — link vs tie rod vs ball joint frequency; bless the urgency framing]",
+      "words": 111,
+      "est_seconds": 46.3,
+      "tech_confirm": true
+    },
+    {
+      "idx": 8,
+      "section": "CAUSE #5 — CREAK AND GROAN: BUSHINGS, MOUNTS, AND THE SPRING SEAT",
+      "kind": "cutaway",
+      "spec": "strut top mount rotating with a dry groan; control arm bushings cracked; spring seat creak",
+      "narration": "The ship-noise tier: **strut top mounts** (the bearing your whole strut pivots on when steering) groan and creak when dry or worn — classic low-speed, full-lock, worse-cold pattern. Aged **control-arm bushings** creak over the same moves. Annoying more than dangerous, usually — but a seized strut mount also ruins steering return and tire wear, so it's a fix-with-the-next-job item, not a never item. [TECH CONFIRM — agree with that urgency slot? Strut-mount-with-strut-job bundling advice]",
+      "words": 74,
+      "est_seconds": 30.8,
+      "tech_confirm": true
+    },
+    {
+      "idx": 9,
+      "section": "THE REPAIR — WHAT THE MONEY LOOKS LIKE",
+      "kind": "flow",
+      "spec": "sound in → part out → ranges",
+      "narration": "Rough ladder, cheapest first: sway bar links and boot re-greases at the bottom; tie rods, strut mounts, power-steering service in the middle; CV axles and bearings mid-to-upper; ball joints varying by design. The alignment footnote: anything that touches steering geometry — tie rods especially — ends with an **alignment**, so that line on the quote isn't padding. [TECH CONFIRM — bless the always-align-after list] [callout: typical US shop ranges — \"Sway bar link: $___–$___ · CV axle: $___–$___ · Wheel bearing: reuse ep-1 range · Tie rod + alignment: $___–$___ · Strut mount pair: $___–$___\"] [TECH CONFIRM — fill from real FHT invoices]",
+      "words": 103,
+      "est_seconds": 42.9,
+      "tech_confirm": true
+    },
+    {
+      "idx": 10,
+      "section": "URGENT OR IGNORABLE?",
+      "kind": "callout",
+      "spec": "three-tier verdict card — \"Schedule it\" / \"This week\" / \"Inspect before highway\"",
+      "narration": "**Schedule it:** creaks and groans, mild PS whine with a healthy reservoir top-up. Comfort-tier, on your calendar. **This week:** clicking CV joints (they only get worse and can strand you), recurring clunks, foamy/burnt PS fluid. **Inspect before highway driving:** loud/growing bearing noise, any clunk with visible steering play or wandering, or a click that's become a shudder under power. Steering and wheel-retention parts get the conservative call, every time. [TECH CONFIRM — bless the tiers]",
+      "words": 75,
+      "est_seconds": 31.3,
+      "tech_confirm": true
+    },
+    {
+      "idx": 11,
+      "section": "OUTRO",
+      "kind": "talk",
+      "spec": null,
+      "narration": "So: the turn is the interrogation, and the sound is the confession. Clicks name the CV joint, sweeping growls name the loaded bearing, wheel-tracking whines name the pump, bump-clunks name the linkage, and ship-creaks name the mounts. Five sounds, five parts, and a flashlight check of the boots that can catch the expensive one while it's cheap. Next time: the scariest pedal sensation there is — your brake pedal goes further than it should — and the hydraulic story behind it.",
+      "words": 81,
+      "est_seconds": 33.8,
+      "tech_confirm": false
+    },
+    {
+      "idx": 12,
+      "section": "OUTRO",
+      "kind": "callout",
+      "spec": "subscribe card + next-episode thumbnail: \"Why Does My Brake Pedal Go To The Floor?\"",
+      "narration": null,
+      "words": 0,
+      "est_seconds": 2.5,
+      "tech_confirm": false
+    }
+  ]
+}

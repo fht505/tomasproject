@@ -1,0 +1,128 @@
+{
+  "source": "12-rotten-egg-smell.md",
+  "generatedAt": "2026-08-11T00:45:01.116Z",
+  "wps": 2.4,
+  "est_total_seconds": 363,
+  "scenes": [
+    {
+      "idx": 1,
+      "section": "COLD OPEN",
+      "kind": "broll",
+      "spec": "driver's POV, nose wrinkle beat — window cracked at a stoplight",
+      "narration": "It hits you at a red light, or halfway up an on-ramp: sulfur. Rotten eggs. That middle-school-chemistry-class smell, riding along with you. Here's what's interesting about this one: your nose is doing real chemistry. Gasoline contains sulfur; a healthy exhaust system processes it into something odorless; and when you smell egg, a specific device under your car is telling you it's overwhelmed — usually because of a problem UPSTREAM of it. The smell is rarely the sick part. It's the messenger.",
+      "words": 81,
+      "est_seconds": 33.8,
+      "tech_confirm": false
+    },
+    {
+      "idx": 2,
+      "section": "COLD OPEN",
+      "kind": "callout",
+      "spec": "channel card — \"Why Is My Car Doing That?\"",
+      "narration": null,
+      "words": 0,
+      "est_seconds": 2.5,
+      "tech_confirm": false
+    },
+    {
+      "idx": 3,
+      "section": "THE SYMPTOM, PRECISELY",
+      "kind": "callout",
+      "spec": "three-way split — \"Outside/exhaust smell?\" / \"Under-hood, near the battery?\" / \"Only under hard acceleration?\"",
+      "narration": "Three sniff-tests before anything else: **Where's it strongest?** Behind the car near the tailpipe: exhaust story — the main one tonight. Under the hood, sharp and acrid, near one corner: that's not exhaust at all — that's a **battery** story, and it's the short, urgent detour we'll take first. **When?** Only under hard acceleration or full load: classic running-rich-plus-converter pattern. All the time, even at idle: the converter's likely further gone. **Any companions?** Check engine light, worse fuel economy, sluggish acceleration — write down which ones ride along; they matter.",
+      "words": 90,
+      "est_seconds": 37.5,
+      "tech_confirm": false
+    },
+    {
+      "idx": 4,
+      "section": "THE DETOUR FIRST — A LEAKING OR OVERCHARGED BATTERY",
+      "kind": "cutaway",
+      "spec": "battery insert — vent caps, sulfuric-acid electrolyte boiling under overcharge, terminal corrosion",
+      "narration": "Quick but important: battery electrolyte is sulfuric acid, and an **overcharging** (failing voltage regulator) or dying, hot battery can boil and vent it — a sharp sulfur smell UNDER THE HOOD, sometimes with a hot-plastic edge, crusty terminal corrosion, or a swollen case. This one isn't a converter conversation; it's a charging-system-today conversation — venting acid near fuel lines and wiring earns urgency. Under-hood egg smell: battery and charging check first, full episode on the battery light later this season. [TECH CONFIRM — how often does \"egg smell\" turn out battery vs converter at FHT?]",
+      "words": 95,
+      "est_seconds": 39.6,
+      "tech_confirm": true
+    },
+    {
+      "idx": 5,
+      "section": "THE MECHANISM — WHAT THE CONVERTER ACTUALLY DOES",
+      "kind": "cutaway",
+      "spec": "NEW 3D — catalytic converter: honeycomb core, precious-metal wash coat, exhaust flowing through; sulfur chemistry overlay H2S → SO2",
+      "narration": "The **catalytic converter** is a ceramic honeycomb coated in precious metals, sitting in your exhaust stream, finishing combustion's leftover chemistry. Sulfur's path: a healthy converter oxidizes smelly hydrogen sulfide into odorless sulfur dioxide. When the converter is **overwhelmed or dying**, that conversion stops — and you smell the eggs. Two ways it gets there, and the order matters:",
+      "words": 58,
+      "est_seconds": 24.2,
+      "tech_confirm": false
+    },
+    {
+      "idx": 6,
+      "section": "CAUSE #1 — RUNNING RICH: THE UPSTREAM PROBLEM (fix this first)",
+      "kind": "flow",
+      "spec": "rich mixture pouring excess fuel into the converter — overheating core, glowing; upstream culprits highlighted: O2 sensor, injector, coolant temp sensor, misfires",
+      "narration": "An engine running **rich** — too much fuel — sends unburnt fuel into the converter, which tries to burn it, overheats, and falls behind on its chemistry: egg smell under load, often with worse mileage and a check engine light (rich or O2 codes). Usual instigators: aging **O2 sensors**, a leaking **injector**, a bad **coolant temp sensor** lying about warm-up, or the misfires from episode 10 washing cylinders through. Here's the money-saving order of operations: a converter replaced WITHOUT fixing the rich condition dies again — expensively, on schedule. Upstream first, always. [TECH CONFIRM — your version of the \"they replaced the cat twice\" story; it's a legendary pattern]",
+      "words": 109,
+      "est_seconds": 45.4,
+      "tech_confirm": true
+    },
+    {
+      "idx": 7,
+      "section": "CAUSE #2 — THE CONVERTER ITSELF: POISONED, MELTED, OR AGED OUT",
+      "kind": "cutaway",
+      "spec": "converter cores side by side — healthy honeycomb / melted-clogged channels / rattling broken substrate",
+      "narration": "Sometimes the messenger IS sick: cores get **melted** by chronic rich running or misfires, **poisoned** by coolant (head gasket episodes, hello) or oil (burning-oil episode, hello), or simply age out of efficiency — the P0420/P0430 \"catalyst efficiency\" codes. Companion tells of a genuinely dying converter: sulfur smell PLUS sluggishness (a clogging core chokes the engine's breathing), rattle from beneath (broken substrate), or glowing-red converter after driving — [TECH CONFIRM — the restricted-exhaust symptoms you check first: vacuum gauge? backpressure test?] And the elephant: converters are the theft-magnet part (the precious metals), and the pricey part. Which makes the fix-upstream-first rule above the single most valuable sentence in this episode. [TECH CONFIRM — does FHT see cat theft locally? Worth a 15-second aside on shields/etching, or skip?]",
+      "words": 126,
+      "est_seconds": 52.5,
+      "tech_confirm": true
+    },
+    {
+      "idx": 8,
+      "section": "CAUSE #3 — FUEL QUALITY AND THE FLUID IMPOSTORS",
+      "kind": "callout",
+      "spec": "short-list card — high-sulfur fill-up · gear-oil leak on hot exhaust · trans fluid overheat",
+      "narration": "The minor suspects, quickly: a tank of **high-sulfur fuel** can smell eggy for a tank and vanish — same run-it-low-and-refill advice as ep 10. And two impostor smells: **gear oil** (hypoid oil is sulfur-based; a differential or manual-box leak dripping on hot exhaust smells rotten-adjacent) and severely **overheated transmission fluid**. Both come with their own evidence — stains, ep-7 rules. [TECH CONFIRM — gear-oil-on-exhaust as an impostor you actually see?]",
+      "words": 70,
+      "est_seconds": 29.2,
+      "tech_confirm": true
+    },
+    {
+      "idx": 9,
+      "section": "THE REPAIR — WHAT THE MONEY LOOKS LIKE",
+      "kind": "flow",
+      "spec": "order of operations — scan → fix rich condition → THEN evaluate converter → aftermarket vs OEM decision",
+      "narration": "The ladder: **scan and fix upstream** (sensor/injector money) → **re-evaluate the converter after** the engine runs clean — some recover usable function, many efficiency codes persist → **converter replacement** as the informed last step, with the aftermarket-vs-OEM quality conversation had honestly (cheap cats often fail efficiency codes within a year or two [TECH CONFIRM — your aftermarket cat experience/warranty stance]). [callout: typical US shop ranges — \"O2 sensor: $___–$___ · Injector: $___–$___ · Converter (aftermarket): $___–$___ · Converter (OEM): $___–$___\"] [TECH CONFIRM — fill from real FHT invoices]",
+      "words": 88,
+      "est_seconds": 36.7,
+      "tech_confirm": true
+    },
+    {
+      "idx": 10,
+      "section": "URGENT OR IGNORABLE?",
+      "kind": "callout",
+      "spec": "three-tier verdict card — \"One-tank watch\" / \"This week\" / \"Today\"",
+      "narration": "**One-tank watch:** first-time smell right after a fill-up, no light, no other symptoms. Run it down, refill elsewhere, reassess. **This week:** recurring smell, check engine light, mileage dropping. The longer a rich condition runs, the more converter you burn. **Today:** under-hood acid smell (battery/charging), rattle-plus-smell, power loss climbing hills, or anything glowing red underneath after a drive. Restricted exhaust and venting acid both earn same-day attention. [TECH CONFIRM — bless the tiers]",
+      "words": 72,
+      "est_seconds": 30,
+      "tech_confirm": true
+    },
+    {
+      "idx": 11,
+      "section": "OUTRO",
+      "kind": "talk",
+      "spec": null,
+      "narration": "So: rotten eggs is chemistry your converter stopped finishing — usually because something upstream is feeding it too much fuel. Fix the sender, then judge the messenger; never buy the converter first. And if the smell lives under the hood instead of behind the car, it's battery acid, and today's the day. Next time: a hum, click, or groan every time you turn the wheel — the steering-and-bearing episode.",
+      "words": 69,
+      "est_seconds": 28.8,
+      "tech_confirm": false
+    },
+    {
+      "idx": 12,
+      "section": "OUTRO",
+      "kind": "callout",
+      "spec": "subscribe card + next-episode thumbnail: \"Why Does My Car Make Noise When Turning?\"",
+      "narration": null,
+      "words": 0,
+      "est_seconds": 2.5,
+      "tech_confirm": false
+    }
+  ]
+}
