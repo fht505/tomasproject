@@ -11,11 +11,24 @@ Mirror of `ops/TODO.md`, vault-side. Updated 2026-08-21 post-restart.
 - ~~Send the Etsy bump~~ — **moot, the API recovered on its own.** Ticket
   #26418530 resolved server-side. Do not send the drafted email.
 
-## 🔴 The live emergency
-0. **KindlyPut is getting ~zero impressions** — 7 views / 52 listings / 24
-   days, 47 listings at zero. Not a conversion problem; nothing reaches
-   search. Diagnosis in flight; **Etsy Ads stay parked until it resolves.**
-   See [[KindlyPut shop]].
+## 🔴 The live emergency — ONE operator action decides everything
+0. **Read Search Analytics impressions.** Shop Manager → Marketing →
+   Search Analytics → Last 30 Days → total **impressions**. Free, 5 min.
+   - **< ~100** → we're not being served to buyers → escalate on #26418530
+   - **hundreds+** → we're shown and ignored → CTR/rank problem, never
+     contact support
+   Do NOT toggle vacation mode first (destroys the baseline). Full
+   reasoning: [[Zero impressions diagnosis]].
+   While on that screen, also check: Search Visibility page · verification
+   status · open all 5 shipping profiles (calculated vs fixed, destination
+   list) · one candle + one tee in buyer view (are category attributes
+   filled? do the `\n` characters visibly render?).
+
+0b. **Three real defects to fix regardless of the fork** —
+   production_partners empty on all 52 (account risk: undeclared POD
+   partner), shop has no policies at all, 12 candle descriptions render as
+   literal `\n`. Agent can fix #3 via API on approval; #1 and #2 are
+   dashboard work.
 
 ## 🔴 Operator — the bottleneck items
 2. **TECH CONFIRM review** — `channel/TECH-CONFIRM-REVIEW.md` (107
