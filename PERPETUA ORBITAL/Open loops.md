@@ -7,12 +7,20 @@ updated: 2026-08-21
 
 Mirror of `ops/TODO.md`, vault-side. Updated 2026-08-21 post-restart.
 
+## ✅ Closed 2026-08-21
+- ~~Send the Etsy bump~~ — **moot, the API recovered on its own.** Ticket
+  #26418530 resolved server-side. Do not send the drafted email.
+
+## 🔴 The live emergency
+0. **KindlyPut is getting ~zero impressions** — 7 views / 52 listings / 24
+   days, 47 listings at zero. Not a conversion problem; nothing reaches
+   search. Diagnosis in flight; **Etsy Ads stay parked until it resolves.**
+   See [[KindlyPut shop]].
+
 ## 🔴 Operator — the bottleneck items
-1. **Send the Etsy bump** — draft in Gmail to developer@etsy.zendesk.com,
-   subject references ticket #26418530. Key dead 15 days; check inbox for
-   any reply the connector can't see.
 2. **TECH CONFIRM review** — `channel/TECH-CONFIRM-REVIEW.md` (107
    questions, ~30–45 min, any format). Gates the entire 16-video season.
+   Confirmed still unanswered as of Aug 21.
 3. **ElevenLabs go/no-go** ($22/mo) — gates voiceover for all 16.
 
 ## 🟡 Operator — when convenient

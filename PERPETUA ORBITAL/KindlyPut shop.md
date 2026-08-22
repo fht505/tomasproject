@@ -38,17 +38,48 @@ updated: 2026-08-21
   (no regenerate, no second seller app allowed, callback re-save no-op).
 - **Aug 10:** ticket **#26418530** to developer@etsy.zendesk.com with the
   full evidence table. Auto-ack same day ("few business days").
-- **Aug 21:** still 403 (15 days). Bump email drafted referencing the
-  ticket. 2-hourly watcher armed; on 200 → verification sweep + Ads
-  decision fire automatically.
-- **Impact**: buyers unaffected (storefront works); we're blind on
-  views/favorites; the ~Aug 11 Etsy Ads decision remains parked on data.
+- **Aug 21, late evening: RESOLVED.** The API came back — 200 on
+  `openapi-ping`, `GET /shops/67181250`, and OAuth endpoints (stored access
+  token was merely expired; the refresh path rotated it automatically).
+  Ticket #26418530 appears to have been fixed server-side with no visible
+  reply. **The drafted bump email is moot — do not send it.**
+- Lasting gotcha: a bare keystring still 403s with "Shared secret is
+  required" — that is the documented composite-key quirk, not an outage.
+- **Cost of the outage**: 15 days blind on views/favorites, and the Etsy Ads
+  decision parked the whole time.
+
+## 🔴 The number the outage was hiding
+
+First stats pull since Aug 6, taken 2026-08-21:
+
+- **~7 total views · 1 favorite · 0 shop favorers · 0 receipts · 0 sales**
+  across **52 listings in 24 days live**.
+- **47 of 52 listings have exactly zero views.** Best performer ~3.
+
+This reframes the lane completely. $0 revenue was being read as a
+cold-start/conversion problem. It is a **zero-impressions problem** —
+nothing is reaching search at all. A healthy new shop sees orders of
+magnitude more than this in three weeks.
+
+**Ruled out:** tag clumping. Live check shows 52 listings / 52 distinct tag
+sets / none untagged — the old 13-shared-sets defect is genuinely fixed and
+is not the cause. Shop is not on vacation (`is_vacation: false`).
+
+**Leading suspicion:** the ~Aug 6 billing suspension de-indexed the shop
+from Etsy search and it never recovered. Under active investigation
+(traffic pattern by listing age, direct search-visibility probes, config
+audit, external research).
+
+> [!warning] Do not buy Etsy Ads until this resolves
+> Ads purchase impressions directly, which papers over an organic-search
+> problem but proves nothing if the shop is suppressed — and spends real
+> money into a void. Resolve visibility first.
 
 ## Sales state
-$0 revenue, 0 orders as of Aug 21 (per Printify ledger pulls). First-sale
-silence of 1–3 weeks was the community norm at launch… we're past that;
-social marketing (see [[Social playbook]]) is the active lever while the
-API outage blocks paid ads analysis.
+$0 revenue, 0 orders — now authoritative from Etsy's own `receipts` count,
+not inferred from Printify. Social marketing ([[Social playbook]]) is the
+one channel currently able to reach buyers, since it bypasses Etsy search
+entirely.
 
 ## Queued when signals arrive
 Christmas printables shelf (same-day build) · batch-5 (niche chosen by

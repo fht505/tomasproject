@@ -71,9 +71,31 @@ session. Raw transcript (word-for-word, includes every command and result):
 - Arb Phase-0 resumed; verdict pushed to ~Sep 4 for a continuous sample.
 - This vault chronicle written.
 
-## Standing lesson
-Session-bound crons die with the session. For automation that must survive,
-use scheduled cloud agents. Everything else — state files, scripts, git —
-survives on disk.
+## Aug 21 (late) — the API returns, and the real problem appears
+- A second session opened on the vault, read the map, and did the right
+  thing: **checked every claim against live APIs instead of trusting the
+  chronicle.** It found the Etsy API answering 200 — independently
+  re-verified here. 15-day outage over; ticket resolved with no reply.
+- First stats pull since Aug 6 exposed the actual business problem:
+  **7 views / 1 favorite / 52 listings / 24 days, 47 listings at zero.**
+  Zero-impressions, not conversion. See [[KindlyPut shop]].
+- Tag clumping ruled out live (52 distinct tag sets).
+- Four-lane diagnostic launched: traffic-pattern-by-age, direct
+  search-visibility probes, config audit, external research.
+- Coordination note: the second session reported "crons are dead" — that
+  was a false alarm born of scoping (cron lists are per-session, so it
+  could not see this session's three live jobs). Re-arming would have
+  double-posted to a live storefront. **One session owns the crons.**
+
+## Standing lessons
+1. Session-bound crons die with the session. For automation that must
+   survive, use scheduled cloud agents. Everything else — state files,
+   scripts, git — survives on disk.
+2. **The vault is a chronicle, not an oracle.** Probe before reporting;
+   state changes underneath the notes. The second session's instinct to
+   verify is exactly right and should be the norm.
+3. **Crons are session-scoped.** A session seeing an empty cron list has
+   learned nothing about other sessions. Never re-arm on that evidence
+   alone — confirm with the operator which session owns the loops.
 
 Related: [[Systems handbook]] · [[House rules]] · [[Open loops]]

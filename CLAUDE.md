@@ -76,13 +76,23 @@ Tests: `npm test` in `ops/worker/`.
 - **KindlyPut is LIVE** (Etsy, since 2026-07-29): 46 physical listings via
   Printify + 6 digital printables = 52 active. **$0 revenue, 0 orders** so
   far — that is the real number, not a placeholder.
-- **The Etsy API app is DEAD** since a ~Aug 6 billing suspension: 403 on
-  every endpoint including a bare `openapi-ping`, while the developer
-  dashboard shows "Approved". Diagnosed exhaustively (REST, OAuth token,
-  consent page); no self-service fix exists. Support ticket **#26418530**
-  filed Aug 10, bump drafted Aug 21. Printify is unaffected. **Do not
-  re-diagnose this from scratch** — read `PERPETUA ORBITAL/KindlyPut
-  shop.md` first.
+- **The Etsy API RECOVERED late 2026-08-21** after 15 days dead. The ~Aug 6
+  billing suspension had deactivated the app server-side; ticket
+  **#26418530** appears resolved with no visible reply. Verified 200 on
+  `openapi-ping`, `GET /shops/67181250`, and the OAuth-authenticated
+  endpoints (the stored access token was merely expired; the refresh path
+  rotated it automatically). The one remaining 403 — bare keystring with no
+  secret — is the documented composite-key quirk, **not** an outage. Always
+  send `keystring:shared_secret`.
+- **The real problem is now visible, and it is worse than the outage:
+  ~7 total views and 1 favorite across 52 listings in 24 days, with 47
+  listings at exactly zero views.** That is a zero-impressions problem, not
+  a conversion problem — nothing is reaching search. Tag clumping is ruled
+  out (52 distinct tag sets, verified live). Leading suspicion is search
+  suppression/de-indexing following the suspension; under active
+  investigation. **Do not spend on Etsy Ads until that resolves** — ads into
+  a suppressed shop buy nothing. Read `PERPETUA ORBITAL/KindlyPut shop.md`
+  before re-diagnosing.
 - **Social is live**: IG @kindly.put + FB Page KindlyPut, posting an
   operator-approved 9-post series one per day. ⚠ A second Instagram
   (@fhtautorepair) is connected in Composio and is the **default** — every
